@@ -26,9 +26,28 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0 auto;
 }
 
+.menu {
+    max-width: 1280px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+}
+
+.menu__item {
+    margin: 20px 10px;
+    padding: 10px 15px;
+    border-radius: 20px;
+    cursor: pointer;
+}
+
+.menu__item:last-child {
+    margin-right: 0;
+}
+
 .element {
     /* margin-top: 20px; */
     width: 200px;
+    height: 200px; /* ??? */
     border: 1px solid #000;
     position: absolute;
 }
@@ -59,5 +78,10 @@ h1, h2, h3, h4, h5, h6 {
 
 #div2 {
     top: 50px;
+    left: 350px;
+}
+
+#div3 {
+    top: 350px;
     left: 350px;
 }

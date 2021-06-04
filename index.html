@@ -8,6 +8,13 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
+    <div class="menu">
+        <button class="menu__item">NEW BOARD</button>
+        <button class="menu__item">SAVE BOARD</button>
+        <button class="menu__item" onclick="newElement()">new element</button>
+        <button class="menu__item">new connection</button>
+    </div>
+
     <div class="container">
         <div id="div1" class="element">
             <div id="elem1" class="element__picture">
@@ -27,8 +34,18 @@
             </div>
         </div>
 
-        <svg width="1500" height="1500">
+        <div id="div3" class="element">
+            <div id="elem3" class="element__picture">
+                <img class="element__img" src="img/3_Nelumbo_nucifera.jfif" alt="Nelumbo_nucifera">
+            </div>
+            <div class="element__title">
+                Nelumbo nucifera
+            </div>
+        </div>
+
+        <svg width="1500" height="1500" viewBox="0 76 1500 1500">
             <line id="line1" x1="250" y1="150" x2="350" y2="150" stroke="black"/>
+            <line id="line2" x1="450" y1="250" x2="450" y2="350" stroke="black"/>
         </svg>
 
     </div>
