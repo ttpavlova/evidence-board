@@ -66,28 +66,37 @@ function dragElement(elem, i) {
 
 // new element
 
+var i = 0;
+
 function newElement() {
-    // alert("Hi");
 
     var ok = true;
-    var i = 0;
+    
 
-    if (ok === true) {
+    //if (ok === true) {
         // create element
         var div = document.createElement("div");
+        
+        let num = 0;
+        
+        console.log("i до подсчёта elements = " + num);
+        for (i = 0; i < draggableElements.length; i++) {
+            num = i+2;
+        }
+        console.log("i после подсчёта elements = " + num);
+
         // define className
         div.className = "element";
+
         // define id
-        for (i = 0; i < draggableElements.length; i++) {
-            i++;
-        }
-        div.id = "div" + i;
+        div.id = "div" + num;
 
         // define positions
         div.style.left = "50px";
         div.style.top = "50px";
 
-        document.getElementsByTagName('body')[0].appendChild(div);
+        // put new div to container class
+        document.getElementsByClassName('container')[0].appendChild(div);
 
         // add picture and title
 
@@ -96,10 +105,15 @@ function newElement() {
         // define className
         elem.className = "element__picture";
         // define id
-        elem.id = "elem" + i;
+        elem.id = "elem" + num;
 
-        document.getElementById(div.id).appendChild(elem);
-    }
+        //elem.src = "img/3_Nelumbo_nucifera.jfif";
+        //document.getElementById(div.id).src = "img/3_Nelumbo_nucifera.jfif";
+
+       document.getElementById(div.id).appendChild(elem);
+
+        console.log(num);
+    //}
 
     // calling drag function again after creating new div
     for (let i = 0; i < draggableElements.length; i++) {
