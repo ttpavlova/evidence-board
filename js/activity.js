@@ -71,7 +71,6 @@ var i = 0;
 function newElement() {
 
     var ok = true;
-    
 
     //if (ok === true) {
         // create element
@@ -98,19 +97,28 @@ function newElement() {
         // put new div to container class
         document.getElementsByClassName('container')[0].appendChild(div);
 
-        // add picture and title
+        // add image and title
 
-        // create element
         var elem = document.createElement("div");
-        // define className
         elem.className = "element__picture";
-        // define id
         elem.id = "elem" + num;
 
-        //elem.src = "img/3_Nelumbo_nucifera.jfif";
-        //document.getElementById(div.id).src = "img/3_Nelumbo_nucifera.jfif";
+        document.getElementById(div.id).appendChild(elem);
 
-       document.getElementById(div.id).appendChild(elem);
+        // add element's image
+
+        var img = document.createElement("img");
+        img.className = "element__img";
+        img.src = "img/6_Saussurea_alpina.jpg";
+        img.alt = "image";
+        document.getElementById(elem.id).appendChild(img);
+
+        // add element's title
+
+        var elem_title = document.createElement("div");
+        elem_title.className = "element__title";
+        elem_title.innerHTML = "lalalalala";
+        document.getElementById(div.id).appendChild(elem_title);
 
         console.log(num);
     //}
