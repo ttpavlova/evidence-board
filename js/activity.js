@@ -70,10 +70,7 @@ var i = 0;
 
 function newElement() {
 
-    var ok = true;
-
-    //if (ok === true) {
-        // create element
+        // add element
         var div = document.createElement("div");
         
         let num = 0;
@@ -117,7 +114,24 @@ function newElement() {
 
         var elem_title = document.createElement("div");
         elem_title.className = "element__title";
-        elem_title.innerHTML = "lalalalala";
+        elem_title.innerHTML = "void_value";
+        var elem_title_by_user = prompt("Enter element title: "); 
+
+        // checks if title is already taken
+        function check() {
+            for (let i = 0; i < draggableElements.length-1; i++) {
+                if (document.getElementsByClassName("element__title")[i].innerHTML === elem_title_by_user) {
+                    elem_title_by_user = prompt("This title is already taken. Enter another element title: ");
+                    check();
+                }
+                else {
+                    elem_title.innerHTML = elem_title_by_user;
+                }
+            }
+        }
+
+        check();
+    
         document.getElementById(div.id).appendChild(elem_title);
 
         console.log(num);
@@ -127,4 +141,90 @@ function newElement() {
     for (let i = 0; i < draggableElements.length; i++) {
         dragElement(draggableElements[i], i);
     }
+}
+
+// new connection
+
+function newConnection() {
+    var elem1 = prompt("Enter the title of the first element: ");
+    var elem2 = prompt("Enter the title of the second element: ");
+    var connection_title = prompt("Enter the title of new connection");
+
+    for (let i = 0; i < draggableElements.length; i++) {
+        //console.log(document.getElementsByClassName("element__title")[i].innerHTML);
+        if (document.getElementsByClassName("element__title")[i].innerHTML === elem1) {
+            //alert("Element found!");
+
+            // insert if-else if taken!!!
+
+
+        }
+    }
+}
+
+function newElement1() {
+    // сначала посчитаем количество имеющихся на странице элементов
+
+    var num = 0;
+
+    for (i = 0; i < draggableElements.length; i++) {
+        num = i + 2;
+    }
+    
+    console.log(num);
+
+    // спросим у пользователя имя нового элемента при нажатии на пноку "новый элемент"
+
+    var new_elem_title = prompt("Enter element title: ");
+
+    function check() {
+        for (let i = 0; i < draggableElements.length; i++) {
+            if (document.getElementsByClassName("element__title")[i].innerHTML === new_elem_title) {
+                // если нашли совпадение, предлагаем ввести другое название
+                new_elem_title = prompt("This title has already been taken. Choose another one: ");
+                //check();
+            }
+            else {
+                //alert("aleeert!");
+                // если повторений нет, создаём новый элемент
+
+                // создаём главный блок
+
+                var div = document.createElement("div");
+                div.id = "div" + num;
+                div.className = "element";
+                div.style.left = "350px";
+                div.style.top = "350px";
+                document.getElementsByClassName("container")[0].appendChild(div);
+
+                // создаём блок, в котором хранится тег с изображением
+                var elem = document.createElement("div");
+                elem.id = "elem" + num;
+                elem.className = "element__picture";
+                document.getElementById(div.id).appendChild(elem);
+
+                // добавляем изображение
+                var img = document.createElement("img");
+                img.className = "element__img";
+                img.src = "img/6_Saussurea_alpina.jpg";
+                img.alt = "image";
+                document.getElementById(elem.id).appendChild(img);
+
+                // добавляем блок с названием
+                var title = document.createElement("div");
+                title.className = "element__title";
+                title.innerHTML = new_elem_title;
+                document.getElementById(div.id).appendChild(title);
+
+                console.log(num);
+
+                // calling drag function again after creating new div
+                for (let i = 0; i < draggableElements.length; i++) {
+                    dragElement(draggableElements[i], i);
+                }
+            }
+        }
+        
+    }
+    check();
 }
