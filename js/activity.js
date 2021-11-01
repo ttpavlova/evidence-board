@@ -98,6 +98,10 @@ function newElement() {
 
 // modal
 
+function closeModal() {
+    modalWindow.classList.remove("modal__open");
+}
+
 function Submit() {
 
     inputValue = document.getElementById("modal-input").value;
@@ -173,7 +177,12 @@ function Submit() {
             document.getElementById(div.id).appendChild(elem_title);
 
             console.log(num);
-        }
+
+            // clear input and close modal window if new element is created
+
+            document.getElementById("modal-input").value = "";
+            closeModal();
+        } 
 
         // calling drag function again after creating new div
         for (let i = 0; i < draggableElements.length; i++) {
@@ -198,10 +207,6 @@ function checkIfInputIsEmpty() {
         messageInput.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace.";
         submitBtn.disabled = true;
     }
-}
-
-function closeModal() {
-    modalWindow.classList.remove("modal__open");
 }
 
 // new connection
