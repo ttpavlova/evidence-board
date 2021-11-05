@@ -45,6 +45,11 @@
         <div id="modal" class="modal">
             <div class="modal__content">
                 <span id="close-btn" class="modal__close" onclick="closeModal()">&times;</span>
+
+                <p>Load image</p>
+                <input id="modal-load-file" type="file" accept=".jpg, .jpeg, .png" onchange="previewFile()"><br>
+                <img id="modal-load-img" class="modal__load" src="" alt="Image preview">
+
                 <label for="modal__input">Enter element title: </label>
                 <input type="text" id="modal-input" name="modal__input" class="modal__input" onblur="checkIfInputIsEmpty()">
                 <span id="message-input"></span>

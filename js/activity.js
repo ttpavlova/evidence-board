@@ -162,7 +162,7 @@ function Submit() {
 
             var img = document.createElement("img");
             img.className = "element__img";
-            img.src = "img/6_Saussurea_alpina.jpg";
+            img.src = localStorage.getItem("imgData" + i);
             img.alt = "image";
             document.getElementById(elem.id).appendChild(img);
 
@@ -181,6 +181,9 @@ function Submit() {
             // clear input and close modal window if new element is created
 
             document.getElementById("modal-input").value = "";
+            document.getElementById("modal-load-img").src = "";
+            messageInput.innerHTML = "";
+            submitBtn.disabled = true;
             closeModal();
         } 
 
@@ -208,6 +211,30 @@ function checkIfInputIsEmpty() {
         submitBtn.disabled = true;
     }
 }
+
+function previewFile() {
+
+    let preview = document.getElementById("modal-load-img");
+    let file = document.getElementById("modal-load-file").files[0];
+    let reader = new FileReader();
+  
+    reader.onloadend = function () {
+      preview.src = reader.result;
+      console.log('Result ', reader.result);
+      let imgData = reader.result;
+      localStorage.setItem("imgData" + i, imgData);
+      i++;
+    }
+  
+    if (file) {
+      reader.readAsDataURL(file);
+      
+    } else {
+      preview.src = "";
+    }
+}
+
+//localStorage.clear();
 
 // new connection
 
