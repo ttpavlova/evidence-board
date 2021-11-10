@@ -70,9 +70,11 @@ let i = 0;
 
 let newItem = document.getElementById("new-element");
 
-let modalWindow = document.getElementById("modal");
+let modalWindow = document.getElementById("modal-element");
+let modalWindowConnection = document.getElementById("modal-connection");
 
-let closeBtn = document.getElementById("close-btn");
+//let closeBtn = document.getElementById("close-btn");
+let closeBtn = document.querySelector("modal__close");
 
 let inputValue = document.getElementById("modal-input").value;
 
@@ -82,24 +84,73 @@ let messageInput = document.getElementById("message-input");
 
 submitBtn.disabled = true;
 
-function newElement() {
-    modalWindow.classList.add("modal__open");
+function fillSelect() {
+    let elements = document.getElementsByClassName("element__title");
 
-    // сначала посчитаем количество имеющихся на странице элементов
+    let selectFirstElement = document.getElementById("modal-elem1");
+    let selectSecondElement = document.getElementById("modal-elem2");
 
-    var num = 0;
+    for (let i = 0; i < elements.length; i++) {
+        let option = elements[i].innerHTML;
+        let elem = document.createElement("option");
+        elem.textContent = option;
+        elem.value = option;
+        let elem2 = document.createElement("option");
+        elem2.textContent = option;
+        elem2.value = option;
+        // cloneNode ?
+        selectFirstElement.appendChild(elem);
+        selectSecondElement.appendChild(elem2);
+    }
+}
+
+function clearSelect() {
+    let i = 0;
+    let selectFirstElement = document.getElementById("modal-elem1");
+    let selectSecondElement = document.getElementById("modal-elem2");
+    let num = selectFirstElement.options.length - 1;
+
+    for (i = num; i > 0; i--) {
+        selectFirstElement.remove(i);
+        selectSecondElement.remove(i);
+    }
+}
+
+function openModal(elem) {
+
+    fillSelect();
+
+    // посчитаем количество имеющихся на странице элементов
+
+    let num = 0;
 
     for (i = 0; i < draggableElements.length; i++) {
         num = i + 1;
     }
+
+    if (elem === 'elem') {
+        modalWindow.classList.add("modal__open");
+        console.log("num in newElement() " + num);
+    }
+    else {
+        modalWindowConnection.classList.add("modal__open");
+        console.log("num in newConnection() " + num);
+    }
     
-    console.log("num in newElement() " + num);
 }
 
 // modal
 
-function closeModal() {
-    modalWindow.classList.remove("modal__open");
+function closeModal(elem) {
+
+    if (elem === 'elem') {
+        modalWindow.classList.remove("modal__open");
+    }
+    else {
+        modalWindowConnection.classList.remove("modal__open");
+    }
+
+    clearSelect();
 }
 
 function Submit() {
@@ -184,7 +235,7 @@ function Submit() {
             document.getElementById("modal-load-img").src = "";
             messageInput.innerHTML = "";
             submitBtn.disabled = true;
-            closeModal();
+            closeModal('elem');
         } 
 
         // calling drag function again after creating new div
@@ -238,19 +289,19 @@ function previewFile() {
 
 // new connection
 
-function newConnection() {
-    var elem1 = prompt("Enter the title of the first element: ");
-    var elem2 = prompt("Enter the title of the second element: ");
-    var connection_title = prompt("Enter the title of new connection");
+// function newConnection() {
+//     var elem1 = prompt("Enter the title of the first element: ");
+//     var elem2 = prompt("Enter the title of the second element: ");
+//     var connection_title = prompt("Enter the title of new connection");
 
-    for (let i = 0; i < draggableElements.length; i++) {
-        //console.log(document.getElementsByClassName("element__title")[i].innerHTML);
-        if (document.getElementsByClassName("element__title")[i].innerHTML === elem1) {
-            //alert("Element found!");
+//     for (let i = 0; i < draggableElements.length; i++) {
+//         //console.log(document.getElementsByClassName("element__title")[i].innerHTML);
+//         if (document.getElementsByClassName("element__title")[i].innerHTML === elem1) {
+//             //alert("Element found!");
 
-            // insert if-else if taken!!!
+//             // insert if-else if taken!!!
 
 
-        }
-    }
-}
+//         }
+//     }
+// }

@@ -11,8 +11,8 @@
     <div class="menu">
         <button class="menu__item">NEW BOARD</button>
         <button class="menu__item">SAVE BOARD</button>
-        <button id="new-element" class="menu__item" onclick="newElement()">new element</button>
-        <button class="menu__item" onclick="newConnection()">new connection</button>
+        <button id="new-element" class="menu__item" onclick="openModal('elem')">new element</button>
+        <button id="new-connection" class="menu__item" onclick="openModal('connection')">new connection</button>
     </div>
 
     <div class="container">
@@ -42,9 +42,10 @@
             <line id="line2" x1="450" y1="250" x2="450" y2="350" stroke="black"/>
         </svg>
 
-        <div id="modal" class="modal">
+        <!-- modal for "new element" button -->
+        <div id="modal-element" class="modal">
             <div class="modal__content">
-                <span id="close-btn" class="modal__close" onclick="closeModal()">&times;</span>
+                <span id="close-btn" class="modal__close" onclick="closeModal('elem')">&times;</span>
 
                 <p>Load image</p>
                 <input id="modal-load-file" type="file" accept=".jpg, .jpeg, .png" onchange="previewFile()"><br>
@@ -54,6 +55,28 @@
                 <input type="text" id="modal-input" name="modal__input" class="modal__input" onblur="checkIfInputIsEmpty()">
                 <span id="message-input"></span>
                 <button id="modal-submit" class="modal__submit" onclick="Submit()">Ok</button>
+            </div>
+        </div>
+
+        <!-- modal for "new connection" button -->
+        <div id="modal-connection" class="modal">
+            <div class="modal__content">
+                <span id="close-btn-connection" class="modal__close" onclick="closeModal('connection')">&times;</span>
+
+                <p>Element 1: </p>
+                <select id="modal-elem1" class="modal__select">
+                    <option>Choose an element</option>
+                </select>
+
+                <p>Element 2: </p>
+                <select id="modal-elem2" class="modal__select">
+                    <option>Choose an element</option>
+                </select>
+
+                <label for="modal__connection-title">Connection title: </label>
+                <input type="text" id="modal-connection-title" name="modal__connection-title" class="modal__input">
+
+                <button id="modal-submit-connection" class="modal__submit" onclick="Submit()">Ok</button>
             </div>
         </div>
 
