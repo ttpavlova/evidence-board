@@ -90,18 +90,41 @@ function fillSelect() {
     let selectFirstElement = document.getElementById("modal-elem1");
     let selectSecondElement = document.getElementById("modal-elem2");
 
+    let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
+
     for (let i = 0; i < elements.length; i++) {
         let option = elements[i].innerHTML;
+
         let elem = document.createElement("option");
         elem.textContent = option;
         elem.value = option;
-        let elem2 = document.createElement("option");
-        elem2.textContent = option;
-        elem2.value = option;
-        // cloneNode ?
         selectFirstElement.appendChild(elem);
+
+        let elem2 = elem.cloneNode(true);
         selectSecondElement.appendChild(elem2);
     }
+
+    // eventlistener to disable option if it's already selected in another dropdown
+
+    selectFirstElement.addEventListener('change', function() {
+        for (i = 1; i < elems.length; i++) {
+            selectSecondElement[i].disabled = false;
+            if (selectFirstElement.selectedIndex == i) {
+                selectSecondElement[i].disabled = true;
+            }
+            
+        }
+    });
+
+    selectSecondElement.addEventListener('change', function() {
+        console.log(selectSecondElement.selectedIndex);
+        for (i = 1; i < elems.length; i++) {
+            selectFirstElement[i].disabled = false;
+            if (selectSecondElement.selectedIndex == i) {
+                selectFirstElement[i].disabled = true;
+            }            
+        } 
+    });
 }
 
 function clearSelect() {
