@@ -42,19 +42,33 @@ function dragElement(elem, i) {
         var line2 = document.getElementById("line2");
         
         if (i == 0) {
-            line1.setAttribute("x1", e.clientX);
-            line1.setAttribute("y1", e.clientY);
+            line1.setAttribute("x1", parseFloat(elem.style.left)+100);
+            line1.setAttribute("y1", parseFloat(elem.style.top)+100);
         }
         else if (i == 1) {
-            line1.setAttribute("x2", e.clientX);
-            line1.setAttribute("y2", e.clientY);
-            line2.setAttribute("x1", e.clientX);
-            line2.setAttribute("y1", e.clientY);
+            line1.setAttribute("x2", parseFloat(elem.style.left)+100);
+            line1.setAttribute("y2", parseFloat(elem.style.top)+100);
+            line2.setAttribute("x1", parseFloat(elem.style.left)+100);
+            line2.setAttribute("y1", parseFloat(elem.style.top)+100);
         }
         else {
-            line2.setAttribute("x2", e.clientX);
-            line2.setAttribute("y2", e.clientY);
+            line2.setAttribute("x2", parseFloat(elem.style.left)+100);
+            line2.setAttribute("y2", parseFloat(elem.style.top)+100);
         }
+
+        // let lines = document.getElementsByTagName("line");
+        // let linesNum = lines.length;
+
+        // if (linesNum > 0) {
+        //     for (i = 0; i < draggableElements.length; i++) {
+        //         lines[i].setAttribute("x1", e.clientX + 100);
+        //         lines[i].setAttribute("y1", e.clientY + 100);
+        //         lines[i].setAttribute("x2", e.clientX + 100);
+        //         lines[i].setAttribute("y2", e.clientY + 100);
+        //     }
+        // }
+
+        
         
     }
 
@@ -108,6 +122,7 @@ function fillSelect() {
 
     selectFirstElement.addEventListener('change', function() {
         for (i = 1; i < elems.length; i++) {
+            // remove disabled state on every element until we find the new chosen one
             selectSecondElement[i].disabled = false;
             if (selectFirstElement.selectedIndex == i) {
                 selectSecondElement[i].disabled = true;
@@ -137,6 +152,95 @@ function clearSelect() {
         selectFirstElement.remove(i);
         selectSecondElement.remove(i);
     }
+}
+
+function createConnection() {
+
+    // посчитаем количество имеющихся на странице элементов
+
+    let num = 0;
+
+    for (i = 0; i < draggableElements.length; i++) {
+        num = i + 1;
+    }
+
+    let divId1 = "";
+    let divId2 = "";
+    let title1 = "";
+    let title2 = "";
+
+    let elements = document.getElementsByClassName("element__title");
+
+    let selectFirstElement = document.getElementById("modal-elem1");
+    let selectSecondElement = document.getElementById("modal-elem2");
+
+    let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
+
+    let index1 = selectFirstElement.selectedIndex;
+    let index2 = selectSecondElement.selectedIndex;
+    console.log("index1 = " + index1);
+    console.log("index2 = " + index2);
+
+    for (let i = 0; i < elems.length; i++) {
+        
+        if (index1 == i) {
+            title1 = elems[i].value;
+            console.log("elems.value = " + title1);
+        }
+
+        if (index2 == i) {
+            title2 = elems[i].value;
+            console.log("elems.value = " + title2);
+        }
+    }
+
+    for (i = 0; i < elements.length; i++) {
+        if (elements[i].innerHTML == title1) {
+            divId1 = elements[i].parentElement.id;
+            console.log("parentNode = " + divId1);
+        }
+
+        if (elements[i].innerHTML == title2) {
+            divId2 = elements[i].parentElement.id;
+            console.log("parentNode = " + divId2);
+        }
+    }
+
+    let elem1 = "";
+    let elem2 = "";
+
+    for (i = 0; i < draggableElements.length; i++) {
+        if (draggableElements[i].div == divId1) {
+            elem1 = document.getElementById(divId1);
+        }
+        if (draggableElements[i].div == divId2) {
+            elem2 = document.getElementById(divId2);
+        }
+    }
+
+    // get (x;y) of div1 and div2
+
+    let x1, y1, x2, y2 = 0;
+
+    let styleFirstElement = window.getComputedStyle(document.getElementById(divId1));
+    x1 = parseFloat(styleFirstElement.getPropertyValue("left")) + 100;
+    y1 = parseFloat(styleFirstElement.getPropertyValue("top")) + 100;
+    console.log("x1 = " + x1 + " y1 = " + y1);
+
+    let styleSecondElement = window.getComputedStyle(document.getElementById(divId2));
+    x2 = parseFloat(styleSecondElement.getPropertyValue("left")) + 100;
+    y2 = parseFloat(styleSecondElement.getPropertyValue("top")) + 100;
+    console.log("x2 = " + x2 + " y2 = " + y2);
+
+    let line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    line.id = "line" + num; // поменять num и добавить отдельную переменную для подсчёта линий!!!
+    line.setAttribute("x1", x1);
+    line.setAttribute("y1", y1);
+    line.setAttribute("x2", x2);
+    line.setAttribute("y2", y2);
+    line.setAttribute("stroke", "black");
+
+    document.getElementsByTagName('svg')[0].appendChild(line);
 }
 
 function openModal(elem) {
@@ -218,7 +322,13 @@ function Submit() {
             div.id = "div" + num;
 
             // define positions
-            div.style.left = "50px";
+            if (num > 0) {
+                div.style.left = 50 + (num-1)*200 + (num-1)*100 + "px";
+            }
+            else {
+                div.style.left = 50 + num*200 + num*100 + "px";
+            }
+            // div.style.left = "50px";
             div.style.top = "50px";
 
             // put new div to container class
