@@ -38,36 +38,14 @@ function dragElement(elem, i) {
         elem.style.top = (elem.offsetTop - pos2) + "px";
         elem.style.left = (elem.offsetLeft - pos1) + "px";
 
-        var line1 = document.getElementById("line1");
-        var line2 = document.getElementById("line2");
-        
-        if (i == 0) {
-            line1.setAttribute("x1", parseFloat(elem.style.left)+100);
-            line1.setAttribute("y1", parseFloat(elem.style.top)+100);
-        }
-        else if (i == 1) {
-            line1.setAttribute("x2", parseFloat(elem.style.left)+100);
-            line1.setAttribute("y2", parseFloat(elem.style.top)+100);
-            line2.setAttribute("x1", parseFloat(elem.style.left)+100);
-            line2.setAttribute("y1", parseFloat(elem.style.top)+100);
-        }
-        else {
-            line2.setAttribute("x2", parseFloat(elem.style.left)+100);
-            line2.setAttribute("y2", parseFloat(elem.style.top)+100);
-        }
+        let lines = document.getElementsByTagName("line");
+        let linesNum = lines.length + 1;
 
-        // let lines = document.getElementsByTagName("line");
-        // let linesNum = lines.length;
+        // определим id элемента, который мы передвигаем
+        console.log(draggableElements[i].id);
 
-        // if (linesNum > 0) {
-        //     for (i = 0; i < draggableElements.length; i++) {
-        //         lines[i].setAttribute("x1", e.clientX + 100);
-        //         lines[i].setAttribute("y1", e.clientY + 100);
-        //         lines[i].setAttribute("x2", e.clientX + 100);
-        //         lines[i].setAttribute("y2", e.clientY + 100);
-        //     }
-        // }
-
+        // получим id линий, которые присоединены к этому элементу
+        findLineId(draggableElements[i].id, elem);
         
         
     }
@@ -78,7 +56,7 @@ function dragElement(elem, i) {
     }
 }
 
-// new element
+// variables
 
 let i = 0;
 
@@ -97,6 +75,8 @@ let submitBtn = document.getElementById("modal-submit");
 let messageInput = document.getElementById("message-input");
 
 submitBtn.disabled = true;
+
+// fills both dropdown lists with options
 
 function fillSelect() {
     let elements = document.getElementsByClassName("element__title");
@@ -142,6 +122,8 @@ function fillSelect() {
     });
 }
 
+// clears options in dropdown lists
+
 function clearSelect() {
     let i = 0;
     let selectFirstElement = document.getElementById("modal-elem1");
@@ -154,15 +136,11 @@ function clearSelect() {
     }
 }
 
+// creates a line between two selected elements
+
 function createConnection() {
 
-    // посчитаем количество имеющихся на странице элементов
-
-    let num = 0;
-
-    for (i = 0; i < draggableElements.length; i++) {
-        num = i + 1;
-    }
+    inputValueConnection = document.getElementById("modal-connection-title").value;
 
     let divId1 = "";
     let divId2 = "";
@@ -206,18 +184,6 @@ function createConnection() {
         }
     }
 
-    let elem1 = "";
-    let elem2 = "";
-
-    for (i = 0; i < draggableElements.length; i++) {
-        if (draggableElements[i].div == divId1) {
-            elem1 = document.getElementById(divId1);
-        }
-        if (draggableElements[i].div == divId2) {
-            elem2 = document.getElementById(divId2);
-        }
-    }
-
     // get (x;y) of div1 and div2
 
     let x1, y1, x2, y2 = 0;
@@ -233,21 +199,104 @@ function createConnection() {
     console.log("x2 = " + x2 + " y2 = " + y2);
 
     let line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    line.id = "line" + num; // поменять num и добавить отдельную переменную для подсчёта линий!!!
+
+    let linesAll = document.getElementsByTagName("line");
+    let linesNum = linesAll.length + 1; 
+
+    line.id = "line" + linesNum;
+
     line.setAttribute("x1", x1);
     line.setAttribute("y1", y1);
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
     line.setAttribute("stroke", "black");
 
+    findConnectedDivs(line.id, inputValueConnection, divId1, divId2);
+
     document.getElementsByTagName('svg')[0].appendChild(line);
 }
+
+// object "lines" contains information about which elements connected to which lines
+
+lines = new Object();
+
+// creates child objects in "lines"
+
+function findConnectedDivs(lineId, title, divId1, divId2) {
+
+    console.log(lines);
+
+    // child object
+
+    lines[lineId] = {
+        id: lineId,
+        title: title,
+        elemId1: divId1,
+        elemId2: divId2
+    };
+
+    console.log(lines[lineId].id, lines[lineId].title, lines[lineId].elemId1, lines[lineId].elemId2);
+
+}
+
+// finds all identifiers of lines which are connected to the draggable element
+
+function findLineId(draggableElementId, elem) {
+
+    let linesAll = document.getElementsByTagName("line");
+    let linesNum = linesAll.length + 1;
+
+    for (i = 0; i < linesNum; i++) {
+        //showDivs(lines["line" + i], "lines.line" + i);
+
+        for (let key in lines["line" + i]) {
+            console.log("lines.line" + i + "." + key + " = " + (lines["line" + i])[key]);
+            if ((lines["line" + i])[key] == draggableElementId) {
+                console.log("key = " + key);
+                console.log("lineId = line" + i);
+                moveLines("line" + i, elem, key);
+            }   
+        }
+    }
+}
+
+// shows all properties of an object and their values
+
+function showDivs(obj, objName) {
+    for (let key in obj) {
+        console.log(objName + "." + key + " = " + obj[key]);
+    }
+}
+
+// moves lines connected to the draggable element
+
+function moveLines(lineId, elem, key) {
+    let linesAll = document.getElementsByTagName("line");
+    let linesNum = linesAll.length + 1;
+
+    console.log("lineId = " + lineId);
+
+    for (let i = 0; i < linesAll.length; i++) {
+        if ((linesAll[i].id == lineId) && (key == "elemId1")) {
+            linesAll[i].setAttribute("x1", parseFloat(elem.style.left) + 100);
+            linesAll[i].setAttribute("y1", parseFloat(elem.style.top) + 100);
+        }
+        else if ((linesAll[i].id == lineId) && (key == "elemId2")) {
+            linesAll[i].setAttribute("x2", parseFloat(elem.style.left) + 100);
+            linesAll[i].setAttribute("y2", parseFloat(elem.style.top) + 100);
+        }
+    }
+}
+
+// modal
+
+// opens modal window
 
 function openModal(elem) {
 
     fillSelect();
 
-    // посчитаем количество имеющихся на странице элементов
+    // counts the amount of created elements
 
     let num = 0;
 
@@ -266,7 +315,7 @@ function openModal(elem) {
     
 }
 
-// modal
+// closes modal window
 
 function closeModal(elem) {
 
@@ -280,6 +329,8 @@ function closeModal(elem) {
     clearSelect();
 }
 
+// creates new element
+
 function Submit() {
 
     inputValue = document.getElementById("modal-input").value;
@@ -292,7 +343,7 @@ function Submit() {
 
         for (let i = 0; i < draggableElements.length; i++) {
             if (document.getElementsByClassName("element__title")[i].innerHTML === inputValue) {
-                // если нашли совпадение, предлагаем ввести другое название
+                // if an element with the same title is found, suggests to enter a different title
                 ifTitleExists++;
                 messageInput.innerHTML = "This title has already been taken. Choose another one.";
                 break;
@@ -379,6 +430,8 @@ function Submit() {
     check();
 }
 
+// checks if input is empty
+
 function checkIfInputIsEmpty() {
     inputValue = document.getElementById("modal-input").value;
     let regex = /^[^\s]+[A-Za-z\d\s]+[^\s]$/;
@@ -395,6 +448,8 @@ function checkIfInputIsEmpty() {
         submitBtn.disabled = true;
     }
 }
+
+// adds a file preview and loads the image in local storage in base64 encoding
 
 function previewFile() {
 
@@ -419,22 +474,3 @@ function previewFile() {
 }
 
 //localStorage.clear();
-
-// new connection
-
-// function newConnection() {
-//     var elem1 = prompt("Enter the title of the first element: ");
-//     var elem2 = prompt("Enter the title of the second element: ");
-//     var connection_title = prompt("Enter the title of new connection");
-
-//     for (let i = 0; i < draggableElements.length; i++) {
-//         //console.log(document.getElementsByClassName("element__title")[i].innerHTML);
-//         if (document.getElementsByClassName("element__title")[i].innerHTML === elem1) {
-//             //alert("Element found!");
-
-//             // insert if-else if taken!!!
-
-
-//         }
-//     }
-// }
