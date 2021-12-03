@@ -74,7 +74,15 @@ let submitBtn = document.getElementById("modal-submit");
 
 let messageInput = document.getElementById("message-input");
 
+let divNumber = 0;
+
+let ifOpenedFirst = true;
+
 submitBtn.disabled = true;
+
+// find latest div's id before anything is deleted
+
+saveLatestDivId();
 
 // fills both dropdown lists with options
 
@@ -357,20 +365,43 @@ function Submit() {
 
             // add element
             var div = document.createElement("div");
-        
+
             let num = 0;
             
             console.log("i до подсчёта elements = " + num);
             for (i = 0; i < draggableElements.length; i++) {
-                num = i+2;
+                num++;
             }
+            num = num + 1;
             console.log("i после подсчёта elements = " + num);
+
+            // define latest div's number
+
+            if (ifOpenedFirst == true) {
+                if (draggableElements.length == 0) {
+                    ifOpenedFirst = false;
+                    divNumber = saveLatestDivId();
+                    console.log("divNumber = " + divNumber);
+                }
+                else {
+                    for (i = 0; i < draggableElements.length; i++) {
+                        ifOpenedFirst = false;
+                        divNumber = saveLatestDivId();
+                        console.log("divNumber = " + divNumber);
+                    }
+                }
+            }
+            else {
+                divNumber++;
+                console.log("divNumber = " + divNumber);
+            }
 
             // define className
             div.className = "element";
 
             // define id
-            div.id = "div" + num;
+            // div.id = "div" + num;
+            div.id = "div" + divNumber;
 
             // define positions
             if (num > 0) {
@@ -389,7 +420,7 @@ function Submit() {
 
             var elem = document.createElement("div");
             elem.className = "element__picture";
-            elem.id = "elem" + num;
+            elem.id = "elem" + divNumber;
 
             document.getElementById(div.id).appendChild(elem);
 
@@ -401,6 +432,14 @@ function Submit() {
             img.alt = "image";
             document.getElementById(elem.id).appendChild(img);
 
+            // add delete button
+
+            var span = document.createElement("span");
+            span.className = "element__delete";
+            span.onclick = function onclick(event) {deleteElement(div.id)};
+            span.innerHTML = "&times;";
+            document.getElementById(elem.id).appendChild(span);
+
             // add element's title
 
             var elem_title = document.createElement("div");
@@ -411,7 +450,7 @@ function Submit() {
 
             document.getElementById(div.id).appendChild(elem_title);
 
-            console.log(num);
+            console.log(divNumber);
 
             // clear input and close modal window if new element is created
 
@@ -474,3 +513,36 @@ function previewFile() {
 }
 
 //localStorage.clear();
+
+// save latest div's id
+
+function saveLatestDivId() {
+    if (ifOpenedFirst == true) {
+        if (draggableElements.length == 0) {
+            divNumber = 1;
+            console.log("divNumber = " + divNumber);
+        }
+        else {
+            for (i = 0; i < draggableElements.length; i++) {
+                divId = draggableElements[i].id;
+                divNumber = divId.slice(3);
+                divNumber++;
+                console.log("divNumber = " + divNumber);
+            }
+        }
+    }
+    return divNumber;
+}
+
+function deleteElement(divId) {
+    console.log("deleteFunction");
+    console.log("divId = " + divId);
+
+    let elem = document.getElementById(divId);
+    elem.parentNode.removeChild(elem);
+
+    // calling drag function again after deleting a div
+    for (let i = 0; i < draggableElements.length; i++) {
+        dragElement(draggableElements[i], i);
+    }
+}
