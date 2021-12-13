@@ -38,16 +38,11 @@ function dragElement(elem, i) {
         elem.style.top = (elem.offsetTop - pos2) + "px";
         elem.style.left = (elem.offsetLeft - pos1) + "px";
 
-        let lines = document.getElementsByTagName("line");
-        let linesNum = lines.length + 1;
-
         // определим id элемента, который мы передвигаем
         console.log(draggableElements[i].id);
 
         // получим id линий, которые присоединены к этому элементу
-        findLineId(draggableElements[i].id, elem);
-        
-        
+        findLineId(draggableElements[i].id, elem, 'move');
     }
 
     function closeDragElement() {
@@ -75,14 +70,16 @@ let submitBtn = document.getElementById("modal-submit");
 let messageInput = document.getElementById("message-input");
 
 let divNumber = 0;
+let lineNumber = 0;
 
 let ifOpenedFirst = true;
 
 submitBtn.disabled = true;
 
-// find latest div's id before anything is deleted
+// find latest div's id and line's id
 
-saveLatestDivId();
+findLatestDivId();
+findLatestLineID();
 
 // fills both dropdown lists with options
 
@@ -208,8 +205,7 @@ function createConnection() {
 
     let line = document.createElementNS('http://www.w3.org/2000/svg','line');
 
-    let linesAll = document.getElementsByTagName("line");
-    let linesNum = linesAll.length + 1; 
+    linesNum = findLatestLineID();
 
     line.id = "line" + linesNum;
 
@@ -249,12 +245,11 @@ function findConnectedDivs(lineId, title, divId1, divId2) {
 
 // finds all identifiers of lines which are connected to the draggable element
 
-function findLineId(draggableElementId, elem) {
+function findLineId(draggableElementId, elem, action) {
 
-    let linesAll = document.getElementsByTagName("line");
-    let linesNum = linesAll.length + 1;
+    console.log("lineNumber = " + lineNumber);
 
-    for (i = 0; i < linesNum; i++) {
+    for (i = 0; i <= lineNumber; i++) {
         //showDivs(lines["line" + i], "lines.line" + i);
 
         for (let key in lines["line" + i]) {
@@ -262,7 +257,15 @@ function findLineId(draggableElementId, elem) {
             if ((lines["line" + i])[key] == draggableElementId) {
                 console.log("key = " + key);
                 console.log("lineId = line" + i);
-                moveLines("line" + i, elem, key);
+                if (action == 'move') {
+                    moveLines("line" + i, elem, key);
+                }
+                else if (action == 'delete') {
+                    deleteLineObject(lines["line" + i], "line" + i);
+                    deleteConnection("line" + i);
+                    // if the line is connected to the deleted element at the start point (divId1), we don't need to read the key (elemId2) that defines the element to which the line is connected at the end point (divId2)
+                    break;
+                }
             }   
         }
     }
@@ -282,7 +285,7 @@ function moveLines(lineId, elem, key) {
     let linesAll = document.getElementsByTagName("line");
     let linesNum = linesAll.length + 1;
 
-    console.log("lineId = " + lineId);
+    // console.log("lineId = " + lineId);
 
     for (let i = 0; i < linesAll.length; i++) {
         if ((linesAll[i].id == lineId) && (key == "elemId1")) {
@@ -320,7 +323,6 @@ function openModal(elem) {
         modalWindowConnection.classList.add("modal__open");
         console.log("num in newConnection() " + num);
     }
-    
 }
 
 // closes modal window
@@ -376,31 +378,14 @@ function Submit() {
             console.log("i после подсчёта elements = " + num);
 
             // define latest div's number
-
-            if (ifOpenedFirst == true) {
-                if (draggableElements.length == 0) {
-                    ifOpenedFirst = false;
-                    divNumber = saveLatestDivId();
-                    console.log("divNumber = " + divNumber);
-                }
-                else {
-                    for (i = 0; i < draggableElements.length; i++) {
-                        ifOpenedFirst = false;
-                        divNumber = saveLatestDivId();
-                        console.log("divNumber = " + divNumber);
-                    }
-                }
-            }
-            else {
-                divNumber++;
-                console.log("divNumber = " + divNumber);
-            }
+            
+            divNumber = findLatestDivId();
+            ifOpenedFirst = false;
 
             // define className
             div.className = "element";
 
             // define id
-            // div.id = "div" + num;
             div.id = "div" + divNumber;
 
             // define positions
@@ -514,9 +499,9 @@ function previewFile() {
 
 //localStorage.clear();
 
-// save latest div's id
+// find latest div's id
 
-function saveLatestDivId() {
+function findLatestDivId() {
     if (ifOpenedFirst == true) {
         if (draggableElements.length == 0) {
             divNumber = 1;
@@ -531,18 +516,75 @@ function saveLatestDivId() {
             }
         }
     }
+    else {
+        divNumber++;
+        console.log("divNumber = " + divNumber);
+    }
     return divNumber;
 }
 
 function deleteElement(divId) {
+
+    // find lines connected to this element and delete them
+
+    findLineId(divId, "", 'delete');
+
+    // delete the element
+
     console.log("deleteFunction");
     console.log("divId = " + divId);
 
     let elem = document.getElementById(divId);
     elem.parentNode.removeChild(elem);
 
+    ifOpenedFirst = false;
+
     // calling drag function again after deleting a div
     for (let i = 0; i < draggableElements.length; i++) {
         dragElement(draggableElements[i], i);
     }
+}
+
+// find latest line's id 
+
+function findLatestLineID() {
+    let linesAll = document.getElementsByTagName("line");
+    let svg = document.getElementById("svg");
+
+    if (ifOpenedFirst == true) {  
+        if (linesAll.length == 0) {
+            lineNumber = 1;
+            console.log("lineNumber = " + lineNumber);
+        }
+        else {
+            let lineId = svg.lastElementChild.id;
+            lineNumber = lineId.slice(4);
+            lineNumber++;
+            console.log("lineNumber = " + lineNumber);
+            
+        }
+    }
+    else {
+        lineNumber++;
+        console.log("lineNumber = " + lineNumber);
+    }
+    return lineNumber;
+}
+
+function deleteLineObject(obj, lineId) {
+    for (let key in obj) {
+        if ((key == "id") && (obj[key] == lineId)) {
+            console.log("id = " + key + " lineId = " + lineId);
+            delete lines[lineId];
+        }
+    }
+}
+
+function deleteConnection(lineId) {
+
+    console.log("deleteConnectionFunction");
+    console.log("lineId = " + lineId);
+
+    let line = document.getElementById(lineId);
+    line.parentNode.removeChild(line);
 }
