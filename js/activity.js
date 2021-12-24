@@ -218,6 +218,23 @@ function createConnection() {
     findConnectedDivs(line.id, inputValueConnection, divId1, divId2);
 
     document.getElementsByTagName('svg')[0].appendChild(line);
+
+    // create text tag for line's title
+
+    let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.id = "text" + linesNum;
+
+    let title = document.getElementById("modal-connection-title").value;
+    text.innerHTML = title;
+
+    const [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, title, text.id);
+
+    text.setAttribute("x", x);
+    text.setAttribute("y", y);
+
+    document.getElementsByTagName('svg')[0].appendChild(text);
+
+    // defineLineTitleCoordinates(x1, y1, x2, y2, title, text.id);
 }
 
 // object "lines" contains information about which elements connected to which lines
@@ -253,16 +270,17 @@ function findLineId(draggableElementId, elem, action) {
         //showDivs(lines["line" + i], "lines.line" + i);
 
         for (let key in lines["line" + i]) {
-            console.log("lines.line" + i + "." + key + " = " + (lines["line" + i])[key]);
+            // console.log("lines.line" + i + "." + key + " = " + (lines["line" + i])[key]);
             if ((lines["line" + i])[key] == draggableElementId) {
-                console.log("key = " + key);
-                console.log("lineId = line" + i);
+                // console.log("key = " + key);
+                // console.log("lineId = line" + i);
                 if (action == 'move') {
                     moveLines("line" + i, elem, key);
                 }
                 else if (action == 'delete') {
                     deleteLineObject(lines["line" + i], "line" + i);
                     deleteConnection("line" + i);
+                    deleteLineTitle("text" + i);
                     // if the line is connected to the deleted element at the start point (divId1), we don't need to read the key (elemId2) that defines the element to which the line is connected at the end point (divId2)
                     break;
                 }
@@ -291,10 +309,38 @@ function moveLines(lineId, elem, key) {
         if ((linesAll[i].id == lineId) && (key == "elemId1")) {
             linesAll[i].setAttribute("x1", parseFloat(elem.style.left) + 100);
             linesAll[i].setAttribute("y1", parseFloat(elem.style.top) + 100);
+
+            // move line's title
+
+            let x2 = linesAll[i].getAttribute("x2");
+            let y2 = linesAll[i].getAttribute("y2");
+
+            let textId= "text" + lineId.slice(4);
+            let text = document.getElementById(textId);
+            console.log("text = " + textId);
+
+            const [x, y] = defineLineTitleCoordinates(parseFloat(elem.style.left) + 100, parseFloat(elem.style.top) + 100, x2, y2, text.innerHTML);
+
+            text.setAttribute("x", x);
+            text.setAttribute("y", y);
         }
         else if ((linesAll[i].id == lineId) && (key == "elemId2")) {
             linesAll[i].setAttribute("x2", parseFloat(elem.style.left) + 100);
             linesAll[i].setAttribute("y2", parseFloat(elem.style.top) + 100);
+
+            // move line's title
+
+            let x1 = linesAll[i].getAttribute("x1");
+            let y1 = linesAll[i].getAttribute("y1");
+
+            let textId= "text" + lineId.slice(4);
+            let text = document.getElementById(textId);
+            console.log("text = " + textId);
+
+            const [x, y] = defineLineTitleCoordinates(parseFloat(elem.style.left) + 100, parseFloat(elem.style.top) + 100, x1, y1, text.innerHTML);
+
+            text.setAttribute("x", x);
+            text.setAttribute("y", y);
         }
     }
 }
@@ -561,7 +607,6 @@ function findLatestLineID() {
             lineNumber = lineId.slice(4);
             lineNumber++;
             console.log("lineNumber = " + lineNumber);
-            
         }
     }
     else {
@@ -587,4 +632,34 @@ function deleteConnection(lineId) {
 
     let line = document.getElementById(lineId);
     line.parentNode.removeChild(line);
+}
+
+function defineLineTitleCoordinates(x1, y1, x2, y2, title) {
+
+    // calculate the width of the text above the line
+
+    const canvas = document.getElementById("canvas");
+    const ctx = canvas.getContext("2d");
+
+    ctx.font = "14px Montserrat, sans-serif";
+
+    let text = ctx.measureText(title); // TextMetrics object
+    console.log("text.width = " + text.width);
+
+    // result
+
+    let x = x1 + (x2 - x1) / 2 - text.width / 2;
+    let y = y1 + (y2 - y1) / 2;
+
+    console.log("x = " + x + ", y = " + y);
+
+    return [x, y];
+}
+
+function deleteLineTitle(titleId) {
+    console.log("deleteLineTitleFunction");
+    console.log("titleId = " + titleId);
+
+    let title = document.getElementById(titleId);
+    title.parentNode.removeChild(title);
 }
