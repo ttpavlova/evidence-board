@@ -10,41 +10,14 @@
 <body>
     <div class="menu">
         <button class="menu__item">NEW BOARD</button>
-        <button class="menu__item">SAVE BOARD</button>
+        <button id="save-db" class="menu__item">SAVE BOARD</button>
         <button id="new-element" class="menu__item" onclick="openModal('elem')">new element</button>
         <button id="new-connection" class="menu__item" onclick="openModal('connection')">new connection</button>
     </div>
 
     <div class="container">
-        <div id="div1" class="element">
-            <div id="elem1" class="element__picture">
-                <img class="element__img" src="img/1_Nymphaea_caerulea.jpg" alt="Nymphaea_caerulea">
-                <span class="element__delete" onclick="deleteElement('div1')">&times;</span>
-            </div>
-            <div class="element__title">N c</div>
-        </div>
 
-        <div id="div2" class="element">
-            <div id="elem2" class="element__picture">
-                <img class="element__img" src="img/2_Nelumbo_lutea.jpg" alt="Nelumbo_lutea">
-                <span class="element__delete" onclick="deleteElement('div2')">&times;</span>
-            </div>
-            <div class="element__title">N l</div>
-        </div>
-
-        <div id="div3" class="element">
-            <div id="elem3" class="element__picture">
-                <img class="element__img" src="img/3_Nelumbo_nucifera.jfif" alt="Nelumbo_nucifera">
-                <span class="element__delete" onclick="deleteElement('div3')">&times;</span>
-            </div>
-            <div class="element__title">N n</div>
-        </div>
-
-        <svg id="svg" width="1500" height="1500" viewBox="0 76 1500 1500">
-            <!-- <line id="line1" class="lines" x1="250" y1="150" x2="350" y2="150" stroke="black"/>
-            <text id="text1" class="line-text" x="250" y="150">text1</text>
-            <line id="line2" class="lines" x1="450" y1="250" x2="450" y2="350" stroke="black"/> -->
-        </svg>
+        <svg id="svg" width="1500" height="1500" viewBox="0 76 1500 1500"></svg>
         
         <canvas id="canvas" width="300" height="150"></canvas>
 
@@ -60,7 +33,7 @@
                 <label for="modal__input">Enter element title: </label>
                 <input type="text" id="modal-input" name="modal__input" class="modal__input" onblur="checkIfInputIsEmpty()">
                 <span id="message-input"></span>
-                <button id="modal-submit" class="modal__submit" onclick="Submit()">Ok</button>
+                <button id="modal-submit" class="modal__submit" onclick="newElement()">Ok</button>
             </div>
         </div>
 

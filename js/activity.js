@@ -38,6 +38,13 @@ function dragElement(elem, i) {
         elem.style.top = (elem.offsetTop - pos2) + "px";
         elem.style.left = (elem.offsetLeft - pos1) + "px";
 
+        // find element in db
+        findItem(draggableElements[i].id);
+
+        // edit element's coordinates in db
+        editItem("elements", draggableElements[i].id, "x", elem.style.left);
+        editItem("elements", draggableElements[i].id, "y", elem.style.top);
+
         // определим id элемента, который мы передвигаем
         console.log(draggableElements[i].id);
 
@@ -72,14 +79,7 @@ let messageInput = document.getElementById("message-input");
 let divNumber = 0;
 let lineNumber = 0;
 
-let ifOpenedFirst = true;
-
 submitBtn.disabled = true;
-
-// find latest div's id and line's id
-
-findLatestDivId();
-findLatestLineID();
 
 // fills both dropdown lists with options
 
@@ -143,71 +143,105 @@ function clearSelect() {
 
 // creates a line between two selected elements
 
-function createConnection() {
+function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1, line_x2, line_y2, createFrom) {
 
-    inputValueConnection = document.getElementById("modal-connection-title").value;
-
+    let line = document.createElementNS('http://www.w3.org/2000/svg','line');
+    let linesNum = 0;
+    let x1, y1, x2, y2 = 0;
+    let inputValueConnection = "";
     let divId1 = "";
     let divId2 = "";
     let title1 = "";
     let title2 = "";
 
-    let elements = document.getElementsByClassName("element__title");
+    // create text tag for line's title
+    let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    let title = "";
 
-    let selectFirstElement = document.getElementById("modal-elem1");
-    let selectSecondElement = document.getElementById("modal-elem2");
+    if (createFrom == "db") {
+        inputValueConnection = lineTitle;
+        divId1 = elemId1;
+        divId2 = elemId2;
+        x1 = line_x1;
+        y1 = line_y1;
+        x2 = line_x2;
+        y2 = line_y2;
+        console.log("in db case: ");
+        console.log("x1 = " + x1 + " y1 = " + y1);
+        console.log("x2 = " + x2 + " y2 = " + y2);
 
-    let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
+        linesNum = findLatestLineID(lineId.slice(4), "db");
 
-    let index1 = selectFirstElement.selectedIndex;
-    let index2 = selectSecondElement.selectedIndex;
-    console.log("index1 = " + index1);
-    console.log("index2 = " + index2);
+        line.id = lineId;
 
-    for (let i = 0; i < elems.length; i++) {
-        
-        if (index1 == i) {
-            title1 = elems[i].value;
-            console.log("elems.value = " + title1);
-        }
-
-        if (index2 == i) {
-            title2 = elems[i].value;
-            console.log("elems.value = " + title2);
-        }
+        text.id = "text" + lineId.slice(4);
+        // text title
+        title = lineTitle;
     }
+    else {
+        inputValueConnection = document.getElementById("modal-connection-title").value;
 
-    for (i = 0; i < elements.length; i++) {
-        if (elements[i].innerHTML == title1) {
-            divId1 = elements[i].parentElement.id;
-            console.log("parentNode = " + divId1);
+        let elements = document.getElementsByClassName("element__title");
+
+        let selectFirstElement = document.getElementById("modal-elem1");
+        let selectSecondElement = document.getElementById("modal-elem2");
+
+        let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
+
+        let index1 = selectFirstElement.selectedIndex;
+        let index2 = selectSecondElement.selectedIndex;
+        console.log("index1 = " + index1);
+        console.log("index2 = " + index2);
+
+        for (let i = 0; i < elems.length; i++) {
+            
+            if (index1 == i) {
+                title1 = elems[i].value;
+                console.log("elems.value = " + title1);
+            }
+
+            if (index2 == i) {
+                title2 = elems[i].value;
+                console.log("elems.value = " + title2);
+            }
         }
 
-        if (elements[i].innerHTML == title2) {
-            divId2 = elements[i].parentElement.id;
-            console.log("parentNode = " + divId2);
+        for (i = 0; i < elements.length; i++) {
+            if (elements[i].innerHTML == title1) {
+                divId1 = elements[i].parentElement.id;
+                console.log("parentNode = " + divId1);
+            }
+
+            if (elements[i].innerHTML == title2) {
+                divId2 = elements[i].parentElement.id;
+                console.log("parentNode = " + divId2);
+            }
         }
+
+        // get (x;y) of div1 and div2
+
+        let styleFirstElement = window.getComputedStyle(document.getElementById(divId1));
+        x1 = parseFloat(styleFirstElement.getPropertyValue("left")) + 100;
+        y1 = parseFloat(styleFirstElement.getPropertyValue("top")) + 100;
+        console.log("x1 = " + x1 + " y1 = " + y1);
+
+        let styleSecondElement = window.getComputedStyle(document.getElementById(divId2));
+        x2 = parseFloat(styleSecondElement.getPropertyValue("left")) + 100;
+        y2 = parseFloat(styleSecondElement.getPropertyValue("top")) + 100;
+        console.log("x2 = " + x2 + " y2 = " + y2);
+
+        linesNum = findLatestLineID();
+
+        line.id = "line" + linesNum;
+
+        // create text tag for line's title
+        title = document.getElementById("modal-connection-title").value;
+
+        text.id = "text" + linesNum;
+
+        // add line data to db
+        addLine(line.id, inputValueConnection, divId1, divId2, x1, y1, x2, y2);
     }
-
-    // get (x;y) of div1 and div2
-
-    let x1, y1, x2, y2 = 0;
-
-    let styleFirstElement = window.getComputedStyle(document.getElementById(divId1));
-    x1 = parseFloat(styleFirstElement.getPropertyValue("left")) + 100;
-    y1 = parseFloat(styleFirstElement.getPropertyValue("top")) + 100;
-    console.log("x1 = " + x1 + " y1 = " + y1);
-
-    let styleSecondElement = window.getComputedStyle(document.getElementById(divId2));
-    x2 = parseFloat(styleSecondElement.getPropertyValue("left")) + 100;
-    y2 = parseFloat(styleSecondElement.getPropertyValue("top")) + 100;
-    console.log("x2 = " + x2 + " y2 = " + y2);
-
-    let line = document.createElementNS('http://www.w3.org/2000/svg','line');
-
-    linesNum = findLatestLineID();
-
-    line.id = "line" + linesNum;
 
     line.setAttribute("x1", x1);
     line.setAttribute("y1", y1);
@@ -220,21 +254,14 @@ function createConnection() {
     document.getElementsByTagName('svg')[0].appendChild(line);
 
     // create text tag for line's title
-
-    let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    text.id = "text" + linesNum;
-
-    let title = document.getElementById("modal-connection-title").value;
     text.innerHTML = title;
 
-    const [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, title, text.id);
-
+    const [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, title);
+    
     text.setAttribute("x", x);
     text.setAttribute("y", y);
 
     document.getElementsByTagName('svg')[0].appendChild(text);
-
-    // defineLineTitleCoordinates(x1, y1, x2, y2, title, text.id);
 }
 
 // object "lines" contains information about which elements connected to which lines
@@ -301,32 +328,40 @@ function showDivs(obj, objName) {
 
 function moveLines(lineId, elem, key) {
     let linesAll = document.getElementsByTagName("line");
-    let linesNum = linesAll.length + 1;
-
-    // console.log("lineId = " + lineId);
 
     for (let i = 0; i < linesAll.length; i++) {
         if ((linesAll[i].id == lineId) && (key == "elemId1")) {
-            linesAll[i].setAttribute("x1", parseFloat(elem.style.left) + 100);
-            linesAll[i].setAttribute("y1", parseFloat(elem.style.top) + 100);
+            let x1 = parseFloat(elem.style.left) + 100;
+            let y1 = parseFloat(elem.style.top) + 100;
+
+            linesAll[i].setAttribute("x1", x1);
+            linesAll[i].setAttribute("y1", y1);
 
             // move line's title
 
             let x2 = linesAll[i].getAttribute("x2");
             let y2 = linesAll[i].getAttribute("y2");
 
-            let textId= "text" + lineId.slice(4);
+            let textId = "text" + lineId.slice(4);
             let text = document.getElementById(textId);
-            console.log("text = " + textId);
+            // console.log("text = " + textId);
 
-            const [x, y] = defineLineTitleCoordinates(parseFloat(elem.style.left) + 100, parseFloat(elem.style.top) + 100, x2, y2, text.innerHTML);
+            const [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, text.innerHTML);
 
             text.setAttribute("x", x);
             text.setAttribute("y", y);
+
+            // update data in db
+            editItem("lines", lineId, "x1", x1);
+            editItem("lines", lineId, "y1", y1);
+            editItem("lines", lineId, "x2", x2);
+            editItem("lines", lineId, "y2", y2);
         }
         else if ((linesAll[i].id == lineId) && (key == "elemId2")) {
-            linesAll[i].setAttribute("x2", parseFloat(elem.style.left) + 100);
-            linesAll[i].setAttribute("y2", parseFloat(elem.style.top) + 100);
+            let x2 = parseFloat(elem.style.left) + 100;
+            let y2 = parseFloat(elem.style.top) + 100;
+            linesAll[i].setAttribute("x2", x2);
+            linesAll[i].setAttribute("y2", y2);
 
             // move line's title
 
@@ -335,12 +370,18 @@ function moveLines(lineId, elem, key) {
 
             let textId= "text" + lineId.slice(4);
             let text = document.getElementById(textId);
-            console.log("text = " + textId);
+            // console.log("text = " + textId);
 
-            const [x, y] = defineLineTitleCoordinates(parseFloat(elem.style.left) + 100, parseFloat(elem.style.top) + 100, x1, y1, text.innerHTML);
+            const [x, y] = defineLineTitleCoordinates(x2, y2, x1, y1, text.innerHTML);
 
             text.setAttribute("x", x);
             text.setAttribute("y", y);
+
+            // update data in db
+            editItem("lines", lineId, "x1", x1);
+            editItem("lines", lineId, "y1", y1);
+            editItem("lines", lineId, "x2", x2);
+            editItem("lines", lineId, "y2", y2);
         }
     }
 }
@@ -387,7 +428,7 @@ function closeModal(elem) {
 
 // creates new element
 
-function Submit() {
+function newElement(id, title, src, x, y, createFrom) {
 
     inputValue = document.getElementById("modal-input").value;
 
@@ -424,10 +465,14 @@ function Submit() {
             console.log("i после подсчёта elements = " + num);
 
             // define latest div's number
+            if (createFrom == "db") {
+                // if we load data from db
+                divNumber = findLatestDivId(id.slice(3), "db");
+            }
+            else {
+                divNumber = findLatestDivId();
+            }
             
-            divNumber = findLatestDivId();
-            ifOpenedFirst = false;
-
             // define className
             div.className = "element";
 
@@ -435,15 +480,21 @@ function Submit() {
             div.id = "div" + divNumber;
 
             // define positions
-            if (num > 0) {
-                div.style.left = 50 + (num-1)*200 + (num-1)*100 + "px";
+            if (createFrom == "db") {
+                div.style.left = x;
+                div.style.top = y;
             }
             else {
-                div.style.left = 50 + num*200 + num*100 + "px";
+                if (num > 0) {
+                    div.style.left = 50 + (num-1)*200 + (num-1)*100 + "px";
+                }
+                else {
+                    div.style.left = 50 + num*200 + num*100 + "px";
+                }
+                // div.style.left = "50px";
+                div.style.top = "50px";
             }
-            // div.style.left = "50px";
-            div.style.top = "50px";
-
+            
             // put new div to container class
             document.getElementsByClassName('container')[0].appendChild(div);
 
@@ -459,7 +510,12 @@ function Submit() {
 
             var img = document.createElement("img");
             img.className = "element__img";
-            img.src = localStorage.getItem("imgData" + i);
+            if (createFrom == "db") {
+                img.src = src;
+            }
+            else {
+                img.src = localStorage.getItem("imgData" + i);
+            }
             img.alt = "image";
             document.getElementById(elem.id).appendChild(img);
 
@@ -467,7 +523,7 @@ function Submit() {
 
             var span = document.createElement("span");
             span.className = "element__delete";
-            span.onclick = function onclick(event) {deleteElement(div.id)};
+            span.onclick = function onclick(event) {deleteElement(div.id); deleteItem("elements", div.id)};
             span.innerHTML = "&times;";
             document.getElementById(elem.id).appendChild(span);
 
@@ -477,7 +533,12 @@ function Submit() {
             elem_title.className = "element__title";
             elem_title.innerHTML = "void_value";
 
-            elem_title.innerHTML = inputValue;
+            if (createFrom == "db") {
+                elem_title.innerHTML = title;
+            }
+            else {
+                elem_title.innerHTML = inputValue;
+            }
 
             document.getElementById(div.id).appendChild(elem_title);
 
@@ -495,6 +556,15 @@ function Submit() {
         // calling drag function again after creating new div
         for (let i = 0; i < draggableElements.length; i++) {
             dragElement(draggableElements[i], i);
+        }
+
+        // add data to db
+
+        if (createFrom == "db") {
+            // do nothing
+        }
+        else {
+            addItem(div.id, elem_title.innerHTML, img.src, div.style.left, div.style.top);
         }
     }
     check();
@@ -547,8 +617,12 @@ function previewFile() {
 
 // find latest div's id
 
-function findLatestDivId() {
-    if (ifOpenedFirst == true) {
+function findLatestDivId(divId, createdFrom) {
+    if (createdFrom == "db") {
+        divNumber = divId;
+        console.log("divNumber = " + divNumber);
+    }
+    else {
         if (draggableElements.length == 0) {
             divNumber = 1;
             console.log("divNumber = " + divNumber);
@@ -562,10 +636,7 @@ function findLatestDivId() {
             }
         }
     }
-    else {
-        divNumber++;
-        console.log("divNumber = " + divNumber);
-    }
+
     return divNumber;
 }
 
@@ -583,8 +654,6 @@ function deleteElement(divId) {
     let elem = document.getElementById(divId);
     elem.parentNode.removeChild(elem);
 
-    ifOpenedFirst = false;
-
     // calling drag function again after deleting a div
     for (let i = 0; i < draggableElements.length; i++) {
         dragElement(draggableElements[i], i);
@@ -593,11 +662,15 @@ function deleteElement(divId) {
 
 // find latest line's id 
 
-function findLatestLineID() {
+function findLatestLineID(lineId, createdFrom) {
     let linesAll = document.getElementsByTagName("line");
     let svg = document.getElementById("svg");
 
-    if (ifOpenedFirst == true) {  
+    if (createdFrom == "db") {
+        lineNumber = lineId;
+        console.log("lineNumber = " + lineNumber);
+    }
+    else {
         if (linesAll.length == 0) {
             lineNumber = 1;
             console.log("lineNumber = " + lineNumber);
@@ -609,10 +682,7 @@ function findLatestLineID() {
             console.log("lineNumber = " + lineNumber);
         }
     }
-    else {
-        lineNumber++;
-        console.log("lineNumber = " + lineNumber);
-    }
+
     return lineNumber;
 }
 
@@ -630,6 +700,9 @@ function deleteConnection(lineId) {
     console.log("deleteConnectionFunction");
     console.log("lineId = " + lineId);
 
+    // delete data from db
+    deleteItem("lines", lineId);
+
     let line = document.getElementById(lineId);
     line.parentNode.removeChild(line);
 }
@@ -644,14 +717,19 @@ function defineLineTitleCoordinates(x1, y1, x2, y2, title) {
     ctx.font = "14px Montserrat, sans-serif";
 
     let text = ctx.measureText(title); // TextMetrics object
-    console.log("text.width = " + text.width);
+    // console.log("text.width = " + text.width);
 
     // result
 
+    x1 = parseFloat(x1);
+    y1 = parseFloat(y1);
+    x2 = parseFloat(x2);
+    y2 = parseFloat(y2);
+
     let x = x1 + (x2 - x1) / 2 - text.width / 2;
     let y = y1 + (y2 - y1) / 2;
-
-    console.log("x = " + x + ", y = " + y);
+    
+    // console.log("x = " + x + ", y = " + y);
 
     return [x, y];
 }
@@ -662,4 +740,193 @@ function deleteLineTitle(titleId) {
 
     let title = document.getElementById(titleId);
     title.parentNode.removeChild(title);
+}
+
+// indexedDB
+
+var db;
+
+var openRequest = indexedDB.open("db", 1);
+
+openRequest.onupgradeneeded = function(e) {
+    var db = e.target.result;
+    console.log("running onupgradeneeded");
+    // the database did not previously exist, so create object stores
+    db.createObjectStore("elements", {keyPath: "id"});
+    db.createObjectStore("lines", {keyPath: "id"});
+};
+
+openRequest.onsuccess = function(e) {
+    console.log("running onsuccess");
+    db = e.target.result;
+
+    // checks if anything is in db
+    readItems("elements");
+    readItems("lines");
+};
+
+openRequest.onerror = function(e) {
+    console.log("onerror!");
+    console.dir(e);
+};
+
+// add item in db
+
+function addItem(elemId, elemTitle, elemImg, elemX, elemY) {
+    var transaction = db.transaction(["elements"], "readwrite");
+    var elements = transaction.objectStore("elements");
+    var item = {
+        id: elemId,
+        title: elemTitle,
+        img: elemImg,
+        x: elemX,
+        y: elemY,
+        created: new Date().getTime()
+    };
+
+    var request = elements.add(item);
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    };
+
+    request.onsuccess = function(e) {
+        console.log("the element was added to db successfully");
+    };
+}
+
+// add line in db
+
+function addLine(lineId, lineTitle, elemId1, elemId2, x1, y1, x2, y2) {
+    var transaction = db.transaction(["lines"], "readwrite");
+    var lines = transaction.objectStore("lines");
+    var item = {
+        id: lineId,
+        title: lineTitle,
+        elem1: elemId1,
+        elem2: elemId2,
+        x1: parseFloat(x1),
+        y1: parseFloat(y1),
+        x2: parseFloat(x2),
+        y2: parseFloat(y2),
+        created: new Date().getTime()
+    };
+
+    var request = lines.add(item);
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    };
+
+    request.onsuccess = function(e) {
+        console.log("the line was added to db successfully");
+    };
+}
+
+// find item in db
+
+function findItem(elemId) {
+    var transaction = db.transaction(["elements"], "readonly");
+    var elements = transaction.objectStore("elements");
+    let request = elements.get(elemId);
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    };
+
+    request.onsuccess = function(e) {
+
+        const matching = request.result;
+
+        if (matching !== undefined) {
+            // a match was found
+            console.log("a match was found");
+        }
+        else {
+            // no match was found
+            console.log("no match was found");
+        }
+    };
+}
+
+// edit item's value in db
+
+function editItem(objectStoreName, elemId, elemTitle, elemValue) {
+    let transaction = db.transaction([objectStoreName], "readwrite");
+    let items = transaction.objectStore(objectStoreName);
+    let request = items.get(elemId);
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    }
+
+    request.onsuccess = function(e) {
+
+        const data = request.result;
+
+        data[elemTitle] = elemValue;
+
+        let requestUpdate = items.put(data);
+
+        requestUpdate.onerror = function(e) {
+            // error
+            console.log("error while editing data in db");
+        }
+        
+        requestUpdate.onsuccess = function(e) {
+            // success
+        }
+    }
+}
+
+// delete item from db
+
+function deleteItem(objectStoreName, elemId) {
+    let request = db.transaction([objectStoreName], "readwrite")
+                    .objectStore(objectStoreName)
+                    .delete(elemId);
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    }
+
+    request.onsuccess = function(e) {
+        console.log("item was deleted successfully from db");
+    }
+}
+
+// function to read info from db
+
+function readItems(objectStoreName) {
+    // check if there is anything in db
+    let request = db.transaction([objectStoreName], "readwrite")
+                .objectStore(objectStoreName)
+                .openCursor();
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    }
+            
+    request.onsuccess = function(e) {
+        const cursor = request.result;
+        if (cursor) {
+            // store is not empty
+            console.log("preparing to load data");
+
+            if (objectStoreName == "elements") {
+                console.log("Data for " + cursor.key + " is " + cursor.value.title + " " + cursor.value.x + " " + cursor.value.y);
+                newElement(cursor.key, cursor.value.title, cursor.value.img, cursor.value.x, cursor.value.y, "db");
+            }
+            else if (objectStoreName == "lines") {
+                console.log("Data for " + cursor.key + " is " + cursor.value.title + " " + cursor.value.x1 + " " + cursor.value.y1 + cursor.value.x2 + " " + cursor.value.y2);
+                createConnection(cursor.key, cursor.value.title, cursor.value.elem1, cursor.value.elem2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2, "db");
+            }
+            cursor.continue();
+        }
+        else {
+            // store is empty
+            console.log("nothing to restore");
+        }
+        console.log("data from db was successfully read");
+    }
 }
