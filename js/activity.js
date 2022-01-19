@@ -73,13 +73,19 @@ let closeBtn = document.querySelector("modal__close");
 let inputValue = document.getElementById("modal-input").value;
 
 let submitBtn = document.getElementById("modal-submit");
+let connectionBtn = document.getElementById("modal-submit-connection");
 
 let messageInput = document.getElementById("message-input");
+let messageInputConnection = document.getElementById("message-input-connection");
 
 let divNumber = 0;
 let lineNumber = 0;
 
 submitBtn.disabled = true;
+connectionBtn.disabled = true;
+
+let firstDropdownElement = 0;
+let secondDropdownElement = 0;
 
 // fills both dropdown lists with options
 
@@ -88,6 +94,7 @@ function fillSelect() {
 
     let selectFirstElement = document.getElementById("modal-elem1");
     let selectSecondElement = document.getElementById("modal-elem2");
+    let inputConnection = document.getElementById("modal-connection-title");
 
     let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
 
@@ -106,6 +113,10 @@ function fillSelect() {
     // eventlistener to disable option if it's already selected in another dropdown
 
     selectFirstElement.addEventListener('change', function() {
+        console.log(selectFirstElement.selectedIndex);
+        // ...
+        firstDropdownElement = selectFirstElement.selectedIndex;
+        checkNewConnectionInputs();
         for (i = 1; i < elems.length; i++) {
             // remove disabled state on every element until we find the new chosen one
             selectSecondElement[i].disabled = false;
@@ -118,12 +129,20 @@ function fillSelect() {
 
     selectSecondElement.addEventListener('change', function() {
         console.log(selectSecondElement.selectedIndex);
+        // ...
+        secondDropdownElement = selectSecondElement.selectedIndex;
+        checkNewConnectionInputs();
         for (i = 1; i < elems.length; i++) {
             selectFirstElement[i].disabled = false;
             if (selectSecondElement.selectedIndex == i) {
                 selectFirstElement[i].disabled = true;
             }            
         } 
+    });
+
+    inputConnection.addEventListener('change', function() {
+        console.log("text in inputConnection changed");
+        checkNewConnectionInputs();
     });
 }
 
@@ -570,22 +589,133 @@ function newElement(id, title, src, x, y, createFrom) {
     check();
 }
 
-// checks if input is empty
+// checks if image in "new element" modal window is selected
 
-function checkIfInputIsEmpty() {
-    inputValue = document.getElementById("modal-input").value;
-    let regex = /^[^\s]+[A-Za-z\d\s]+[^\s]$/;
+// add event listeners
 
-    console.log("in check " + inputValue);
+let img = document.getElementById("modal-load-file");
+let modalElementInput = document.getElementById("modal-input");
 
-    if (regex.test(inputValue)) {
-        messageInput.innerHTML = "Input accepted";
-        submitBtn.disabled = false;
+img.addEventListener('change', function() {
+    checkNewElementInputs();
+    previewFile();
+});
+
+modalElementInput.addEventListener('change', function() {
+    checkNewElementInputs();
+});
+
+// checks if image in "new element" modal window is selected
+
+function checkIfImageIsSelected() {
+    let img = document.getElementById("modal-load-file");
+
+    if (img.files.length == 0) {
+        console.log("no files selected");
+    }
+    else {
+        console.log("image is selected");
+        return true;
+    }
+}
+
+// checks if dropdown options in "new connection" modal window are selected
+
+function checkDropdownOptions() {
+
+    if ((firstDropdownElement != 0) && (secondDropdownElement != 0)) {
+        // both options are selected
         return true;
     }
     else {
-        messageInput.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace.";
-        submitBtn.disabled = true;
+        // one of options isn't selected
+    }
+}
+
+// checks if text input is empty
+
+function checkIfInputIsEmpty(inputId) {
+    
+    let regex = /^[^\s]+[A-Za-z\d\s]+[^\s]$/;
+    
+    // checks which input we need to test
+
+    // new element modal window
+    if (inputId == "modal-input") {
+        inputValue = document.getElementById("modal-input").value;
+    }
+    // new connection modal window
+    else if (inputId == "modal-connection-title") {
+        inputValue = document.getElementById("modal-connection-title").value;
+    }
+
+    console.log("in check " + inputValue);    
+
+    if (regex.test(inputValue)) {
+        return true;
+    }
+    else {
+        // ...
+    }
+}
+
+// checks inputs in "new element" modal window
+
+function checkNewElementInputs() {
+
+    let btn = submitBtn;
+    let message = messageInput;
+    let inputId = "modal-input";
+
+    if (checkIfImageIsSelected()) {
+        if (checkIfInputIsEmpty(inputId)) {
+            message.innerHTML = "Input accepted";
+            btn.disabled = false;
+        }
+        else {
+            message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
+            btn.disabled = true;
+        }
+    }
+    else {
+        if (checkIfInputIsEmpty(inputId)) {
+            message.innerHTML = "No image was selected";
+            btn.disabled = true;
+        }
+        else {
+            message.innerHTML = "All fields must contain data";
+            btn.disabled = true;
+        }
+    }
+}
+
+// checks inputs in "new connection" modal window
+
+function checkNewConnectionInputs() {
+
+    let btn = connectionBtn;
+    let message = messageInputConnection; 
+    let inputId = "modal-connection-title";
+
+    if (checkDropdownOptions()) {
+        if (checkIfInputIsEmpty(inputId)) {
+            message.innerHTML = "Input accepted";
+            btn.disabled = false;
+        }
+        else {
+            message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
+            btn.disabled = true;
+        }
+    }
+    else {
+        if (checkIfInputIsEmpty(inputId)) {
+            message.innerHTML = "One of elements isn't selected";
+            btn.disabled = true;
+        }
+        else {
+            message.innerHTML = "All fields must contain data";
+            btn.disabled = true;
+        }
     }
 }
 
