@@ -262,6 +262,8 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
         addLine(line.id, inputValueConnection, divId1, divId2, x1, y1, x2, y2);
     }
 
+    line.setAttribute("class", "lines");
+
     line.setAttribute("x1", x1);
     line.setAttribute("y1", y1);
     line.setAttribute("x2", x2);
@@ -1058,5 +1060,30 @@ function readItems(objectStoreName) {
             console.log("nothing to restore");
         }
         console.log("data from db was successfully read");
+    }
+}
+
+clearDbButton = document.getElementById("clear-db");
+clearDbButton.addEventListener("click", function() {
+    if (window.confirm("Are you sure you want to clear the data? After deletion, the page will be reloaded.")) {
+        // delete items from db
+        deleteItems("elements");
+        deleteItems("lines");
+        // reload the page
+        document.location.reload();
+    }
+});
+
+// function to delete all data from db
+
+function deleteItems(objectStoreName) {
+    let request = db.transaction([objectStoreName], "readwrite").objectStore(objectStoreName).clear();
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    }
+
+    request.onsuccess = function(e) {
+        console.log("all items were deleted successfully from db");
     }
 }
