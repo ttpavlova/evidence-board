@@ -535,7 +535,7 @@ function newElement(id, title, src, x, y, createFrom) {
                 img.src = src;
             }
             else {
-                img.src = localStorage.getItem("imgData" + i);
+                img.src = imgPreview.src;
             }
             img.alt = "image";
             document.getElementById(elem.id).appendChild(img);
@@ -567,6 +567,7 @@ function newElement(id, title, src, x, y, createFrom) {
 
             // clear input and close modal window if new element is created
 
+            fileInput.value = "";
             document.getElementById("modal-input").value = "";
             document.getElementById("modal-load-img").src = "";
             messageInput.innerHTML = "";
@@ -595,10 +596,11 @@ function newElement(id, title, src, x, y, createFrom) {
 
 // add event listeners
 
-let img = document.getElementById("modal-load-file");
+let fileInput = document.getElementById("modal-load-file");
+let imgPreview = document.getElementById("modal-load-img");
 let modalElementInput = document.getElementById("modal-input");
 
-img.addEventListener('change', function() {
+fileInput.addEventListener('change', function() {
     checkNewElementInputs();
     previewFile();
 });
@@ -721,27 +723,22 @@ function checkNewConnectionInputs() {
     }
 }
 
-// adds a file preview and loads the image in local storage in base64 encoding
+// adds a file preview and representes the file's data as a base64 encoded string
 
 function previewFile() {
 
-    let preview = document.getElementById("modal-load-img");
     let file = document.getElementById("modal-load-file").files[0];
     let reader = new FileReader();
   
     reader.onloadend = function () {
-      preview.src = reader.result;
-      console.log('Result ', reader.result);
-      let imgData = reader.result;
-      localStorage.setItem("imgData" + i, imgData);
-      i++;
+        imgPreview.src = reader.result;
     }
   
     if (file) {
-      reader.readAsDataURL(file);
-      
-    } else {
-      preview.src = "";
+        reader.readAsDataURL(file);
+    }
+    else {
+        imgPreview.src = "";
     }
 }
 
