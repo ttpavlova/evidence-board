@@ -62,6 +62,8 @@ function dragElement(elem, i) {
 
 let i = 0;
 
+let elementWidth = 150;
+
 let newItem = document.getElementById("new-element");
 
 let modalWindow = document.getElementById("modal-element");
@@ -240,13 +242,13 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
         // get (x;y) of div1 and div2
 
         let styleFirstElement = window.getComputedStyle(document.getElementById(divId1));
-        x1 = parseFloat(styleFirstElement.getPropertyValue("left")) + 100;
-        y1 = parseFloat(styleFirstElement.getPropertyValue("top")) + 100;
+        x1 = parseFloat(styleFirstElement.getPropertyValue("left")) + elementWidth/2;
+        y1 = parseFloat(styleFirstElement.getPropertyValue("top")) + elementWidth/2;
         console.log("x1 = " + x1 + " y1 = " + y1);
 
         let styleSecondElement = window.getComputedStyle(document.getElementById(divId2));
-        x2 = parseFloat(styleSecondElement.getPropertyValue("left")) + 100;
-        y2 = parseFloat(styleSecondElement.getPropertyValue("top")) + 100;
+        x2 = parseFloat(styleSecondElement.getPropertyValue("left")) + elementWidth/2;
+        y2 = parseFloat(styleSecondElement.getPropertyValue("top")) + elementWidth/2;
         console.log("x2 = " + x2 + " y2 = " + y2);
 
         linesNum = findLatestLineID();
@@ -278,6 +280,8 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     text.innerHTML = title;
 
     const [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, title);
+
+    text.setAttribute("class", "lines__text");
     
     text.setAttribute("x", x);
     text.setAttribute("y", y);
@@ -352,8 +356,8 @@ function moveLines(lineId, elem, key) {
 
     for (let i = 0; i < linesAll.length; i++) {
         if ((linesAll[i].id == lineId) && (key == "elemId1")) {
-            let x1 = parseFloat(elem.style.left) + 100;
-            let y1 = parseFloat(elem.style.top) + 100;
+            let x1 = parseFloat(elem.style.left) + elementWidth/2;
+            let y1 = parseFloat(elem.style.top) + elementWidth/2;
 
             linesAll[i].setAttribute("x1", x1);
             linesAll[i].setAttribute("y1", y1);
@@ -379,8 +383,8 @@ function moveLines(lineId, elem, key) {
             editItem("lines", lineId, "y2", y2);
         }
         else if ((linesAll[i].id == lineId) && (key == "elemId2")) {
-            let x2 = parseFloat(elem.style.left) + 100;
-            let y2 = parseFloat(elem.style.top) + 100;
+            let x2 = parseFloat(elem.style.left) + elementWidth/2;
+            let y2 = parseFloat(elem.style.top) + elementWidth/2;
             linesAll[i].setAttribute("x2", x2);
             linesAll[i].setAttribute("y2", y2);
 

@@ -8,10 +8,19 @@
     <link rel="stylesheet" type="text/css" href="css/style.css">
 </head>
 <body>
-    <div class="menu">
-        <button id="clear-db" class="menu__item">CLEAR</button>
-        <button id="new-element" class="menu__item" onclick="openModal('elem')">new element</button>
-        <button id="new-connection" class="menu__item" onclick="openModal('connection')">new connection</button>
+    <div class="header">
+        <div class="header__container">
+            <div class="header__content">
+                <div class="header__logo">
+                    <a href="#">Evidence board</a>
+                </div>
+                <div class="header__menu">
+                    <button class="menu__item" id="clear-db">CLEAR</button>
+                    <button class="menu__item" id="new-element" onclick="openModal('elem')">new element</button>
+                    <button class="menu__item" id="new-connection" onclick="openModal('connection')">new connection</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <div class="container">

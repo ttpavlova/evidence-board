@@ -4,6 +4,9 @@ body {
     line-height: 1.6;
     color: #333333;
     background-color: lightgray;
+    background-image: url("../img/bg2.jpg");
+    /* background-repeat: no-repeat; */
+    background-size: 600px;
 
     overflow-x: hidden;
 }
@@ -21,16 +24,44 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 
+.header {
+    width: 100%;
+    background-color: rgb(250, 211, 174);
+}
+
+.header__container {
+    width: 100%;
+    max-width: 1000px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.header__content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.header__logo {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.header__logo a {
+    font-family: 'Courier New', Courier, monospace;
+    font-size: 22px;
+    text-decoration: none;
+    color: #fff;
+}
+
 .container {
     /* max-width: 1280px; */
     margin: 0 auto;
 }
 
-.menu {
-    max-width: 1280px;
-    display: flex;
-    justify-content: flex-end;
-    align-items: center;
+.header__menu {
+
 }
 
 .menu__item {
@@ -38,6 +69,15 @@ h1, h2, h3, h4, h5, h6 {
     padding: 10px 15px;
     border-radius: 20px;
     cursor: pointer;
+    background: linear-gradient(to bottom right, #DBE6F6 0%, #C5796D  51%, #DBE6F6  100%);
+    text-align: center;
+    text-transform: uppercase;
+    transition: 0.5s;
+    background-size: 200% auto;
+    color: #fff;
+}
+.menu__item:hover {
+    background-position: right center;
 }
 
 .menu__item:last-child {
@@ -46,8 +86,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .element {
     /* margin-top: 20px; */
-    width: 200px;
-    height: 200px; /* ??? */
+    width: 150px;
+    height: 150px; /* ??? */
     border: 1px solid #000;
     position: absolute;
 }
@@ -71,7 +111,7 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
     align-items: center;
     top: 0px;
-    left: 178px;
+    right: 0;
     width: 20px;
     height: 20px;
     z-index: 11;
@@ -82,24 +122,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .element__title {
-    width: 200px;
+    width: 150px;
     text-align: center;
-}
-
-#div1 {
-    top: 50px;
-    left: 50px;
-    z-index: 9;
-}
-
-#div2 {
-    top: 50px;
-    left: 350px;
-}
-
-#div3 {
-    top: 350px;
-    left: 350px;
 }
 
 /* modal */
@@ -182,5 +206,8 @@ h1, h2, h3, h4, h5, h6 {
     cursor: pointer;
 }
 
-.line-text {
+.lines__text {
+    /* width: 20px;
+    height: 20px;
+    background-color: rgb(252, 205, 53); */
 }
