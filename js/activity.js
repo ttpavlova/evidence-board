@@ -36,23 +36,32 @@ function dragElement(elem, i) {
         pos3 = e.clientX;
         pos4 = e.clientY;
         elem.style.top = (elem.offsetTop - pos2) + "px";
-        elem.style.left = (elem.offsetLeft - pos1) + "px";
-
-        // find element in db
-        findItem(draggableElements[i].id);
-
-        // edit element's coordinates in db
-        editItem("elements", draggableElements[i].id, "x", elem.style.left);
-        editItem("elements", draggableElements[i].id, "y", elem.style.top);
-
-        // определим id элемента, который мы передвигаем
-        console.log(draggableElements[i].id);
+        elem.style.left = (elem.offsetLeft - pos1) + "px";     
 
         // получим id линий, которые присоединены к этому элементу
         findLineId(draggableElements[i].id, elem, 'move');
     }
 
     function closeDragElement() {
+
+        // find element in db
+        // findItem(draggableElements[i].id);
+
+        // определим id элемента, который мы передвигаем
+        console.log(draggableElements[i].id);
+
+        // edit element's coordinates in db
+        editItem("elements", draggableElements[i].id, "x", elem.style.left);
+        editItem("elements", draggableElements[i].id, "y", elem.style.top);
+
+        console.log("lineNumber = " + lineNumber);
+
+        // lineArr stores identifiers of the lines connected to the draggable element 
+        let lineArr = findLineId(draggableElements[i].id, elem, 'find');
+
+        // updates new coordinates to db after moving an element
+        changeLineCoordinates(lineArr);
+
         document.onmouseup = null;
         document.onmousemove = null;
     }
@@ -316,17 +325,23 @@ function findConnectedDivs(lineId, title, divId1, divId2) {
 
 function findLineId(draggableElementId, elem, action) {
 
-    console.log("lineNumber = " + lineNumber);
+    let lineId = "";
+    let lineArr = [];
 
     for (i = 0; i <= lineNumber; i++) {
         //showDivs(lines["line" + i], "lines.line" + i);
 
-        for (let key in lines["line" + i]) {
+        for (key in lines["line" + i]) {
             // console.log("lines.line" + i + "." + key + " = " + (lines["line" + i])[key]);
             if ((lines["line" + i])[key] == draggableElementId) {
                 // console.log("key = " + key);
                 // console.log("lineId = line" + i);
-                if (action == 'move') {
+                if (action == 'find') {
+                    lineId = "line" + i;
+                    lineArr.push(lineId);
+                    // console.log(lineArr);
+                }
+                else if (action == 'move') {
                     moveLines("line" + i, elem, key);
                 }
                 else if (action == 'delete') {
@@ -339,6 +354,7 @@ function findLineId(draggableElementId, elem, action) {
             }   
         }
     }
+    return lineArr;
 }
 
 // shows all properties of an object and their values
@@ -375,12 +391,6 @@ function moveLines(lineId, elem, key) {
 
             text.setAttribute("x", x);
             text.setAttribute("y", y);
-
-            // update data in db
-            editItem("lines", lineId, "x1", x1);
-            editItem("lines", lineId, "y1", y1);
-            editItem("lines", lineId, "x2", x2);
-            editItem("lines", lineId, "y2", y2);
         }
         else if ((linesAll[i].id == lineId) && (key == "elemId2")) {
             let x2 = parseFloat(elem.style.left) + elementWidth/2;
@@ -401,13 +411,26 @@ function moveLines(lineId, elem, key) {
 
             text.setAttribute("x", x);
             text.setAttribute("y", y);
-
-            // update data in db
-            editItem("lines", lineId, "x1", x1);
-            editItem("lines", lineId, "y1", y1);
-            editItem("lines", lineId, "x2", x2);
-            editItem("lines", lineId, "y2", y2);
         }
+    }
+}
+
+// gets all coordinates from the lines connected to the draggable element and writes them to db
+
+function changeLineCoordinates(lineArr) {
+    for (let i = 0; i < lineArr.length; i++) {
+        let lineId = lineArr[i];
+        let line = document.getElementById(lineId);
+        let x1 = line.getAttribute("x1");
+        let y1 = line.getAttribute("y1");
+        let x2 = line.getAttribute("x2");
+        let y2 = line.getAttribute("y2");
+
+        // updates coordinates in db
+        editItem("lines", lineId, "x1", x1);
+        editItem("lines", lineId, "y1", y1);
+        editItem("lines", lineId, "x2", x2);
+        editItem("lines", lineId, "y2", y2);
     }
 }
 
@@ -746,8 +769,6 @@ function previewFile() {
     }
 }
 
-//localStorage.clear();
-
 // find latest div's id
 
 function findLatestDivId(divId, createdFrom) {
@@ -973,7 +994,7 @@ function findItem(elemId) {
 
         if (matching !== undefined) {
             // a match was found
-            console.log("a match was found");
+            // console.log("a match was found");
         }
         else {
             // no match was found
@@ -1008,6 +1029,7 @@ function editItem(objectStoreName, elemId, elemTitle, elemValue) {
         
         requestUpdate.onsuccess = function(e) {
             // success
+            // console.log("item in '" + objectStoreName + "' moved, " + "elemTitle is " + elemTitle + ", elemValue is " + elemValue);
         }
     }
 }
