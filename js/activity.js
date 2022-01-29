@@ -78,22 +78,15 @@ let newItem = document.getElementById("new-element");
 let modalWindow = document.getElementById("modal-element");
 let modalWindowConnection = document.getElementById("modal-connection");
 
-//let closeBtn = document.getElementById("close-btn");
 let closeBtn = document.querySelector("modal__close");
 
 let inputValue = document.getElementById("modal-input").value;
-
-let submitBtn = document.getElementById("modal-submit");
-let connectionBtn = document.getElementById("modal-submit-connection");
 
 let messageInput = document.getElementById("message-input");
 let messageInputConnection = document.getElementById("message-input-connection");
 
 let divNumber = 0;
 let lineNumber = 0;
-
-submitBtn.disabled = true;
-connectionBtn.disabled = true;
 
 let firstDropdownElement = 0;
 let secondDropdownElement = 0;
@@ -105,7 +98,6 @@ function fillSelect() {
 
     let selectFirstElement = document.getElementById("modal-elem1");
     let selectSecondElement = document.getElementById("modal-elem2");
-    let inputConnection = document.getElementById("modal-connection-title");
 
     let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
 
@@ -127,7 +119,6 @@ function fillSelect() {
         console.log(selectFirstElement.selectedIndex);
         // ...
         firstDropdownElement = selectFirstElement.selectedIndex;
-        checkNewConnectionInputs();
         for (i = 1; i < elems.length; i++) {
             // remove disabled state on every element until we find the new chosen one
             selectSecondElement[i].disabled = false;
@@ -142,18 +133,12 @@ function fillSelect() {
         console.log(selectSecondElement.selectedIndex);
         // ...
         secondDropdownElement = selectSecondElement.selectedIndex;
-        checkNewConnectionInputs();
         for (i = 1; i < elems.length; i++) {
             selectFirstElement[i].disabled = false;
             if (selectSecondElement.selectedIndex == i) {
                 selectFirstElement[i].disabled = true;
             }            
         } 
-    });
-
-    inputConnection.addEventListener('change', function() {
-        console.log("text in inputConnection changed");
-        checkNewConnectionInputs();
     });
 }
 
@@ -296,6 +281,13 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     text.setAttribute("y", y);
 
     document.getElementsByTagName('svg')[0].appendChild(text);
+
+    // clear input and close modal window if new connection is created
+
+    document.getElementById("modal-connection-title").value = "";
+    messageInputConnection.innerHTML = "";
+
+    closeModal('connection');
 }
 
 // object "lines" contains information about which elements connected to which lines
@@ -454,7 +446,7 @@ function openModal(elem) {
         modalWindow.classList.add("modal__open");
         console.log("num in newElement() " + num);
     }
-    else {
+    else if (elem === 'connection') {
         modalWindowConnection.classList.add("modal__open");
         console.log("num in newConnection() " + num);
     }
@@ -467,7 +459,7 @@ function closeModal(elem) {
     if (elem === 'elem') {
         modalWindow.classList.remove("modal__open");
     }
-    else {
+    else if (elem === 'connection') {
         modalWindowConnection.classList.remove("modal__open");
     }
 
@@ -598,7 +590,6 @@ function newElement(id, title, src, x, y, createFrom) {
             document.getElementById("modal-input").value = "";
             document.getElementById("modal-load-img").src = "";
             messageInput.innerHTML = "";
-            submitBtn.disabled = true;
             closeModal('elem');
         } 
 
@@ -628,12 +619,7 @@ let imgPreview = document.getElementById("modal-load-img");
 let modalElementInput = document.getElementById("modal-input");
 
 fileInput.addEventListener('change', function() {
-    checkNewElementInputs();
     previewFile();
-});
-
-modalElementInput.addEventListener('change', function() {
-    checkNewElementInputs();
 });
 
 // checks if image in "new element" modal window is selected
@@ -690,32 +676,44 @@ function checkIfInputIsEmpty(inputId) {
     }
 }
 
+// event listeners for create elements and lines buttons
+
+createElementBtn = document.getElementById("modal-submit");
+createConnectionBtn = document.getElementById("modal-submit-connection");
+
+createElementBtn.addEventListener("click", function() {
+    if (checkNewElementInputs()) {
+        newElement();
+    }
+});
+
+createConnectionBtn.addEventListener("click", function() {
+    if (checkNewConnectionInputs()) {
+        createConnection();
+    }
+});
+
 // checks inputs in "new element" modal window
 
 function checkNewElementInputs() {
 
-    let btn = submitBtn;
     let message = messageInput;
     let inputId = "modal-input";
 
     if (checkIfImageIsSelected()) {
         if (checkIfInputIsEmpty(inputId)) {
-            message.innerHTML = "Input accepted";
-            btn.disabled = false;
+            return true;
         }
         else {
             message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
-            btn.disabled = true;
         }
     }
     else {
         if (checkIfInputIsEmpty(inputId)) {
             message.innerHTML = "No image was selected";
-            btn.disabled = true;
         }
         else {
             message.innerHTML = "All fields must contain data";
-            btn.disabled = true;
         }
     }
 }
@@ -724,28 +722,23 @@ function checkNewElementInputs() {
 
 function checkNewConnectionInputs() {
 
-    let btn = connectionBtn;
     let message = messageInputConnection; 
     let inputId = "modal-connection-title";
 
     if (checkDropdownOptions()) {
         if (checkIfInputIsEmpty(inputId)) {
-            message.innerHTML = "Input accepted";
-            btn.disabled = false;
+            return true;
         }
         else {
             message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
-            btn.disabled = true;
         }
     }
     else {
         if (checkIfInputIsEmpty(inputId)) {
             message.innerHTML = "One of elements isn't selected";
-            btn.disabled = true;
         }
         else {
             message.innerHTML = "All fields must contain data";
-            btn.disabled = true;
         }
     }
 }

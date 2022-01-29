@@ -50,9 +50,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .header__logo a {
     font-family: 'Courier New', Courier, monospace;
-    font-size: 22px;
+    font-size: 24px;
     text-decoration: none;
-    color: #fff;
+    color: #C5796D;
 }
 
 .container {
@@ -67,14 +67,14 @@ h1, h2, h3, h4, h5, h6 {
 .menu__item {
     margin: 20px 10px;
     padding: 10px 15px;
+    background-size: 200% auto;
     border-radius: 20px;
-    cursor: pointer;
-    background: linear-gradient(to bottom right, #DBE6F6 0%, #C5796D  51%, #DBE6F6  100%);
+    background-color: #C5796D;
     text-align: center;
     text-transform: uppercase;
     transition: 0.5s;
-    background-size: 200% auto;
     color: #fff;
+    cursor: pointer;
 }
 .menu__item:hover {
     background-position: right center;
@@ -85,19 +85,20 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .element {
-    /* margin-top: 20px; */
-    width: 150px;
-    height: 150px; /* ??? */
-    border: 1px solid #000;
     position: absolute;
+    width: 150px;
+    height: 150px;
+    
 }
 
 .element__picture {
+    position: relative;
     width: 100%;
     height: 100%;
-    cursor: move;
+    border: 5px solid #C5796D;
+    background-color: #C5796D;
     z-index: 10;
-    position: relative;
+    cursor: move;
 }
 
 .element__img {
@@ -107,23 +108,31 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .element__delete {
+    position: absolute;
     display: flex;
     flex-direction: column;
     align-items: center;
     top: 0px;
     right: 0;
     width: 20px;
-    height: 20px;
-    z-index: 11;
-    position: absolute;
-    cursor: pointer;
+    height: 20px;    
     color: #fff;
-    background-color: gray;
+    background-color: #C5796D;
+    z-index: 11;
+    cursor: pointer;
+}
+
+.element__delete:hover {
+
 }
 
 .element__title {
     width: 150px;
+    background-color: #fff;
     text-align: center;
+    font-size: 22px;
+    background-color: #C5796D;
+    color: #fff;
 }
 
 /* modal */
@@ -141,7 +150,7 @@ h1, h2, h3, h4, h5, h6 {
     background-color: rgba(0, 0, 0, 0.5);
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.5s, visibility 0s;
+    transition: opacity 0.5s, visibility 0.5s;
 }
 
 .modal__open {
@@ -150,27 +159,65 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .modal__content {
-    min-width: 300px;
+    position: relative;
+    width: 500px;
+    max-width: 100%;
     min-height: 150px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    flex-direction: column;
-    padding: 10px 10px;
+    padding: 20px 20px;
     background-color: #fff;
     overflow: auto;
 }
 
 .modal__close {
-    top: 10px;
-    right: 10px;
-    cursor: pointer;
-    font-weight: bold;
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    width: 20px;
+    height: 20px;
+    cursor: pointer;    
+}
+
+.modal__close-img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    opacity: 0.5;
+    transition: 0.5s ease;
+}
+
+.modal__close-img:hover {
+    opacity: 0.8;
+}
+
+/* new element modal window */
+
+.modal__load-text {
+    margin: 20px 0;
+}
+
+.modal__load-file {
+    margin-bottom: 20px;
+}
+
+.modal__label {
+    display: block;
+    margin: 20px 0;
 }
 
 .modal__input {
-    padding: 5px 10px;
-    border: 1px solid rgba(0, 0, 0, 0.3);
+    display: block;
+    padding: 10px 20px;
+    width: 250px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+}
+
+.modal__input:hover {
+
+}
+
+.modal__input:focus {
+    outline: none;
+    border-bottom: 1px solid #C5796D;
 }
 
 .modal__container {
@@ -185,20 +232,39 @@ h1, h2, h3, h4, h5, h6 {
     object-fit: cover;
 }
 
-.modal__submit {
-    padding: 5px 10px;
-    border: 1px solid #000;
+/* new connection modal window */
+
+.modal__text {
+    margin: 20px 0;
 }
 
 .modal__select {
     padding: 5px 10px;
+    width: 250px;
     border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.modal__message {
+    display: block;
+    margin-top: 10px;
+    width: 300px;
+    font-size: 12px;
+    color: red;
+}
+
+.modal__submit {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #C5796D;
+    color: #fff;
+    cursor: pointer;
 }
 
 /* lines */
 
 .lines {
-    stroke-width: 1px;
+    stroke-width: 2px;
+    stroke: #342617;
 }
 
 .lines:hover {
@@ -207,7 +273,5 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .lines__text {
-    /* width: 20px;
-    height: 20px;
-    background-color: rgb(252, 205, 53); */
+    font-size: 18px;
 }

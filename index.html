@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evidence board</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="header">
@@ -32,41 +33,47 @@
         <!-- modal for "new element" button -->
         <div id="modal-element" class="modal">
             <div class="modal__content">
-                <span id="close-btn" class="modal__close" onclick="closeModal('elem')">&times;</span>
+                <div class="modal__close" id="close-btn" onclick="closeModal('elem')">
+                    <img class="modal__close-img" src="img/close-button.png" alt="close-button">
+                </div>
 
-                <p>Load image</p>
-                <input id="modal-load-file" type="file" accept=".jpg, .jpeg, .png"><br>
+                <p class="modal__load-text">Load image</p>
+                <input class="modal__load-file" id="modal-load-file" type="file" accept=".jpg, .jpeg, .png"><br>
                 <div class="modal__container">
                     <img id="modal-load-img" class="modal__img" src="" alt="Image preview">
                 </div>
 
-                <label for="modal__input">Enter element title: </label>
-                <input type="text" id="modal-input" name="modal__input" class="modal__input">
-                <span id="message-input"></span>
-                <button id="modal-submit" class="modal__submit" onclick="newElement()">Ok</button>
+                <label for="modal__input" class="modal__label">Enter element title: </label>
+
+                <input type="text" id="modal-input" name="modal__input" class="modal__input" placeholder="Element name">
+                <span class="modal__message" id="message-input"></span>
+                
+                <button id="modal-submit" class="modal__submit">Create element</button>
             </div>
         </div>
 
         <!-- modal for "new connection" button -->
         <div id="modal-connection" class="modal">
             <div class="modal__content">
-                <span id="close-btn-connection" class="modal__close" onclick="closeModal('connection')">&times;</span>
+                <div class="modal__close" id="close-btn-connection" onclick="closeModal('connection')">
+                    <img class="modal__close-img" src="img/close-button.png" alt="close-button">
+                </div>
 
-                <p>Element 1: </p>
+                <p class="modal__text">Element 1: </p>
                 <select id="modal-elem1" class="modal__select">
                     <option>Choose an element</option>
                 </select>
 
-                <p>Element 2: </p>
+                <p class="modal__text">Element 2: </p>
                 <select id="modal-elem2" class="modal__select">
                     <option>Choose an element</option>
                 </select>
 
-                <label for="modal__connection-title">Connection title: </label>
-                <input type="text" id="modal-connection-title" name="modal__connection-title" class="modal__input">
-                <span id="message-input-connection"></span>
+                <label for="modal__connection-title" class="modal__label">Connection title: </label>
+                <input type="text" id="modal-connection-title" name="modal__connection-title" class="modal__input" placeholder="Connection name">
+                <span class="modal__message" id="message-input-connection"></span>
 
-                <button id="modal-submit-connection" class="modal__submit" onclick="createConnection()">Ok</button>
+                <button id="modal-submit-connection" class="modal__submit">Create connection</button>
             </div>
         </div>
 
