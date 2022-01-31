@@ -88,7 +88,7 @@ h1, h2, h3, h4, h5, h6 {
     position: absolute;
     width: 150px;
     height: 150px;
-    
+    z-index: 10;    
 }
 
 .element__picture {
@@ -97,7 +97,6 @@ h1, h2, h3, h4, h5, h6 {
     height: 100%;
     border: 5px solid #C5796D;
     background-color: #C5796D;
-    z-index: 10;
     cursor: move;
 }
 

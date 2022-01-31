@@ -185,9 +185,11 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
         console.log("x1 = " + x1 + " y1 = " + y1);
         console.log("x2 = " + x2 + " y2 = " + y2);
 
-        linesNum = findLatestLineID(lineId.slice(4), "db");
+        // update array of lines' id
+        findLatestLineID(lineId.slice(4), "db");
 
         line.id = lineId;
+        console.log("created from db: " + lineId);
 
         text.id = "text" + lineId.slice(4);
         // text title
@@ -331,7 +333,6 @@ function findLineId(draggableElementId, elem, action) {
                 if (action == 'find') {
                     lineId = "line" + i;
                     lineArr.push(lineId);
-                    // console.log(lineArr);
                 }
                 else if (action == 'move') {
                     moveLines("line" + i, elem, key);
@@ -470,6 +471,8 @@ function closeModal(elem) {
 
 function newElement(id, title, src, x, y, createFrom) {
 
+    let divNum = 0;
+
     inputValue = document.getElementById("modal-input").value;
 
     console.log("submit" + inputValue);
@@ -484,9 +487,6 @@ function newElement(id, title, src, x, y, createFrom) {
                 ifTitleExists++;
                 messageInput.innerHTML = "This title has already been taken. Choose another one.";
                 break;
-            }
-            else {
-                messageInput.innerHTML = "This title is ok.";
             }
         }
 
@@ -507,17 +507,19 @@ function newElement(id, title, src, x, y, createFrom) {
             // define latest div's number
             if (createFrom == "db") {
                 // if we load data from db
-                divNumber = findLatestDivId(id.slice(3), "db");
+                // update array of elements' id
+                findLatestDivId(id.slice(3), "db");
+                // define id
+                div.id = "div" + id.slice(3);
             }
             else {
-                divNumber = findLatestDivId();
+                divNum = findLatestDivId();
+                // define id
+                div.id = "div" + divNum;
             }
             
             // define className
             div.className = "element";
-
-            // define id
-            div.id = "div" + divNumber;
 
             // define positions
             if (createFrom == "db") {
@@ -525,14 +527,10 @@ function newElement(id, title, src, x, y, createFrom) {
                 div.style.top = y;
             }
             else {
-                if (num > 0) {
-                    div.style.left = 50 + (num-1)*200 + (num-1)*100 + "px";
-                }
-                else {
-                    div.style.left = 50 + num*200 + num*100 + "px";
-                }
-                // div.style.left = "50px";
-                div.style.top = "50px";
+                let windowWidth = window.innerWidth;
+                
+                div.style.top = "100px";
+                div.style.left = windowWidth / 2 - elementWidth / 2 + "px";
             }
             
             // put new div to container class
@@ -542,7 +540,12 @@ function newElement(id, title, src, x, y, createFrom) {
 
             var elem = document.createElement("div");
             elem.className = "element__picture";
-            elem.id = "elem" + divNumber;
+            if (createFrom == "db") {
+                elem.id = "elem" + id.slice(3);
+            }
+            else {
+                elem.id = "elem" + divNum;
+            }
 
             document.getElementById(div.id).appendChild(elem);
 
@@ -764,9 +767,14 @@ function previewFile() {
 
 // find latest div's id
 
+const divNumArr = [];
+
 function findLatestDivId(divId, createdFrom) {
+
     if (createdFrom == "db") {
-        divNumber = divId;
+        divNumArr.push(divId);
+        // update max id from elements' array
+        divNumber = Math.max.apply(null, divNumArr);
         console.log("divNumber = " + divNumber);
     }
     else {
@@ -775,12 +783,10 @@ function findLatestDivId(divId, createdFrom) {
             console.log("divNumber = " + divNumber);
         }
         else {
-            for (i = 0; i < draggableElements.length; i++) {
-                divId = draggableElements[i].id;
-                divNumber = divId.slice(3);
-                divNumber++;
-                console.log("divNumber = " + divNumber);
-            }
+            divNumber = Math.max.apply(null, divNumArr);
+            divNumber++;
+            divNumArr.push(divNumber.toString());
+            console.log("divNumber = " + divNumber);
         }
     }
 
@@ -792,6 +798,15 @@ function deleteElement(divId) {
     // find lines connected to this element and delete them
 
     findLineId(divId, "", 'delete');
+
+    // delete id from array of all elements
+    let number = divId.slice(3);
+
+    const index = divNumArr.indexOf(number);
+
+    if (index > -1) {
+        divNumArr.splice(index, 1);
+    }
 
     // delete the element
 
@@ -807,14 +822,17 @@ function deleteElement(divId) {
     }
 }
 
-// find latest line's id 
+// find latest line's id
+
+let lineNumArr = [];
 
 function findLatestLineID(lineId, createdFrom) {
     let linesAll = document.getElementsByTagName("line");
-    let svg = document.getElementById("svg");
 
     if (createdFrom == "db") {
-        lineNumber = lineId;
+        lineNumArr.push(lineId);
+        // update max id from lines' array
+        lineNumber = Math.max.apply(null, lineNumArr);
         console.log("lineNumber = " + lineNumber);
     }
     else {
@@ -823,9 +841,9 @@ function findLatestLineID(lineId, createdFrom) {
             console.log("lineNumber = " + lineNumber);
         }
         else {
-            let lineId = svg.lastElementChild.id;
-            lineNumber = lineId.slice(4);
+            lineNumber = Math.max.apply(null, lineNumArr);
             lineNumber++;
+            lineNumArr.push(lineNumber.toString());
             console.log("lineNumber = " + lineNumber);
         }
     }
@@ -843,6 +861,15 @@ function deleteLineObject(obj, lineId) {
 }
 
 function deleteConnection(lineId) {
+
+    // delete id from array of all lines
+    let number = lineId.slice(4);
+
+    const index = lineNumArr.indexOf(number);
+
+    if (index > -1) {
+        lineNumArr.splice(index, 1);
+    }
 
     console.log("deleteConnectionFunction");
     console.log("lineId = " + lineId);
@@ -893,14 +920,14 @@ function deleteLineTitle(titleId) {
 
 var db;
 
-var openRequest = indexedDB.open("db", 1);
+var openRequest = indexedDB.open("db", 3);
 
 openRequest.onupgradeneeded = function(e) {
     var db = e.target.result;
     console.log("running onupgradeneeded");
     // the database did not previously exist, so create object stores
     db.createObjectStore("elements", {keyPath: "id"});
-    db.createObjectStore("lines", {keyPath: "id"});
+    db.createObjectStore("lines", {keyPath: "id"});    
 };
 
 openRequest.onsuccess = function(e) {
