@@ -16,6 +16,12 @@
                     <a href="#">Evidence board</a>
                 </div>
                 <div class="header__menu">
+                    <a class="toolbar-item" id="zoom-in" title="Zoom In" onclick="zoom('in')">
+                        <img src="img/zoom-in-1.png" alt="Zoom In">
+                    </a>
+                    <a class="toolbar-item" id="zoom-out" title="Zoom Out" onclick="zoom('out')">
+                        <img src="img/zoom-out-1.png" alt="Zoom Out">
+                    </a>
                     <button class="menu__item" id="clear-db">CLEAR</button>
                     <button class="menu__item" id="new-element" onclick="openModal('elem')">new element</button>
                     <button class="menu__item" id="new-connection" onclick="openModal('connection')">new connection</button>
@@ -24,12 +30,7 @@
         </div>
     </div>
 
-    <div class="container">
-
-        <svg id="svg" width="1500" height="1500" viewBox="0 76 1500 1500"></svg>
-        
-        <canvas id="canvas" width="300" height="150"></canvas>
-
+    <div class="modal-container">
         <!-- modal for "new element" button -->
         <div id="modal-element" class="modal">
             <div class="modal__content">
@@ -76,6 +77,13 @@
                 <button id="modal-submit-connection" class="modal__submit">Create connection</button>
             </div>
         </div>
+    </div>
+
+    <div class="container" id="container" style="transform: scale(1);">
+
+        <svg id="svg" width="1500" height="1500" viewBox="0 0 1500 1500"></svg>
+        
+        <canvas id="canvas" width="300" height="150"></canvas>
 
     </div>
     <script src="js/activity.js"></script>

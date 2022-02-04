@@ -56,12 +56,13 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .container {
-    /* max-width: 1280px; */
-    margin: 0 auto;
+    transform-origin: 0 0;
 }
 
 .header__menu {
-
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .menu__item {
@@ -82,6 +83,22 @@ h1, h2, h3, h4, h5, h6 {
 
 .menu__item:last-child {
     margin-right: 0;
+}
+
+/* toolbar */
+
+.toolbar-item {
+    display: block;
+    width: 24px;
+    height: 24px;
+    margin: 20px 10px;
+    opacity: 0.6;
+    transition: 0.5s;
+    cursor: pointer;
+}
+
+.toolbar-item:hover {
+    opacity: 0.8;
 }
 
 .element {

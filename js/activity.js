@@ -916,6 +916,27 @@ function deleteLineTitle(titleId) {
     title.parentNode.removeChild(title);
 }
 
+// zoom
+
+let scale = 1;
+
+function zoom(name) {
+    // 1.0 is default value
+    if (name == 'in') {
+        // if zoom is not max yet
+        if (scale < 1) {
+            scale = scale + 0.1;
+            container.style.transform = "scale(" + scale + ")";
+        }
+    }
+    else if (name == 'out') {
+        if (scale > 0.6) {
+            scale = scale - 0.1;
+            container.style.transform = "scale(" + scale + ")";
+        }
+    }
+}
+
 // indexedDB
 
 var db;
