@@ -4,7 +4,6 @@ let draggableElements = document.getElementsByClassName("element");
 
 for (let i = 0; i < draggableElements.length; i++) {
     dragElement(draggableElements[i], i);
-    
 }
 
 function dragElement(elem, i) {
@@ -50,6 +49,9 @@ function dragElement(elem, i) {
         // определим id элемента, который мы передвигаем
         console.log(draggableElements[i].id);
 
+        // function to select the element
+        selectItem(draggableElements[i].id, "elem");
+
         // edit element's coordinates in db
         editItem("elements", draggableElements[i].id, "x", elem.style.left);
         editItem("elements", draggableElements[i].id, "y", elem.style.top);
@@ -90,6 +92,71 @@ let lineNumber = 0;
 
 let firstDropdownElement = 0;
 let secondDropdownElement = 0;
+
+// select item onclick/onmove
+
+let selectedItemId = ""; // id of the latest selected item
+let selectedType = ""; // type (element or line) of the latest selected item
+
+function selectItem(itemId, itemType) {
+
+    // the element selected now
+    let item = document.getElementById(itemId);
+    // latest selected element
+    let itemSelected = document.getElementById(selectedItemId);
+    let className = "";
+
+    if (itemType == "elem") {
+        className = "element__selected";
+    }
+    else if (itemType == "line") {
+        className = "line__selected";
+    }
+
+    // if the item clicked just now is not selected already, we need to remove previous item's selection
+    if (selectedItemId != "") {
+        if (selectedType != itemType) {
+            // if previously selected item has deifferent type
+            if (itemType == "elem") {
+                itemSelected.classList.remove("line__selected");
+            }
+            else {
+                itemSelected.classList.remove("element__selected");
+            }
+        }
+        else {
+            itemSelected.classList.remove(className);
+        }
+    }
+
+    item.classList.add(className);
+    selectedItemId = itemId; // remember id of the latest selected element
+    selectedType = itemType; // remember if the latest selected item was element or line
+}
+
+// area that doesn't include svg lines
+let background = document.getElementById("background");
+
+background.addEventListener("click", function() {
+    if (selectedItemId != "") {
+        removeSelection();
+    }
+});
+
+function removeSelection() {
+    // latest selected item
+    let itemSelected = document.getElementById(selectedItemId);
+
+    if (selectedType == "elem") {
+        itemSelected.classList.remove("element__selected");
+    }
+    else {
+        itemSelected.classList.remove("line__selected");
+    }
+
+    selectedItemId = "";
+    selectedType = "";
+}
 
 // fills both dropdown lists with options
 
@@ -267,6 +334,8 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
     line.setAttribute("stroke", "black");
+
+    line.onclick = function onclick(event) {selectItem(line.id, "line")};
 
     findConnectedDivs(line.id, inputValueConnection, divId1, divId2);
 

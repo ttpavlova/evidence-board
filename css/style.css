@@ -88,9 +88,7 @@ h1, h2, h3, h4, h5, h6 {
 /* toolbar */
 
 .toolbar-item {
-    display: block;
     width: 24px;
-    height: 24px;
     margin: 20px 10px;
     opacity: 0.6;
     transition: 0.5s;
@@ -101,11 +99,24 @@ h1, h2, h3, h4, h5, h6 {
     opacity: 0.8;
 }
 
+.toolbar-item__img {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+/* elements */
+
 .element {
     position: absolute;
     width: 150px;
     height: 150px;
     z-index: 10;    
+}
+
+.element__selected {
+    border: dashed #fff;
+    border-width: 3px;
 }
 
 .element__picture {
@@ -143,7 +154,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .element__title {
-    width: 150px;
+    width: 100%;
     background-color: #fff;
     text-align: center;
     font-size: 22px;
@@ -290,4 +301,8 @@ h1, h2, h3, h4, h5, h6 {
 
 .lines__text {
     font-size: 18px;
+}
+
+.line__selected {
+    stroke: rgb(102, 153, 230);
 }
