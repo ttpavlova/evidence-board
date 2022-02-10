@@ -91,18 +91,23 @@ h1, h2, h3, h4, h5, h6 {
     width: 24px;
     margin: 20px 10px;
     opacity: 0.6;
-    transition: 0.5s;
+    transition: 0.1s;
     cursor: pointer;
 }
 
-.toolbar-item:hover {
+/* .toolbar-item:hover {
     opacity: 0.8;
-}
+} */
 
 .toolbar-item__img {
     display: block;
     width: 100%;
     height: 100%;
+}
+
+.iconDisabled {
+    opacity: 0.2;
+    pointer-events: none;
 }
 
 /* elements */

@@ -93,10 +93,62 @@ let lineNumber = 0;
 let firstDropdownElement = 0;
 let secondDropdownElement = 0;
 
+// toolbar
+
+// zoom
+
+let scale = 1;
+
+function zoom(name) {
+    // 1.0 is default value
+    if (name == 'in') {
+        // if zoom is not max yet
+        if (scale < 1) {
+            scale = scale + 0.1;
+            container.style.transform = "scale(" + scale + ")";
+        }
+    }
+    else if (name == 'out') {
+        if (scale > 0.6) {
+            scale = scale - 0.1;
+            container.style.transform = "scale(" + scale + ")";
+        }
+    }
+}
+
+// edit item
+
+let editBtn = document.getElementById("edit-item");
+let deleteBtn = document.getElementById("delete-item");
+
+editBtn.addEventListener("click", function() {
+    // open modal for editing selected item
+});
+
+deleteBtn.addEventListener("click", function() {
+    // delete item
+});
+
+// add/remove disabled state to icons on toolbar
+
+function ifSelectedItemExists() {
+    if (selectedItemId == "") {
+        editBtn.classList.add("iconDisabled");
+        deleteBtn.classList.add("iconDisabled");
+    }
+    else {
+        editBtn.classList.remove("iconDisabled");
+        deleteBtn.classList.remove("iconDisabled");
+    } 
+}
+
 // select item onclick/onmove
 
 let selectedItemId = ""; // id of the latest selected item
 let selectedType = ""; // type (element or line) of the latest selected item
+
+// set edit and delete buttons to disabled by default
+ifSelectedItemExists();
 
 function selectItem(itemId, itemType) {
 
@@ -132,6 +184,8 @@ function selectItem(itemId, itemType) {
     item.classList.add(className);
     selectedItemId = itemId; // remember id of the latest selected element
     selectedType = itemType; // remember if the latest selected item was element or line
+
+    ifSelectedItemExists();
 }
 
 // area that doesn't include svg lines
@@ -141,6 +195,8 @@ background.addEventListener("click", function() {
     if (selectedItemId != "") {
         removeSelection();
     }
+
+    ifSelectedItemExists();
 });
 
 function removeSelection() {
@@ -983,27 +1039,6 @@ function deleteLineTitle(titleId) {
 
     let title = document.getElementById(titleId);
     title.parentNode.removeChild(title);
-}
-
-// zoom
-
-let scale = 1;
-
-function zoom(name) {
-    // 1.0 is default value
-    if (name == 'in') {
-        // if zoom is not max yet
-        if (scale < 1) {
-            scale = scale + 0.1;
-            container.style.transform = "scale(" + scale + ")";
-        }
-    }
-    else if (name == 'out') {
-        if (scale > 0.6) {
-            scale = scale - 0.1;
-            container.style.transform = "scale(" + scale + ")";
-        }
-    }
 }
 
 // indexedDB
