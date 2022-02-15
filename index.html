@@ -29,8 +29,8 @@
                         <img class="toolbar-item__img" src="img/delete.png" alt="Delete">
                     </a>
                     <button class="menu__item" id="clear-db">CLEAR</button>
-                    <button class="menu__item" id="new-element" onclick="openModal('elem')">new element</button>
-                    <button class="menu__item" id="new-connection" onclick="openModal('connection')">new connection</button>
+                    <button class="menu__item" id="new-element" onclick="openModal('elem', 'create')">new element</button>
+                    <button class="menu__item" id="new-connection" onclick="openModal('connection', 'create')">new connection</button>
                 </div>
             </div>
         </div>
@@ -55,7 +55,10 @@
                 <input type="text" id="modal-input" name="modal__input" class="modal__input" placeholder="Element name">
                 <span class="modal__message" id="message-input"></span>
                 
+                <!-- create element -->
                 <button id="modal-submit" class="modal__submit">Create element</button>
+                <!-- update element -->
+                <button id="modal-update" class="modal__submit">Update element</button>
             </div>
         </div>
 
@@ -80,7 +83,10 @@
                 <input type="text" id="modal-connection-title" name="modal__connection-title" class="modal__input" placeholder="Connection name">
                 <span class="modal__message" id="message-input-connection"></span>
 
+                <!-- create connection -->
                 <button id="modal-submit-connection" class="modal__submit">Create connection</button>
+                <!-- update connection -->
+                <button id="modal-edit-connection" class="modal__submit">Update connection</button>
             </div>
         </div>
     </div>

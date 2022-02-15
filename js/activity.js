@@ -123,6 +123,12 @@ let deleteBtn = document.getElementById("delete-item");
 
 editBtn.addEventListener("click", function() {
     // open modal for editing selected item
+    if (selectedType == "elem") {
+        openModal("elem", "edit");
+    }
+    else if (selectedType == "line") {
+        openModal("connection", "edit");
+    }
 });
 
 deleteBtn.addEventListener("click", function() {
@@ -304,15 +310,11 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
         y1 = line_y1;
         x2 = line_x2;
         y2 = line_y2;
-        console.log("in db case: ");
-        console.log("x1 = " + x1 + " y1 = " + y1);
-        console.log("x2 = " + x2 + " y2 = " + y2);
 
         // update array of lines' id
         findLatestLineID(lineId.slice(4), "db");
 
         line.id = lineId;
-        console.log("created from db: " + lineId);
 
         text.id = "text" + lineId.slice(4);
         // text title
@@ -425,8 +427,6 @@ lines = new Object();
 
 function findConnectedDivs(lineId, title, divId1, divId2) {
 
-    console.log(lines);
-
     // child object
 
     lines[lineId] = {
@@ -435,9 +435,6 @@ function findConnectedDivs(lineId, title, divId1, divId2) {
         elemId1: divId1,
         elemId2: divId2
     };
-
-    console.log(lines[lineId].id, lines[lineId].title, lines[lineId].elemId1, lines[lineId].elemId2);
-
 }
 
 // finds all identifiers of lines which are connected to the draggable element
@@ -556,40 +553,149 @@ function changeLineCoordinates(lineArr) {
 
 // opens modal window
 
-function openModal(elem) {
+function openModal(elem, action) {
+
+    let createElemBtn = document.getElementById("modal-submit");
+    let updateElemBtn = document.getElementById("modal-update");
+
+    let createConnBtn = document.getElementById("modal-submit-connection");
+    let updateConnBtn = document.getElementById("modal-edit-connection");
 
     fillSelect();
 
-    // counts the amount of created elements
-
-    let num = 0;
-
-    for (i = 0; i < draggableElements.length; i++) {
-        num = i + 1;
-    }
-
-    if (elem === 'elem') {
+    if (elem == 'elem') {
         modalWindow.classList.add("modal__open");
-        console.log("num in newElement() " + num);
+
+        if (action == "create") {
+            createElemBtn.classList.remove("hidden");
+            updateElemBtn.classList.add("hidden");
+        }
+        else if (action == "edit") {
+            // fill inputs with item's data
+            fillElementInputs(selectedItemId);
+
+            updateElemBtn.classList.remove("hidden");
+            createElemBtn.classList.add("hidden");
+        }
     }
-    else if (elem === 'connection') {
+    else if (elem == 'connection') {
         modalWindowConnection.classList.add("modal__open");
-        console.log("num in newConnection() " + num);
+
+        if (action == "create") {
+            createConnBtn.classList.remove("hidden");
+            updateConnBtn.classList.add("hidden");
+        }
+        else if (action == "edit") {
+            // fill inputs with item's data
+            fillConnectionInputs(selectedItemId);
+
+            updateConnBtn.classList.remove("hidden");
+            createConnBtn.classList.add("hidden");
+        }
     }
+}
+
+function fillElementInputs(selectedItemId) {
+
+    let previewImg = document.getElementById("modal-load-img");
+    let titleInput = document.getElementById("modal-input");
+
+    let img = getImgSrc(selectedItemId);
+    let title = getTitle(selectedItemId);
+
+    previewImg.src = img;
+    titleInput.value = title;
+}
+
+function fillConnectionInputs(selectedItemId) {
+
+    let firstElement = document.getElementById("modal-elem1");
+    let secondElement = document.getElementById("modal-elem2");
+    let titleInput = document.getElementById("modal-connection-title");
+
+    let select1 = getSelectTitle(selectedItemId, "elemId1");
+    let select2 = getSelectTitle(selectedItemId, "elemId2");
+    let title = findObjectValue(selectedItemId, "title");
+
+    firstElement.value = select1;
+    secondElement.value = select2;
+    titleInput.value = title;
+}
+
+function getImgSrc(elemId) {
+
+    let item = document.getElementById(elemId);
+    let imgSrc = item.querySelector(".element__img").src;
+
+    return imgSrc;
+}
+
+function getTitle(elemId) {
+
+    let item = document.getElementById(elemId);
+
+    let titleValue = item.querySelector(".element__title").innerHTML;
+
+    return titleValue;
+}
+
+function getSelectTitle(selectedItemId, elemIdNumber) {
+
+    let elemId = findObjectValue(selectedItemId, elemIdNumber);
+
+    let title = getTitle(elemId);
+
+    return title;
+}
+
+function findObjectValue(id, valueName) {
+    for (i = 0; i <= lineNumber; i++) {
+        for (key in lines["line" + i]) {
+            if ((lines["line" + i])[key] == id) {
+                let value = (lines["line" + i])[valueName];
+
+                return value;
+            }
+        }
+    } 
 }
 
 // closes modal window
 
 function closeModal(elem) {
 
-    if (elem === 'elem') {
+    if (elem == "elem") {
         modalWindow.classList.remove("modal__open");
+
+        // clear all fields
+        clearInputs("elem");
     }
-    else if (elem === 'connection') {
+    else if (elem == "connection") {
         modalWindowConnection.classList.remove("modal__open");
+
+        // clear all fields
+        clearInputs("connection");
     }
 
     clearSelect();
+}
+
+function clearInputs(itemType) {
+    let previewImg = document.getElementById("modal-load-img");
+    let titleInput = document.getElementById("modal-input");
+    let messageInput = document.getElementById("message-input");
+
+    let titleInputConnection = document.getElementById("modal-connection-title");
+
+    if (itemType == "elem") {
+        previewImg.src = "";
+        titleInput.value = "";
+        messageInput.innerHTML = "";
+    }
+    else if (itemType == "connection") {
+        titleInputConnection.value = "";
+        messageInput.innerHTML = "";
+    }
 }
 
 // creates new element
@@ -619,15 +725,6 @@ function newElement(id, title, src, x, y, createFrom) {
 
             // add element
             var div = document.createElement("div");
-
-            let num = 0;
-            
-            console.log("i до подсчёта elements = " + num);
-            for (i = 0; i < draggableElements.length; i++) {
-                num++;
-            }
-            num = num + 1;
-            console.log("i после подсчёта elements = " + num);
 
             // define latest div's number
             if (createFrom == "db") {
@@ -710,7 +807,7 @@ function newElement(id, title, src, x, y, createFrom) {
 
             document.getElementById(div.id).appendChild(elem_title);
 
-            console.log(divNumber);
+            // console.log(divNumber);
 
             // clear input and close modal window if new element is created
 
@@ -900,7 +997,7 @@ function findLatestDivId(divId, createdFrom) {
         divNumArr.push(divId);
         // update max id from elements' array
         divNumber = Math.max.apply(null, divNumArr);
-        console.log("divNumber = " + divNumber);
+        // console.log("divNumber = " + divNumber);
     }
     else {
         if (draggableElements.length == 0) {
@@ -958,7 +1055,7 @@ function findLatestLineID(lineId, createdFrom) {
         lineNumArr.push(lineId);
         // update max id from lines' array
         lineNumber = Math.max.apply(null, lineNumArr);
-        console.log("lineNumber = " + lineNumber);
+        // console.log("lineNumber = " + lineNumber);
     }
     else {
         if (linesAll.length == 0) {
@@ -1090,7 +1187,7 @@ function addItem(elemId, elemTitle, elemImg, elemX, elemY) {
     };
 
     request.onsuccess = function(e) {
-        console.log("the element was added to db successfully");
+        // console.log("the element was added to db successfully");
     };
 }
 
@@ -1118,15 +1215,15 @@ function addLine(lineId, lineTitle, elemId1, elemId2, x1, y1, x2, y2) {
     };
 
     request.onsuccess = function(e) {
-        console.log("the line was added to db successfully");
+        // console.log("the line was added to db successfully");
     };
 }
 
 // find item in db
 
-function findItem(elemId) {
-    var transaction = db.transaction(["elements"], "readonly");
-    var elements = transaction.objectStore("elements");
+function findItem(objectStoreName, elemId) {
+    var transaction = db.transaction([objectStoreName], "readonly");
+    var elements = transaction.objectStore(objectStoreName);
     let request = elements.get(elemId);
 
     request.onerror = function(e) {
@@ -1145,7 +1242,7 @@ function findItem(elemId) {
             // no match was found
             console.log("no match was found");
         }
-    };
+    };    
 }
 
 // edit item's value in db
@@ -1211,14 +1308,12 @@ function readItems(objectStoreName) {
         const cursor = request.result;
         if (cursor) {
             // store is not empty
-            console.log("preparing to load data");
+            // console.log("preparing to load data");
 
             if (objectStoreName == "elements") {
-                console.log("Data for " + cursor.key + " is " + cursor.value.title + " " + cursor.value.x + " " + cursor.value.y);
                 newElement(cursor.key, cursor.value.title, cursor.value.img, cursor.value.x, cursor.value.y, "db");
             }
             else if (objectStoreName == "lines") {
-                console.log("Data for " + cursor.key + " is " + cursor.value.title + " " + cursor.value.x1 + " " + cursor.value.y1 + cursor.value.x2 + " " + cursor.value.y2);
                 createConnection(cursor.key, cursor.value.title, cursor.value.elem1, cursor.value.elem2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2, "db");
             }
             cursor.continue();
@@ -1227,7 +1322,7 @@ function readItems(objectStoreName) {
             // store is empty
             console.log("nothing to restore");
         }
-        console.log("data from db was successfully read");
+        // console.log("data from db was successfully read");
     }
 }
 
