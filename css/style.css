@@ -231,6 +231,28 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 20px;
 }
 
+.modal__container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 200px;
+    width: 200px;
+    border: 1px solid rgba(0, 0, 0, 0.5);
+}
+
+.modal__img {
+    height: 100%;
+    width: 100%;
+    object-fit: cover;
+    
+}
+
+.blank {
+    height: 50%;
+    width: 50%;
+    opacity: 0.5;
+}
+
 .modal__label {
     display: block;
     margin: 20px 0;
@@ -250,18 +272,6 @@ h1, h2, h3, h4, h5, h6 {
 .modal__input:focus {
     outline: none;
     border-bottom: 1px solid #C5796D;
-}
-
-.modal__container {
-    height: 200px;
-    width: 200px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-}
-
-.modal__img {
-    height: 100%;
-    width: 100%;
-    object-fit: cover;
 }
 
 /* new connection modal window */

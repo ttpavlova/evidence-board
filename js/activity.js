@@ -220,15 +220,13 @@ function removeSelection() {
     selectedType = "";
 }
 
+let selectFirstElement = document.getElementById("modal-elem1");
+let selectSecondElement = document.getElementById("modal-elem2");
+
 // fills both dropdown lists with options
 
 function fillSelect() {
     let elements = document.getElementsByClassName("element__title");
-
-    let selectFirstElement = document.getElementById("modal-elem1");
-    let selectSecondElement = document.getElementById("modal-elem2");
-
-    let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
 
     for (let i = 0; i < elements.length; i++) {
         let option = elements[i].innerHTML;
@@ -241,35 +239,37 @@ function fillSelect() {
         let elem2 = elem.cloneNode(true);
         selectSecondElement.appendChild(elem2);
     }
-
-    // eventlistener to disable option if it's already selected in another dropdown
-
-    selectFirstElement.addEventListener('change', function() {
-        console.log(selectFirstElement.selectedIndex);
-        // ...
-        firstDropdownElement = selectFirstElement.selectedIndex;
-        for (i = 1; i < elems.length; i++) {
-            // remove disabled state on every element until we find the new chosen one
-            selectSecondElement[i].disabled = false;
-            if (selectFirstElement.selectedIndex == i) {
-                selectSecondElement[i].disabled = true;
-            }
-            
-        }
-    });
-
-    selectSecondElement.addEventListener('change', function() {
-        console.log(selectSecondElement.selectedIndex);
-        // ...
-        secondDropdownElement = selectSecondElement.selectedIndex;
-        for (i = 1; i < elems.length; i++) {
-            selectFirstElement[i].disabled = false;
-            if (selectSecondElement.selectedIndex == i) {
-                selectFirstElement[i].disabled = true;
-            }            
-        } 
-    });
 }
+
+// eventlistener to disable option if it's already selected in another dropdown
+
+let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
+
+selectFirstElement.addEventListener('change', function() {
+    console.log(selectFirstElement.selectedIndex);
+    // ...
+    firstDropdownElement = selectFirstElement.selectedIndex;
+    for (i = 1; i < elems.length; i++) {
+        // remove disabled state on every element until we find the new chosen one
+        selectSecondElement[i].disabled = false;
+        if (selectFirstElement.selectedIndex == i) {
+            selectSecondElement[i].disabled = true;
+        }
+        
+    }
+});
+
+selectSecondElement.addEventListener('change', function() {
+    console.log(selectSecondElement.selectedIndex);
+    // ...
+    secondDropdownElement = selectSecondElement.selectedIndex;
+    for (i = 1; i < elems.length; i++) {
+        selectFirstElement[i].disabled = false;
+        if (selectSecondElement.selectedIndex == i) {
+            selectFirstElement[i].disabled = true;
+        }            
+    } 
+});
 
 // clears options in dropdown lists
 
@@ -295,8 +295,6 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     let inputValueConnection = "";
     let divId1 = "";
     let divId2 = "";
-    let title1 = "";
-    let title2 = "";
 
     // create text tag for line's title
     let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -323,54 +321,13 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     else {
         inputValueConnection = document.getElementById("modal-connection-title").value;
 
-        let elements = document.getElementsByClassName("element__title");
-
-        let selectFirstElement = document.getElementById("modal-elem1");
-        let selectSecondElement = document.getElementById("modal-elem2");
-
-        let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
-
-        let index1 = selectFirstElement.selectedIndex;
-        let index2 = selectSecondElement.selectedIndex;
-        console.log("index1 = " + index1);
-        console.log("index2 = " + index2);
-
-        for (let i = 0; i < elems.length; i++) {
-            
-            if (index1 == i) {
-                title1 = elems[i].value;
-                console.log("elems.value = " + title1);
-            }
-
-            if (index2 == i) {
-                title2 = elems[i].value;
-                console.log("elems.value = " + title2);
-            }
-        }
-
-        for (i = 0; i < elements.length; i++) {
-            if (elements[i].innerHTML == title1) {
-                divId1 = elements[i].parentElement.id;
-                console.log("parentNode = " + divId1);
-            }
-
-            if (elements[i].innerHTML == title2) {
-                divId2 = elements[i].parentElement.id;
-                console.log("parentNode = " + divId2);
-            }
-        }
+        let divId1 = getElemIdFromTitle("first");
+        let divId2 = getElemIdFromTitle("second");
 
         // get (x;y) of div1 and div2
 
-        let styleFirstElement = window.getComputedStyle(document.getElementById(divId1));
-        x1 = parseFloat(styleFirstElement.getPropertyValue("left")) + elementWidth/2;
-        y1 = parseFloat(styleFirstElement.getPropertyValue("top")) + elementWidth/2;
-        console.log("x1 = " + x1 + " y1 = " + y1);
-
-        let styleSecondElement = window.getComputedStyle(document.getElementById(divId2));
-        x2 = parseFloat(styleSecondElement.getPropertyValue("left")) + elementWidth/2;
-        y2 = parseFloat(styleSecondElement.getPropertyValue("top")) + elementWidth/2;
-        console.log("x2 = " + x2 + " y2 = " + y2);
+        [x1, y1] = getElemCenterCoordinates(divId1);
+        [x2, y2] = getElemCenterCoordinates(divId2);
 
         linesNum = findLatestLineID();
 
@@ -417,6 +374,53 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     messageInputConnection.innerHTML = "";
 
     closeModal('connection');
+}
+
+function getElemIdFromTitle(selectNumber) {
+
+    let divId = "";
+    let title = "";
+    let select = "";
+
+    let elements = document.getElementsByClassName("element__title");
+
+    if (selectNumber == "first") {
+        select = document.getElementById("modal-elem1");
+    }
+    else if (selectNumber == "second") {
+        select = document.getElementById("modal-elem2");
+    }
+
+    let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
+
+    let index = select.selectedIndex;
+    console.log("index = " + index);
+
+    for (let i = 0; i < elems.length; i++) {
+        
+        if (index == i) {
+            title = elems[i].value;
+            console.log("elems.value = " + title);
+        }
+    }
+
+    for (i = 0; i < elements.length; i++) {
+        if (elements[i].innerHTML == title) {
+            divId = elements[i].parentElement.id;
+            console.log("parentNode = " + divId);
+        }
+    }
+
+    return divId;
+}
+
+function getElemCenterCoordinates(id) {
+    let elemPosition = window.getComputedStyle(document.getElementById(id));
+    let x = parseFloat(elemPosition.getPropertyValue("left")) + elementWidth/2;
+    let y = parseFloat(elemPosition.getPropertyValue("top")) + elementWidth/2;
+    console.log("x = " + x + " y = " + y);
+
+    return [x, y];
 }
 
 // object "lines" contains information about which elements connected to which lines
@@ -551,15 +555,15 @@ function changeLineCoordinates(lineArr) {
 
 // modal
 
+let createElemBtn = document.getElementById("modal-submit");
+let updateElemBtn = document.getElementById("modal-update");
+
+let createConnBtn = document.getElementById("modal-submit-connection");
+let updateConnBtn = document.getElementById("modal-edit-connection");
+
 // opens modal window
 
 function openModal(elem, action) {
-
-    let createElemBtn = document.getElementById("modal-submit");
-    let updateElemBtn = document.getElementById("modal-update");
-
-    let createConnBtn = document.getElementById("modal-submit-connection");
-    let updateConnBtn = document.getElementById("modal-edit-connection");
 
     fillSelect();
 
@@ -571,6 +575,7 @@ function openModal(elem, action) {
             updateElemBtn.classList.add("hidden");
         }
         else if (action == "edit") {
+            removeBlankClass();
             // fill inputs with item's data
             fillElementInputs(selectedItemId);
 
@@ -589,10 +594,30 @@ function openModal(elem, action) {
             // fill inputs with item's data
             fillConnectionInputs(selectedItemId);
 
+            console.log(firstDropdownElement);
+            console.log(secondDropdownElement);
+            console.log(selectFirstElement.selectedIndex);
+            console.log(selectSecondElement.selectedIndex);
+
             updateConnBtn.classList.remove("hidden");
             createConnBtn.classList.add("hidden");
         }
     }
+}
+
+setPreviewImgtoBlank();
+
+function setPreviewImgtoBlank() {
+    let previewImg = document.getElementById("modal-load-img");
+
+    previewImg.src = "img/add-image.png";
+    previewImg.classList.add("blank");
+}
+
+function removeBlankClass() {
+    let previewImg = document.getElementById("modal-load-img");
+
+    previewImg.classList.remove("blank");
 }
 
 function fillElementInputs(selectedItemId) {
@@ -686,15 +711,16 @@ function clearInputs(itemType) {
     let messageInput = document.getElementById("message-input");
 
     let titleInputConnection = document.getElementById("modal-connection-title");
+    let messageInputConnection = document.getElementById("message-input-connection");
 
     if (itemType == "elem") {
-        previewImg.src = "";
+        setPreviewImgtoBlank();
         titleInput.value = "";
         messageInput.innerHTML = "";
     }
     else if (itemType == "connection") {
         titleInputConnection.value = "";
-        messageInput.innerHTML = "";
+        messageInputConnection.innerHTML = "";
     }
 }
 
@@ -813,7 +839,6 @@ function newElement(id, title, src, x, y, createFrom) {
 
             fileInput.value = "";
             document.getElementById("modal-input").value = "";
-            document.getElementById("modal-load-img").src = "";
             messageInput.innerHTML = "";
             closeModal('elem');
         } 
@@ -850,9 +875,9 @@ fileInput.addEventListener('change', function() {
 // checks if image in "new element" modal window is selected
 
 function checkIfImageIsSelected() {
-    let img = document.getElementById("modal-load-file");
+    let imgPreview = document.getElementById("modal-load-img");
 
-    if (img.files.length == 0) {
+    if (imgPreview.classList.contains("blank")) {
         console.log("no files selected");
     }
     else {
@@ -865,7 +890,15 @@ function checkIfImageIsSelected() {
 
 function checkDropdownOptions() {
 
-    if ((firstDropdownElement != 0) && (secondDropdownElement != 0)) {
+    let selectFirstElement = document.getElementById("modal-elem1");
+    let selectSecondElement = document.getElementById("modal-elem2");
+
+    let index1 = selectFirstElement.selectedIndex;
+    let index2 = selectSecondElement.selectedIndex;
+    console.log("index1 = " + index1);
+    console.log("index2 = " + index2);
+
+    if ((index1 != 0) && (index2 != 0)) {
         // both options are selected
         return true;
     }
@@ -903,27 +936,68 @@ function checkIfInputIsEmpty(inputId) {
 
 // event listeners for create elements and lines buttons
 
-createElementBtn = document.getElementById("modal-submit");
-createConnectionBtn = document.getElementById("modal-submit-connection");
-
-createElementBtn.addEventListener("click", function() {
+createElemBtn.addEventListener("click", function() {
     if (checkNewElementInputs()) {
         newElement();
     }
 });
 
-createConnectionBtn.addEventListener("click", function() {
+createConnBtn.addEventListener("click", function() {
     if (checkNewConnectionInputs()) {
         createConnection();
     }
 });
+
+// event listeners for update elements and lines buttons
+
+updateElemBtn.addEventListener("click", function() {
+    console.log("clicked");
+    if (checkNewElementInputs()) {
+        // update element function
+        updateElem();
+    }
+});
+
+updateConnBtn.addEventListener("click", function() {
+    if (checkNewConnectionInputs()) {
+        // update connection function
+        updateConn();
+    }
+});
+
+function updateElem() {
+    let previewImg = document.getElementById("modal-load-img").src;
+    let titleInput = document.getElementById("modal-input").value;
+    // let inputId = "modal-input";
+
+    editItem("elements", selectedItemId, "img", previewImg);
+    editItem("elements", selectedItemId, "title", titleInput);
+}
+
+function updateConn() {
+    let title = document.getElementById("modal-connection-title").value;
+
+    let divId1 = getElemIdFromTitle("first");
+    let divId2 = getElemIdFromTitle("second");
+
+    let [x1, y1] = getElemCenterCoordinates(divId1);
+    let [x2, y2] = getElemCenterCoordinates(divId2);
+
+    editItem("lines", selectedItemId, "elem1", divId1);
+    editItem("lines", selectedItemId, "elem2", divId2);
+    editItem("lines", selectedItemId, "title", title);
+    editItem("lines", selectedItemId, "x1", x1);
+    editItem("lines", selectedItemId, "y1", y1);
+    editItem("lines", selectedItemId, "x2", x2);
+    editItem("lines", selectedItemId, "y2", y2);
+}
 
 // checks inputs in "new element" modal window
 
 function checkNewElementInputs() {
 
     let message = messageInput;
-    let inputId = "modal-input";
+    let inputId = "modal-input";    
 
     if (checkIfImageIsSelected()) {
         if (checkIfInputIsEmpty(inputId)) {
@@ -981,9 +1055,10 @@ function previewFile() {
   
     if (file) {
         reader.readAsDataURL(file);
+        removeBlankClass();
     }
     else {
-        imgPreview.src = "";
+        setPreviewImgtoBlank();
     }
 }
 
