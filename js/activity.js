@@ -133,6 +133,19 @@ editBtn.addEventListener("click", function() {
 
 deleteBtn.addEventListener("click", function() {
     // delete item
+    if (selectedType == "elem") {
+        deleteElement(selectedItemId);
+        deleteItem("elements", selectedItemId);
+    }
+    else if (selectedType == "line") {
+        let id = selectedItemId.slice(4);
+        deleteLineObject(lines["line" + id], "line" + id);
+        deleteConnection("line" + id);
+        deleteLineTitle("text" + id);
+    }
+
+    selectedItemId = "";
+    selectedType = "";
 });
 
 // add/remove disabled state to icons on toolbar
@@ -321,8 +334,8 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     else {
         inputValueConnection = document.getElementById("modal-connection-title").value;
 
-        let divId1 = getElemIdFromTitle("first");
-        let divId2 = getElemIdFromTitle("second");
+        divId1 = getElemIdFromTitle("first");
+        divId2 = getElemIdFromTitle("second");
 
         // get (x;y) of div1 and div2
 
@@ -809,14 +822,6 @@ function newElement(id, title, src, x, y, createFrom) {
             }
             img.alt = "image";
             document.getElementById(elem.id).appendChild(img);
-
-            // add delete button
-
-            var span = document.createElement("span");
-            span.className = "element__delete";
-            span.onclick = function onclick(event) {deleteElement(div.id); deleteItem("elements", div.id)};
-            span.innerHTML = "&times;";
-            document.getElementById(elem.id).appendChild(span);
 
             // add element's title
 
