@@ -1,3 +1,5 @@
+'use strict';
+
 // drag'n'drop elements
 
 let draggableElements = document.getElementsByClassName("element");
@@ -89,9 +91,6 @@ let messageInputConnection = document.getElementById("message-input-connection")
 
 let divNumber = 0;
 let lineNumber = 0;
-
-let firstDropdownElement = 0;
-let secondDropdownElement = 0;
 
 // toolbar
 
@@ -256,33 +255,87 @@ function fillSelect() {
 
 // eventlistener to disable option if it's already selected in another dropdown
 
-let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
+selectFirstElement.addEventListener("change", function() {
+    disableSelectOptions("first");
+});
 
-selectFirstElement.addEventListener('change', function() {
-    console.log(selectFirstElement.selectedIndex);
-    // ...
-    firstDropdownElement = selectFirstElement.selectedIndex;
-    for (i = 1; i < elems.length; i++) {
+selectSecondElement.addEventListener("change", function() {
+    disableSelectOptions("second");
+});
+
+function disableSelectOptions(select) {
+
+    let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
+
+    let firstElement = document.getElementById("modal-elem1");
+    let secondElement = document.getElementById("modal-elem2");
+    let elemTitle = "";
+
+    if (select == "first") {
+        selectFirstElement = document.getElementById("modal-elem1");
+        selectSecondElement = document.getElementById("modal-elem2");
+        elemTitle = firstElement.value;
+    }
+    else if (select == "second") {
+        selectSecondElement = document.getElementById("modal-elem1");
+        selectFirstElement = document.getElementById("modal-elem2");
+        elemTitle = secondElement.value;
+    }
+
+    let elemId = findElemObjValue(elemTitle, "id");
+    let titleArr = createArrayOfTitles(elemId);
+    
+    for (let i = 1; i < elems.length; i++) {
         // remove disabled state on every element until we find the new chosen one
         selectSecondElement[i].disabled = false;
         if (selectFirstElement.selectedIndex == i) {
             selectSecondElement[i].disabled = true;
         }
-        
-    }
-});
 
-selectSecondElement.addEventListener('change', function() {
-    console.log(selectSecondElement.selectedIndex);
-    // ...
-    secondDropdownElement = selectSecondElement.selectedIndex;
-    for (i = 1; i < elems.length; i++) {
-        selectFirstElement[i].disabled = false;
-        if (selectSecondElement.selectedIndex == i) {
-            selectFirstElement[i].disabled = true;
-        }            
-    } 
-});
+        for (let j = 0; j < titleArr.length; j++) {
+            if (selectSecondElement.options[i].text == titleArr[j]) {
+                selectSecondElement[i].disabled = true;
+            }
+        }
+    }
+}
+
+// generates an array of elements' identifiers
+// includes all elements connected to the element selected in the dropdown list
+
+function createArrayOfIds(elemId) {
+
+    let idArr = [];
+
+    for (i = 0; i <= lineNumber; i++) {
+        for (let key in lines["line" + i]) {
+            if (((lines["line" + i])[key] == elemId) && (key == "elemId1")) {
+                idArr.push((lines["line" + i])["elemId2"]);
+            }
+            else if (((lines["line" + i])[key] == elemId) && (key == "elemId2")) {
+                idArr.push((lines["line" + i])["elemId1"]);
+            }
+        }
+    }
+
+    return idArr;
+}
+
+// generates an array of elements' titles from an array of elements' identifiers
+
+function createArrayOfTitles(elemId) {
+    
+    let titleArr = [];
+
+    let idArr = createArrayOfIds(elemId);
+
+    for (let i = 0; i < idArr.length; i++) {
+        let title = findElemObjValue(idArr[i], "title");
+        titleArr.push(title);
+    }
+
+    return titleArr;
+}
 
 // clears options in dropdown lists
 
@@ -365,7 +418,7 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
 
     line.onclick = function onclick(event) {selectItem(line.id, "line")};
 
-    findConnectedDivs(line.id, inputValueConnection, divId1, divId2);
+    createLineObj(line.id, inputValueConnection, divId1, divId2);
 
     document.getElementsByTagName('svg')[0].appendChild(line);
 
@@ -436,13 +489,24 @@ function getElemCenterCoordinates(id) {
     return [x, y];
 }
 
+// object "elements" contains information about each element's id and title
+
+let elements = new Object();
+
+function createElemObj(elemId, title) {
+    elements[elemId] = {
+        id: elemId,
+        title: title
+    };
+}
+
 // object "lines" contains information about which elements connected to which lines
 
-lines = new Object();
+let lines = new Object();
 
 // creates child objects in "lines"
 
-function findConnectedDivs(lineId, title, divId1, divId2) {
+function createLineObj(lineId, title, divId1, divId2) {
 
     // child object
 
@@ -464,7 +528,7 @@ function findLineId(draggableElementId, elem, action) {
     for (i = 0; i <= lineNumber; i++) {
         //showDivs(lines["line" + i], "lines.line" + i);
 
-        for (key in lines["line" + i]) {
+        for (let key in lines["line" + i]) {
             // console.log("lines.line" + i + "." + key + " = " + (lines["line" + i])[key]);
             if ((lines["line" + i])[key] == draggableElementId) {
                 // console.log("key = " + key);
@@ -607,11 +671,6 @@ function openModal(elem, action) {
             // fill inputs with item's data
             fillConnectionInputs(selectedItemId);
 
-            console.log(firstDropdownElement);
-            console.log(secondDropdownElement);
-            console.log(selectFirstElement.selectedIndex);
-            console.log(selectSecondElement.selectedIndex);
-
             updateConnBtn.classList.remove("hidden");
             createConnBtn.classList.add("hidden");
         }
@@ -653,7 +712,7 @@ function fillConnectionInputs(selectedItemId) {
 
     let select1 = getSelectTitle(selectedItemId, "elemId1");
     let select2 = getSelectTitle(selectedItemId, "elemId2");
-    let title = findObjectValue(selectedItemId, "title");
+    let title = findLineObjValue(selectedItemId, "title");
 
     firstElement.value = select1;
     secondElement.value = select2;
@@ -679,16 +738,28 @@ function getTitle(elemId) {
 
 function getSelectTitle(selectedItemId, elemIdNumber) {
 
-    let elemId = findObjectValue(selectedItemId, elemIdNumber);
+    let elemId = findLineObjValue(selectedItemId, elemIdNumber);
 
     let title = getTitle(elemId);
 
     return title;
 }
 
-function findObjectValue(id, valueName) {
-    for (i = 0; i <= lineNumber; i++) {
-        for (key in lines["line" + i]) {
+function findElemObjValue(keyValue, keyName) {
+    for (let i = 0; i <= divNumber; i++) {
+        for (let key in elements["div" + i]) {
+            if ((elements["div" + i])[key] == keyValue) {
+                let value = (elements["div" + i])[keyName];
+
+                return value;
+            }
+        }
+    } 
+}
+
+function findLineObjValue(id, valueName) {
+    for (let i = 0; i <= lineNumber; i++) {
+        for (let key in lines["line" + i]) {
             if ((lines["line" + i])[key] == id) {
                 let value = (lines["line" + i])[valueName];
 
@@ -719,7 +790,6 @@ function closeModal(elem) {
 }
 
 function clearInputs(itemType) {
-    let previewImg = document.getElementById("modal-load-img");
     let titleInput = document.getElementById("modal-input");
     let messageInput = document.getElementById("message-input");
 
@@ -861,6 +931,8 @@ function newElement(id, title, src, x, y, createFrom) {
         else {
             addItem(div.id, elem_title.innerHTML, img.src, div.style.left, div.style.top);
         }
+
+        createElemObj(div.id, elem_title.innerHTML);
     }
     check();
 }
@@ -1406,7 +1478,8 @@ function readItems(objectStoreName) {
     }
 }
 
-clearDbButton = document.getElementById("clear-db");
+let clearDbButton = document.getElementById("clear-db");
+
 clearDbButton.addEventListener("click", function() {
     if (window.confirm("Are you sure you want to clear the data? After deletion, the page will be reloaded.")) {
         // delete items from db
