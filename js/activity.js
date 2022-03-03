@@ -256,14 +256,14 @@ function fillSelect() {
 // eventlistener to disable option if it's already selected in another dropdown
 
 selectFirstElement.addEventListener("change", function() {
-    disableSelectOptions("first");
+    disableUnavalilableSelectOptions("first");
 });
 
 selectSecondElement.addEventListener("change", function() {
-    disableSelectOptions("second");
+    disableUnavalilableSelectOptions("second");
 });
 
-function disableSelectOptions(select) {
+function disableUnavalilableSelectOptions(select) {
 
     let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
 
@@ -673,6 +673,9 @@ function openModal(elem, action) {
 
             updateConnBtn.classList.remove("hidden");
             createConnBtn.classList.add("hidden");
+
+            disableUnavalilableSelectOptions("first");
+            disableUnavalilableSelectOptions("second");
         }
     }
 }
