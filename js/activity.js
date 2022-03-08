@@ -111,6 +111,7 @@ let messageInputConnection = document.getElementById("message-input-connection")
 
 let divNumber = 0;
 let lineNumber = 0;
+let noteNumber = 0;
 
 // toolbar
 
@@ -174,19 +175,24 @@ editBtn.addEventListener("click", function() {
     else if (selectedType == "line") {
         openModal("connection", "edit");
     }
+    else if (selectedType == "note") {
+        openModal("note", "edit");
+    }
 });
 
 deleteBtn.addEventListener("click", function() {
     // delete item
     if (selectedType == "elem") {
         deleteElement(selectedItemId);
-        deleteItem("elements", selectedItemId);
     }
     else if (selectedType == "line") {
         let id = selectedItemId.slice(4);
         deleteLineObject(lines["line" + id], "line" + id);
         deleteConnection("line" + id);
         deleteLineTitle("text" + id);
+    }
+    else if (selectedType == "note") {
+        deleteNote(selectedItemId);
     }
 
     selectedItemId = "";
@@ -519,7 +525,7 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     document.getElementById("modal-connection-title").value = "";
     messageInputConnection.innerHTML = "";
 
-    closeModal('connection');
+    closeModal("connection");
 }
 
 function getElemIdFromTitle(selectNumber) {
@@ -595,6 +601,18 @@ function createLineObj(lineId, title, divId1, divId2) {
         title: title,
         elemId1: divId1,
         elemId2: divId2
+    };
+}
+
+// object "notes"
+
+let notes = new Object();
+
+function createNoteObj(noteId, title, text) {
+    notes[noteId] = {
+        id: noteId,
+        title: title,
+        text: text
     };
 }
 
@@ -769,6 +787,9 @@ function openModal(item, action) {
             updateNoteBtn.classList.add("hidden");
         }
         else if (action == "edit") {
+            // fill inputs with item's data
+            fillNotesInputs(selectedItemId);
+
             updateNoteBtn.classList.remove("hidden");
             createNoteBtn.classList.add("hidden");
         }
@@ -815,6 +836,17 @@ function fillConnectionInputs(selectedItemId) {
     firstElement.value = select1;
     secondElement.value = select2;
     titleInput.value = title;
+}
+
+function fillNotesInputs(selectedItemId) {
+    let titleInput = document.getElementById("modal-note-title");
+    let textInput = document.getElementById("modal-note-text");
+
+    let title = findNoteObjValue(selectedItemId, "title");
+    let text = findNoteObjValue(selectedItemId, "text");
+
+    titleInput.value = title;
+    textInput.value = text;
 }
 
 function getImgSrc(elemId) {
@@ -867,6 +899,18 @@ function findLineObjValue(id, valueName) {
     } 
 }
 
+function findNoteObjValue(id, valueName) {
+    for (let i = 0; i <= noteNumber; i++) {
+        for (let key in notes["note" + i]) {
+            if ((notes["note" + i])[key] == id) {
+                let value = (notes["note" + i])[valueName];
+
+                return value;
+            }
+        }
+    } 
+}
+
 // closes modal window
 
 function closeModal(item) {
@@ -886,6 +930,8 @@ function closeModal(item) {
     }
     else if (item == "note") {
         modalWindowNote.classList.remove("modal__open");
+
+        clearInputs("note");
     }
 }
 
@@ -896,6 +942,9 @@ function clearInputs(itemType) {
     let titleInputConnection = document.getElementById("modal-connection-title");
     let messageInputConnection = document.getElementById("message-input-connection");
 
+    let titleInputNote = document.getElementById("modal-note-title");
+    let textInputNote = document.getElementById("modal-note-text");
+
     if (itemType == "elem") {
         setPreviewImgtoBlank();
         titleInput.value = "";
@@ -904,6 +953,10 @@ function clearInputs(itemType) {
     else if (itemType == "connection") {
         titleInputConnection.value = "";
         messageInputConnection.innerHTML = "";
+    }
+    else if (itemType == "note") {
+        titleInputNote.value = "";
+        textInputNote.value = "";
     }
 }
 
@@ -1025,7 +1078,7 @@ function newElement(id, title, src, x, y, createFrom) {
             fileInput.value = "";
             document.getElementById("modal-input").value = "";
             messageInput.innerHTML = "";
-            closeModal('elem');
+            closeModal("elem");
         } 
 
         // calling drag function again after creating new div
@@ -1148,6 +1201,7 @@ updateElemBtn.addEventListener("click", function() {
     if (checkNewElementInputs()) {
         // update element function
         updateElem();
+        closeModal("elem");
     }
 });
 
@@ -1155,6 +1209,7 @@ updateConnBtn.addEventListener("click", function() {
     if (checkNewConnectionInputs()) {
         // update connection function
         updateConn();
+        closeModal("connection");
     }
 });
 
@@ -1162,6 +1217,7 @@ updateNoteBtn.addEventListener("click", function() {
     if (checkNewNoteInputs()) {
         // update element function
         updateNote();
+        closeModal("note");
     }
 });
 
@@ -1190,6 +1246,14 @@ function updateConn() {
     editItem("lines", selectedItemId, "y1", y1);
     editItem("lines", selectedItemId, "x2", x2);
     editItem("lines", selectedItemId, "y2", y2);
+}
+
+function updateNote() {
+    let titleInput = document.getElementById("modal-note-title").value;
+    let textInput = document.getElementById("modal-note-text").value;
+
+    editItem("notes", selectedItemId, "title", titleInput);
+    editItem("notes", selectedItemId, "text", textInput);
 }
 
 // checks inputs in "new element" modal window
@@ -1320,6 +1384,9 @@ function deleteElement(divId) {
 
     console.log("deleteFunction");
     console.log("divId = " + divId);
+
+    // delete data from db
+    deleteItem("elements", divId);
 
     let elem = document.getElementById(divId);
     elem.parentNode.removeChild(elem);
@@ -1517,10 +1584,11 @@ function newNote(id, title, text, x, y, createFrom) {
     else {
         addNoteToDB(div.id, note_title.innerHTML, note_text.innerHTML, div.style.left, div.style.top);
     }
+
+    createNoteObj(div.id, note_title.innerHTML, note_text.innerHTML);
 }
 
 let noteNumArr = [];
-let noteNumber = 0;
 
 function findLatestNoteID(noteID, createdFrom) {
 
@@ -1563,6 +1631,9 @@ function deleteNote(noteID) {
 
     console.log("deleteFunction");
     console.log("noteId = " + noteID);
+
+    // delete data from db
+    deleteItem("notes", noteID);
 
     let note = document.getElementById(noteID);
     note.parentNode.removeChild(note);
