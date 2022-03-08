@@ -28,9 +28,10 @@
                     <a class="toolbar-item" id="delete-item" title="Delete">
                         <img class="toolbar-item__img" src="img/delete.png" alt="Delete">
                     </a>
-                    <button class="menu__item" id="clear-db">CLEAR</button>
                     <button class="menu__item" id="new-element" onclick="openModal('elem', 'create')">new element</button>
                     <button class="menu__item" id="new-connection" onclick="openModal('connection', 'create')">new connection</button>
+                    <button class="menu__item" id="new-note" onclick="openModal('note', 'create')">new note</button>
+                    <button class="menu__item" id="clear-db">CLEAR</button>
                 </div>
             </div>
         </div>
@@ -38,7 +39,7 @@
 
     <div class="modal-container">
         <!-- modal for "new element" button -->
-        <div id="modal-element" class="modal">
+        <div class="modal" id="modal-element">
             <div class="modal__content">
                 <div class="modal__close" id="close-btn" onclick="closeModal('elem')">
                     <img class="modal__close-img" src="img/close-button.png" alt="close-button">
@@ -56,14 +57,14 @@
                 <span class="modal__message" id="message-input"></span>
                 
                 <!-- create element -->
-                <button id="modal-submit" class="modal__submit">Create element</button>
+                <button class="modal__submit" id="modal-submit">Create element</button>
                 <!-- update element -->
-                <button id="modal-update" class="modal__submit">Update element</button>
+                <button class="modal__submit" id="modal-update">Update element</button>
             </div>
         </div>
 
         <!-- modal for "new connection" button -->
-        <div id="modal-connection" class="modal">
+        <div class="modal" id="modal-connection">
             <div class="modal__content">
                 <div class="modal__close" id="close-btn-connection" onclick="closeModal('connection')">
                     <img class="modal__close-img" src="img/close-button.png" alt="close-button">
@@ -84,9 +85,29 @@
                 <span class="modal__message" id="message-input-connection"></span>
 
                 <!-- create connection -->
-                <button id="modal-submit-connection" class="modal__submit">Create connection</button>
+                <button class="modal__submit" id="modal-submit-connection">Create connection</button>
                 <!-- update connection -->
-                <button id="modal-edit-connection" class="modal__submit">Update connection</button>
+                <button class="modal__submit" id="modal-edit-connection">Update connection</button>
+            </div>
+        </div>
+
+        <!-- modal for "new note" button -->
+        <div class="modal" id="modal-note">
+            <div class="modal__content">
+                <div class="modal__close" id="close-btn-note" onclick="closeModal('note')">
+                    <img class="modal__close-img" src="img/close-button.png" alt="close-button">
+                </div>
+
+                <label for="modal__note-title" class="modal__label">Note title: </label>
+                <input type="text" class="modal__input" name="modal__note-title" id="modal-note-title" placeholder="Note name">
+
+                <label for="modal__note-text" class="modal__label">Note text: </label>
+                <input type="text" class="modal__input" name="modal__note-text" id="modal-note-text" placeholder="Note text">
+
+                <!-- create note -->
+                <button class="modal__submit" id="modal-submit-note">Create note</button>
+                <!-- update note -->
+                <button class="modal__submit" id="modal-edit-note">Update note</button>
             </div>
         </div>
     </div>
@@ -96,6 +117,15 @@
         <svg id="svg" width="1500" height="1500" viewBox="0 0 1500 1500">
             <rect id="background" x="0" y="0" width="1500" height="1500" fill="transparent"></rect>
         </svg>
+
+        <div class="elements__container"></div>
+
+        <div class="notes__container">
+            <!-- <div class="note" id="note1">
+                <p class="note__title">Title</p>
+                <textarea class="note__text">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tenetur, iusto optio beatae facilis vel itaque provident ipsam nobis quam cumque dolor sapiente nisi obcaecati at qui cupiditate laborum delectus ullam!</textarea>
+            </div> -->
+        </div>
         
         <canvas id="canvas" width="300" height="150"></canvas>
 

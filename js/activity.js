@@ -5,10 +5,16 @@
 let draggableElements = document.getElementsByClassName("element");
 
 for (let i = 0; i < draggableElements.length; i++) {
-    dragElement(draggableElements[i], i);
+    dragElement(draggableElements[i], i, "element");
 }
 
-function dragElement(elem, i) {
+let draggableNotes = document.getElementsByClassName("note");
+
+for (let i = 0; i < draggableNotes.length; i++) {
+    dragElement(draggableNotes[i], i, "note");
+}
+
+function dragElement(elem, i, itemType) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
 
     if (document.getElementById(elem.id)) {
@@ -37,34 +43,47 @@ function dragElement(elem, i) {
         pos3 = e.clientX;
         pos4 = e.clientY;
         elem.style.top = (elem.offsetTop - pos2) + "px";
-        elem.style.left = (elem.offsetLeft - pos1) + "px";     
+        elem.style.left = (elem.offsetLeft - pos1) + "px";
 
         // получим id линий, которые присоединены к этому элементу
-        findLineId(draggableElements[i].id, elem, 'move');
+
+        if (itemType == "element") {
+            findLineId(draggableElements[i].id, elem, 'move');
+        }
     }
 
     function closeDragElement() {
 
-        // find element in db
-        // findItem(draggableElements[i].id);
+        if (itemType == "element") {
 
-        // определим id элемента, который мы передвигаем
-        console.log(draggableElements[i].id);
+            // определим id элемента, который мы передвигаем
+            console.log(draggableElements[i].id);
 
-        // function to select the element
-        selectItem(draggableElements[i].id, "elem");
+            // function to select the element
+            selectItem(draggableElements[i].id, "elem");
 
-        // edit element's coordinates in db
-        editItem("elements", draggableElements[i].id, "x", elem.style.left);
-        editItem("elements", draggableElements[i].id, "y", elem.style.top);
+            // edit element's coordinates in db
+            editItem("elements", draggableElements[i].id, "x", elem.style.left);
+            editItem("elements", draggableElements[i].id, "y", elem.style.top);
 
-        console.log("lineNumber = " + lineNumber);
+            console.log("lineNumber = " + lineNumber);
 
-        // lineArr stores identifiers of the lines connected to the draggable element 
-        let lineArr = findLineId(draggableElements[i].id, elem, 'find');
+            // lineArr stores identifiers of the lines connected to the draggable element 
+            let lineArr = findLineId(draggableElements[i].id, elem, 'find');
 
-        // updates new coordinates to db after moving an element
-        changeLineCoordinates(lineArr);
+            // updates new coordinates to db after moving an element
+            changeLineCoordinates(lineArr);
+        }
+        else if (itemType == "note") {
+            console.log(draggableNotes[i].id);
+
+            // function to select the element
+            selectItem(draggableNotes[i].id, "note");
+
+            // edit element's coordinates in db
+            editItem("notes", draggableNotes[i].id, "x", elem.style.left);
+            editItem("notes", draggableNotes[i].id, "y", elem.style.top);
+        }
 
         document.onmouseup = null;
         document.onmousemove = null;
@@ -81,6 +100,7 @@ let newItem = document.getElementById("new-element");
 
 let modalWindow = document.getElementById("modal-element");
 let modalWindowConnection = document.getElementById("modal-connection");
+let modalWindowNote = document.getElementById("modal-note");
 
 let closeBtn = document.querySelector("modal__close");
 
@@ -198,12 +218,14 @@ function selectItem(itemId, itemType) {
 
     // the element selected now
     let item = document.getElementById(itemId);
+    let ideaIcon = item.querySelector(".item__icon");
     // latest selected element
     let itemSelected = document.getElementById(selectedItemId);
+    
     let className = "";
 
-    if (itemType == "elem") {
-        className = "element__selected";
+    if ((itemType == "elem") || (itemType == "note")) {
+        className = "item__selected";
     }
     else if (itemType == "line") {
         className = "line__selected";
@@ -211,21 +233,51 @@ function selectItem(itemId, itemType) {
 
     // if the item clicked just now is not selected already, we need to remove previous item's selection
     if (selectedItemId != "") {
+        let ideaIconSelected = itemSelected.querySelector(".item__icon");
         if (selectedType != itemType) {
             // if previously selected item has deifferent type
             if (itemType == "elem") {
-                itemSelected.classList.remove("line__selected");
+                if (selectedType == "line") {
+                    itemSelected.classList.remove("line__selected");
+                }
+                else if (selectedType == "note") {
+                    itemSelected.classList.remove("item__selected");
+                    ideaIconSelected.classList.remove("icon__visible");
+                }
             }
-            else {
-                itemSelected.classList.remove("element__selected");
+            else if (itemType == "line") {
+                if (selectedType == "elem") {
+                    itemSelected.classList.remove("item__selected");
+                }
+                else if (selectedType == "note") {
+                    itemSelected.classList.remove("item__selected");
+                }
+                ideaIconSelected.classList.remove("icon__visible");
+            }
+            else if (itemType == "note") {
+                if (selectedType == "elem") {
+                    itemSelected.classList.remove("item__selected");
+                    ideaIconSelected.classList.remove("icon__visible");
+                }
+                else if (selectedType == "line") {
+                    itemSelected.classList.remove("line__selected");
+                }
             }
         }
         else {
             itemSelected.classList.remove(className);
+            ideaIconSelected.classList.remove("icon__visible");
         }
     }
 
-    item.classList.add(className);
+    if ((itemType == "elem") || (itemType == "note")) {
+        item.classList.add(className);
+        ideaIcon.classList.add("icon__visible");
+    }
+    else if (itemType == "line") {
+        item.classList.add(className);
+    }
+
     selectedItemId = itemId; // remember id of the latest selected element
     selectedType = itemType; // remember if the latest selected item was element or line
 
@@ -246,11 +298,13 @@ background.addEventListener("click", function() {
 function removeSelection() {
     // latest selected item
     let itemSelected = document.getElementById(selectedItemId);
+    let ideaIcon = itemSelected.querySelector(".item__icon");
 
-    if (selectedType == "elem") {
-        itemSelected.classList.remove("element__selected");
+    if ((selectedType == "elem") || (selectedType == "note")) {
+        itemSelected.classList.remove("item__selected");
+        ideaIcon.classList.remove("icon__visible");
     }
-    else {
+    else if (selectedType == "line") {
         itemSelected.classList.remove("line__selected");
     }
 
@@ -664,13 +718,14 @@ let updateElemBtn = document.getElementById("modal-update");
 let createConnBtn = document.getElementById("modal-submit-connection");
 let updateConnBtn = document.getElementById("modal-edit-connection");
 
+let createNoteBtn = document.getElementById("modal-submit-note");
+let updateNoteBtn = document.getElementById("modal-edit-note");
+
 // opens modal window
 
-function openModal(elem, action) {
+function openModal(item, action) {
 
-    fillSelect();
-
-    if (elem == 'elem') {
+    if (item == "elem") {
         modalWindow.classList.add("modal__open");
 
         if (action == "create") {
@@ -686,7 +741,9 @@ function openModal(elem, action) {
             createElemBtn.classList.add("hidden");
         }
     }
-    else if (elem == 'connection') {
+    else if (item == "connection") {
+        fillSelect();
+
         modalWindowConnection.classList.add("modal__open");
 
         if (action == "create") {
@@ -702,6 +759,18 @@ function openModal(elem, action) {
 
             disableUnavalilableSelectOptions("first");
             disableUnavalilableSelectOptions("second");
+        }
+    }
+    else if (item == "note") {
+        modalWindowNote.classList.add("modal__open");
+
+        if (action == "create") {
+            createNoteBtn.classList.remove("hidden");
+            updateNoteBtn.classList.add("hidden");
+        }
+        else if (action == "edit") {
+            updateNoteBtn.classList.remove("hidden");
+            createNoteBtn.classList.add("hidden");
         }
     }
 }
@@ -800,22 +869,24 @@ function findLineObjValue(id, valueName) {
 
 // closes modal window
 
-function closeModal(elem) {
+function closeModal(item) {
 
-    if (elem == "elem") {
+    if (item == "elem") {
         modalWindow.classList.remove("modal__open");
 
         // clear all fields
         clearInputs("elem");
     }
-    else if (elem == "connection") {
+    else if (item == "connection") {
         modalWindowConnection.classList.remove("modal__open");
 
         // clear all fields
         clearInputs("connection");
+        clearSelect();
     }
-
-    clearSelect();
+    else if (item == "note") {
+        modalWindowNote.classList.remove("modal__open");
+    }
 }
 
 function clearInputs(itemType) {
@@ -842,13 +913,15 @@ function newElement(id, title, src, x, y, createFrom) {
 
     let divNum = 0;
 
-    inputValue = document.getElementById("modal-input").value;
+    let inputValue = document.getElementById("modal-input").value;
 
     console.log("submit" + inputValue);
 
     function check() {
 
         let ifTitleExists = 0;
+
+        let div, elem_title;
 
         for (let i = 0; i < draggableElements.length; i++) {
             if (document.getElementsByClassName("element__title")[i].innerHTML === inputValue) {
@@ -862,7 +935,7 @@ function newElement(id, title, src, x, y, createFrom) {
         if (ifTitleExists == 0) {
 
             // add element
-            var div = document.createElement("div");
+            div = document.createElement("div");
 
             // define latest div's number
             if (createFrom == "db") {
@@ -894,11 +967,11 @@ function newElement(id, title, src, x, y, createFrom) {
             }
             
             // put new div to container class
-            document.getElementsByClassName('container')[0].appendChild(div);
+            document.getElementsByClassName("elements__container")[0].appendChild(div);
 
             // add image and title
 
-            var elem = document.createElement("div");
+            let elem = document.createElement("div");
             elem.className = "element__picture";
             if (createFrom == "db") {
                 elem.id = "elem" + id.slice(3);
@@ -911,7 +984,7 @@ function newElement(id, title, src, x, y, createFrom) {
 
             // add element's image
 
-            var img = document.createElement("img");
+            let img = document.createElement("img");
             img.className = "element__img";
             if (createFrom == "db") {
                 img.src = src;
@@ -922,9 +995,17 @@ function newElement(id, title, src, x, y, createFrom) {
             img.alt = "image";
             document.getElementById(elem.id).appendChild(img);
 
+            // add icon for displaying selected state
+
+            let icon = document.createElement("img");
+            icon.className = "item__icon";
+            icon.src = "img/icons8-idea.svg";
+            icon.alt = "selected";
+            document.getElementById(div.id).appendChild(icon);
+
             // add element's title
 
-            var elem_title = document.createElement("div");
+            elem_title = document.createElement("div");
             elem_title.className = "element__title";
             elem_title.innerHTML = "void_value";
 
@@ -949,7 +1030,7 @@ function newElement(id, title, src, x, y, createFrom) {
 
         // calling drag function again after creating new div
         for (let i = 0; i < draggableElements.length; i++) {
-            dragElement(draggableElements[i], i);
+            dragElement(draggableElements[i], i, "element");
         }
 
         // add data to db
@@ -1040,7 +1121,7 @@ function checkIfInputIsEmpty(inputId) {
     }
 }
 
-// event listeners for create elements and lines buttons
+// event listeners for create elements, lines and notes buttons
 
 createElemBtn.addEventListener("click", function() {
     if (checkNewElementInputs()) {
@@ -1054,7 +1135,13 @@ createConnBtn.addEventListener("click", function() {
     }
 });
 
-// event listeners for update elements and lines buttons
+createNoteBtn.addEventListener("click", function() {
+    if (checkNewNoteInputs()) {
+        newNote();
+    }
+});
+
+// event listeners for update elements, lines and notes buttons
 
 updateElemBtn.addEventListener("click", function() {
     console.log("clicked");
@@ -1068,6 +1155,13 @@ updateConnBtn.addEventListener("click", function() {
     if (checkNewConnectionInputs()) {
         // update connection function
         updateConn();
+    }
+});
+
+updateNoteBtn.addEventListener("click", function() {
+    if (checkNewNoteInputs()) {
+        // update element function
+        updateNote();
     }
 });
 
@@ -1148,6 +1242,17 @@ function checkNewConnectionInputs() {
     }
 }
 
+// checks inputs in "new note" modal window
+
+function checkNewNoteInputs() {
+    let titleInput = document.getElementById("modal__note-title");
+    let textInput = document.getElementById("modal__note-text");
+
+    // should we allow creating empty notes?
+
+    return true;
+}
+
 // adds a file preview and representes the file's data as a base64 encoded string
 
 function previewFile() {
@@ -1221,7 +1326,7 @@ function deleteElement(divId) {
 
     // calling drag function again after deleting a div
     for (let i = 0; i < draggableElements.length; i++) {
-        dragElement(draggableElements[i], i);
+        dragElement(draggableElements[i], i, "element");
     }
 }
 
@@ -1319,18 +1424,168 @@ function deleteLineTitle(titleId) {
     title.parentNode.removeChild(title);
 }
 
+// notes
+
+function newNote(id, title, text, x, y, createFrom) {
+
+    let noteNum = 0;
+    let titleInput = document.getElementById("modal-note-title").value;
+    let textInput = document.getElementById("modal-note-text").value;
+
+    // add element
+    let div = document.createElement("div");
+
+    if (createFrom == "db") {
+        // if we load data from db
+        // update array of elements' id
+        findLatestNoteID(id.slice(4), "db");
+        // define id
+        div.id = "note" + id.slice(4);
+    }
+    else {
+        noteNum = findLatestNoteID();
+        div.id = "note" + noteNum;
+    }
+
+    // define className
+    div.className = "note";
+
+    // define positions
+    if (createFrom == "db") {
+        div.style.left = x;
+        div.style.top = y;
+    }
+    else {
+        let windowWidth = window.innerWidth;
+        
+        div.style.top = "100px";
+        div.style.left = windowWidth / 2 - elementWidth / 2 + "px";
+    }
+
+    // put new div to container class
+    document.getElementsByClassName("notes__container")[0].appendChild(div);
+
+    // add icon for displaying selected state
+
+    let icon = document.createElement("img");
+    icon.className = "item__icon";
+    icon.src = "img/icons8-idea.svg";
+    icon.alt = "selected";
+    document.getElementById(div.id).appendChild(icon);
+
+    // add title
+
+    let note_title = document.createElement("div");
+    note_title.className = "note__title";
+    note_title.innerHTML = "void_value";
+    if (createFrom == "db") {
+        note_title.innerHTML = title;
+    }
+    else {
+        note_title.innerHTML = titleInput;
+    }
+    document.getElementById(div.id).appendChild(note_title);
+
+    // add text
+
+    let note_text = document.createElement("textarea");
+    note_text.className = "note__text";
+    note_text.innerHTML = "void_value";
+    if (createFrom == "db") {
+        note_text.innerHTML = text;
+    }
+    else {
+        note_text.innerHTML = textInput;
+    }
+    document.getElementById(div.id).appendChild(note_text);
+
+    // clear input and close modal window if new note is created
+
+    // document.getElementById("modal-input").value = "";
+    closeModal("note");
+
+    // calling drag function again after creating new div
+    for (let i = 0; i < draggableNotes.length; i++) {
+        dragElement(draggableNotes[i], i, "note");
+    }
+
+    // add data to db
+
+    if (createFrom == "db") {
+        // do nothing
+    }
+    else {
+        addNoteToDB(div.id, note_title.innerHTML, note_text.innerHTML, div.style.left, div.style.top);
+    }
+}
+
+let noteNumArr = [];
+let noteNumber = 0;
+
+function findLatestNoteID(noteID, createdFrom) {
+
+    if (createdFrom == "db") {
+        noteNumArr.push(noteID);
+        // update max id from notes' array
+        noteNumber = Math.max.apply(null, noteNumArr);
+    }
+    else {
+        if (draggableNotes.length == 0) {
+            noteNumber = 1;
+            noteNumArr.push(noteNumber.toString());
+            console.log("noteNumber = " + noteNumber);
+        }
+        else {
+            noteNumber = Math.max.apply(null, noteNumArr);
+            console.log("noteNumber = " + noteNumber);
+            noteNumber++;
+            noteNumArr.push(noteNumber.toString());
+            console.log("noteNumber = " + noteNumber);
+            console.log(noteNumArr);
+        }
+    }
+
+    return noteNumber;
+}
+
+function deleteNote(noteID) {
+
+    // delete id from array of all notes
+    let number = noteID.slice(4);
+
+    const index = noteNumArr.indexOf(number);
+
+    if (index > -1) {
+        noteNumArr.splice(index, 1);
+    }
+
+    // delete the note
+
+    console.log("deleteFunction");
+    console.log("noteId = " + noteID);
+
+    let note = document.getElementById(noteID);
+    note.parentNode.removeChild(note);
+
+    // calling drag function again after deleting a div
+    for (let i = 0; i < draggableNotes.length; i++) {
+        dragElement(draggableNotes[i], i, "note");
+    }
+}
+
 // indexedDB
 
 var db;
 
-var openRequest = indexedDB.open("db", 3);
+var openRequest = indexedDB.open("db", 4);
 
 openRequest.onupgradeneeded = function(e) {
     var db = e.target.result;
     console.log("running onupgradeneeded");
     // the database did not previously exist, so create object stores
     db.createObjectStore("elements", {keyPath: "id"});
-    db.createObjectStore("lines", {keyPath: "id"});    
+    db.createObjectStore("lines", {keyPath: "id"});
+    db.createObjectStore("notes", {keyPath: "id"});
 };
 
 openRequest.onsuccess = function(e) {
@@ -1340,6 +1595,7 @@ openRequest.onsuccess = function(e) {
     // checks if anything is in db
     readItems("elements");
     readItems("lines");
+    readItems("notes");
 };
 
 openRequest.onerror = function(e) {
@@ -1397,6 +1653,31 @@ function addLine(lineId, lineTitle, elemId1, elemId2, x1, y1, x2, y2) {
 
     request.onsuccess = function(e) {
         // console.log("the line was added to db successfully");
+    };
+}
+
+// add note in db
+
+function addNoteToDB(id, title, text, x, y) {
+    let transaction = db.transaction(["notes"], "readwrite");
+    let notes = transaction.objectStore("notes");
+    let item = {
+        id: id,
+        title: title,
+        text: text,
+        x: x,
+        y: y,
+        created: new Date().getTime()
+    };
+
+    let request = notes.add(item);
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    };
+
+    request.onsuccess = function(e) {
+        // console.log("the element was added to db successfully");
     };
 }
 
@@ -1496,6 +1777,9 @@ function readItems(objectStoreName) {
             }
             else if (objectStoreName == "lines") {
                 createConnection(cursor.key, cursor.value.title, cursor.value.elem1, cursor.value.elem2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2, "db");
+            }
+            else if (objectStoreName == "notes") {
+                newNote(cursor.key, cursor.value.title, cursor.value.text, cursor.value.x, cursor.value.y, "db");
             }
             cursor.continue();
         }
