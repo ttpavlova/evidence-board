@@ -657,11 +657,8 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     document.getElementsByTagName('svg')[0].appendChild(text);
 
     // clear input and close modal window if new connection is created
-
-    document.getElementById("modal-connection-title").value = "";
-    messageInputConnection.innerHTML = "";
-
-    closeModal("connection");
+    connModal.clear();
+    connModal.close();
 }
 
 function getElemIdFromTitle(selectNumber) {
@@ -1078,11 +1075,9 @@ function newElement(id, title, src, x, y, createFrom) {
             // console.log(divNumber);
 
             // clear input and close modal window if new element is created
-
             fileInput.value = "";
-            document.getElementById("modal-input").value = "";
-            messageInput.innerHTML = "";
-            closeModal("elem");
+            elemModal.clear();
+            elemModal.close();
         } 
 
         // calling drag function again after creating new div
@@ -1206,7 +1201,7 @@ updateElemBtn.addEventListener("click", function() {
     if (checkNewElementInputs()) {
         // update element function
         updateElem();
-        closeModal("elem");
+        elemModal.close();
     }
 });
 
@@ -1214,7 +1209,7 @@ updateConnBtn.addEventListener("click", function() {
     if (checkNewConnectionInputs()) {
         // update connection function
         updateConn();
-        closeModal("connection");
+        connModal.close();
     }
 });
 
@@ -1222,7 +1217,7 @@ updateNoteBtn.addEventListener("click", function() {
     if (checkNewNoteInputs()) {
         // update element function
         updateNote();
-        closeModal("note");
+        noteModal.close();
     }
 });
 
@@ -1572,9 +1567,8 @@ function newNote(id, title, text, x, y, createFrom) {
     document.getElementById(div.id).appendChild(note_text);
 
     // clear input and close modal window if new note is created
-
-    // document.getElementById("modal-input").value = "";
-    closeModal("note");
+    noteModal.clear();
+    noteModal.close();
 
     // calling drag function again after creating new div
     for (let i = 0; i < draggableNotes.length; i++) {
