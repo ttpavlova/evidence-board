@@ -2,10 +2,9 @@ body {
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     line-height: 1.6;
-    color: #333333;
+    color: #333;
     background-color: lightgray;
     background-image: url("../img/bg2.jpg");
-    /* background-repeat: no-repeat; */
     background-size: 600px;
 
     overflow-x: hidden;
@@ -34,9 +33,6 @@ h1, h2, h3, h4, h5, h6 {
     max-width: 1000px;
     margin: 0 auto;
     text-align: center;
-}
-
-.header__content {
     display: flex;
     justify-content: space-between;
     align-items: center;

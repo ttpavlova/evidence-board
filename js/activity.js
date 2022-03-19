@@ -1,18 +1,192 @@
 'use strict';
 
-// drag'n'drop elements
+function init() {
+    // drag'n'drop elements
+    for (let i = 0; i < draggableElements.length; i++) {
+        dragElement(draggableElements[i], i, "element");
+    }
+    
+    for (let i = 0; i < draggableNotes.length; i++) {
+        dragElement(draggableNotes[i], i, "note");
+    }
+
+    elemModal.setPreviewImgtoBlank();
+}
+
+window.onload = init;
+
+let model = {
+    elemNumber: 0,
+    connNumber: 0,
+    noteNumber: 0,
+    elemWidth: 200,
+    noteWidth: 150,
+    selectedItemId: "", // id of the latest selected item
+    selectedType: "", // type (element, line or note) of the latest selected item
+};
+
+// modal
+
+let createElemBtn = document.getElementById("create-elem-btn");
+let updateElemBtn = document.getElementById("update-elem-btn");
+
+let createConnBtn = document.getElementById("create-conn-btn");
+let updateConnBtn = document.getElementById("update-conn-btn");
+
+let createNoteBtn = document.getElementById("create-note-btn");
+let updateNoteBtn = document.getElementById("update-note-btn");
+
+// modal constructor
+
+function Modal(window, createBtn, updateBtn) {
+    this.window = document.getElementById(window);
+    this.createBtn = document.getElementById(createBtn);
+    this.updateBtn = document.getElementById(updateBtn);
+}
+
+// opens modal window
+Modal.prototype.open = function() {
+    this.window.classList.add("modal__open");
+}
+
+// closes modal window
+Modal.prototype.close = function() {
+    this.window.classList.remove("modal__open");
+}
+
+// show create btn, hide update btn
+Modal.prototype.showCreateBtn = function() {
+    this.createBtn.classList.remove("hidden");
+    this.updateBtn.classList.add("hidden");
+}
+
+Modal.prototype.showUpdateBtn = function() {
+    this.updateBtn.classList.remove("hidden");
+    this.createBtn.classList.add("hidden");
+}
+
+// clear all text fields and error messages
+Modal.prototype.clear = function() {
+    this.window.querySelector(".modal__input").value = "";
+    if (this.window.querySelector(".modal__message") != null) {
+        this.window.querySelector(".modal__message").value = "";
+    }
+}
+
+// element modal window
+
+let elemModal = new Modal("modal-element", "create-elem-btn", "update-elem-btn");
+
+elemModal.setPreviewImgtoBlank = function() {
+    let previewImg = document.getElementById("modal-load-img");
+
+    previewImg.src = "img/add-image.png";
+    previewImg.classList.add("blank");
+}
+
+elemModal.removeBlankClass = function() {
+    let previewImg = document.getElementById("modal-load-img");
+
+    previewImg.classList.remove("blank");
+}
+
+let newElemBtn = document.getElementById("new-element");
+
+newElemBtn.addEventListener("click", function() {
+    elemModal.open();
+    elemModal.showCreateBtn();
+});
+
+let closeElemModalBtn = document.getElementById("close-btn");
+
+closeElemModalBtn.addEventListener("click", function() {
+    elemModal.close();
+    elemModal.clear();
+    elemModal.setPreviewImgtoBlank();
+});
+
+// connection modal window
+
+let connModal = new Modal("modal-connection", "create-conn-btn", "update-conn-btn");
+
+let selectFirstElement = document.getElementById("modal-elem1");
+let selectSecondElement = document.getElementById("modal-elem2");
+
+// fills both dropdown lists with options
+connModal.fillSelectOptions = function() {
+    let elements = document.getElementsByClassName("element__title");
+
+    for (let i = 0; i < elements.length; i++) {
+        let option = elements[i].innerHTML;
+
+        let elem = document.createElement("option");
+        elem.textContent = option;
+        elem.value = option;
+        selectFirstElement.appendChild(elem);
+
+        let elem2 = elem.cloneNode(true);
+        selectSecondElement.appendChild(elem2);
+    }
+}
+
+// clears options in dropdown lists
+connModal.clearSelectOptions = function() {
+    let num = selectFirstElement.options.length - 1;
+    for (let i = num; i > 0; i--) {
+        selectFirstElement.remove(i);
+        selectSecondElement.remove(i);
+    }
+}
+
+let newConnBtn = document.getElementById("new-connection");
+
+newConnBtn.addEventListener("click", function() {
+    connModal.open();
+    connModal.fillSelectOptions();
+    connModal.showCreateBtn();
+});
+
+let closeConnModalBtn = document.getElementById("close-btn-connection");
+
+closeConnModalBtn.addEventListener("click", function() {
+    connModal.close();
+    connModal.clear();
+    connModal.clearSelectOptions();
+});
+
+// note modal window
+
+let noteModal = new Modal("modal-note", "create-note-btn", "update-note-btn");
+
+let newNoteBtn = document.getElementById("new-note");
+
+newNoteBtn.addEventListener("click", function() {
+    noteModal.open();
+    noteModal.showCreateBtn();
+});
+
+let closeNoteModalBtn = document.getElementById("close-btn-note");
+
+closeNoteModalBtn.addEventListener("click", function() {
+    noteModal.close();
+    noteModal.clear();
+});
+
+// element constuctor
+
+function Element(id, img, title, x, y) {
+    this.id = id;
+    this.img = img;
+    this.title = title;
+    this.x = x;
+    this.y = y;
+}
+
+Element.prototype.selected = false;
 
 let draggableElements = document.getElementsByClassName("element");
 
-for (let i = 0; i < draggableElements.length; i++) {
-    dragElement(draggableElements[i], i, "element");
-}
-
 let draggableNotes = document.getElementsByClassName("note");
-
-for (let i = 0; i < draggableNotes.length; i++) {
-    dragElement(draggableNotes[i], i, "note");
-}
 
 function dragElement(elem, i, itemType) {
     let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
@@ -92,8 +266,6 @@ function dragElement(elem, i, itemType) {
 
 // variables
 
-let i = 0;
-
 let elementWidth = 150;
 
 let newItem = document.getElementById("new-element");
@@ -103,8 +275,6 @@ let modalWindowConnection = document.getElementById("modal-connection");
 let modalWindowNote = document.getElementById("modal-note");
 
 let closeBtn = document.querySelector("modal__close");
-
-let inputValue = document.getElementById("modal-input").value;
 
 let messageInput = document.getElementById("message-input");
 let messageInputConnection = document.getElementById("message-input-connection");
@@ -169,14 +339,18 @@ let deleteBtn = document.getElementById("delete-item");
 
 editBtn.addEventListener("click", function() {
     // open modal for editing selected item
-    if (selectedType == "elem") {
-        openModal("elem", "edit");
+    if (model.selectedType == "elem") {
+        elemModal.open();
+        elemModal.showUpdateBtn();
     }
-    else if (selectedType == "line") {
-        openModal("connection", "edit");
+    else if (model.selectedType == "line") {
+        connModal.open();
+        connModal.fillSelectOptions();
+        connModal.showUpdateBtn();
     }
-    else if (selectedType == "note") {
-        openModal("note", "edit");
+    else if (model.selectedType == "note") {
+        noteModal.open();
+        noteModal.showUpdateBtn();
     }
 });
 
@@ -202,7 +376,7 @@ deleteBtn.addEventListener("click", function() {
 // add/remove disabled state to icons on toolbar
 
 function ifSelectedItemExists() {
-    if (selectedItemId == "") {
+    if (model.selectedItemId == "") {
         editBtn.classList.add("iconDisabled");
         deleteBtn.classList.add("iconDisabled");
     }
@@ -212,13 +386,10 @@ function ifSelectedItemExists() {
     } 
 }
 
-// select item onclick/onmove
-
-let selectedItemId = ""; // id of the latest selected item
-let selectedType = ""; // type (element or line) of the latest selected item
-
 // set edit and delete buttons to disabled by default
 ifSelectedItemExists();
+
+// select item onclick/onmove
 
 function selectItem(itemId, itemType) {
 
@@ -226,7 +397,7 @@ function selectItem(itemId, itemType) {
     let item = document.getElementById(itemId);
     let ideaIcon = item.querySelector(".item__icon");
     // latest selected element
-    let itemSelected = document.getElementById(selectedItemId);
+    let itemSelected = document.getElementById(model.selectedItemId);
     
     let className = "";
 
@@ -238,34 +409,34 @@ function selectItem(itemId, itemType) {
     }
 
     // if the item clicked just now is not selected already, we need to remove previous item's selection
-    if (selectedItemId != "") {
+    if (model.selectedItemId != "") {
         let ideaIconSelected = itemSelected.querySelector(".item__icon");
-        if (selectedType != itemType) {
+        if (model.selectedType != itemType) {
             // if previously selected item has deifferent type
             if (itemType == "elem") {
-                if (selectedType == "line") {
+                if (model.selectedType == "line") {
                     itemSelected.classList.remove("line__selected");
                 }
-                else if (selectedType == "note") {
+                else if (model.selectedType == "note") {
                     itemSelected.classList.remove("item__selected");
                     ideaIconSelected.classList.remove("icon__visible");
                 }
             }
             else if (itemType == "line") {
-                if (selectedType == "elem") {
+                if (model.selectedType == "elem") {
                     itemSelected.classList.remove("item__selected");
                 }
-                else if (selectedType == "note") {
+                else if (model.selectedType == "note") {
                     itemSelected.classList.remove("item__selected");
                 }
                 ideaIconSelected.classList.remove("icon__visible");
             }
             else if (itemType == "note") {
-                if (selectedType == "elem") {
+                if (model.selectedType == "elem") {
                     itemSelected.classList.remove("item__selected");
                     ideaIconSelected.classList.remove("icon__visible");
                 }
-                else if (selectedType == "line") {
+                else if (model.selectedType == "line") {
                     itemSelected.classList.remove("line__selected");
                 }
             }
@@ -284,8 +455,8 @@ function selectItem(itemId, itemType) {
         item.classList.add(className);
     }
 
-    selectedItemId = itemId; // remember id of the latest selected element
-    selectedType = itemType; // remember if the latest selected item was element or line
+    model.selectedItemId = itemId; // remember id of the latest selected element
+    model.selectedType = itemType; // remember if the latest selected item was element or line
 
     ifSelectedItemExists();
 }
@@ -294,7 +465,7 @@ function selectItem(itemId, itemType) {
 let background = document.getElementById("background");
 
 background.addEventListener("click", function() {
-    if (selectedItemId != "") {
+    if (model.selectedItemId != "") {
         removeSelection();
     }
 
@@ -303,40 +474,19 @@ background.addEventListener("click", function() {
 
 function removeSelection() {
     // latest selected item
-    let itemSelected = document.getElementById(selectedItemId);
+    let itemSelected = document.getElementById(model.selectedItemId);
     let ideaIcon = itemSelected.querySelector(".item__icon");
 
-    if ((selectedType == "elem") || (selectedType == "note")) {
+    if ((model.selectedType == "elem") || (model.selectedType == "note")) {
         itemSelected.classList.remove("item__selected");
         ideaIcon.classList.remove("icon__visible");
     }
-    else if (selectedType == "line") {
+    else if (model.selectedType == "line") {
         itemSelected.classList.remove("line__selected");
     }
 
-    selectedItemId = "";
-    selectedType = "";
-}
-
-let selectFirstElement = document.getElementById("modal-elem1");
-let selectSecondElement = document.getElementById("modal-elem2");
-
-// fills both dropdown lists with options
-
-function fillSelect() {
-    let elements = document.getElementsByClassName("element__title");
-
-    for (let i = 0; i < elements.length; i++) {
-        let option = elements[i].innerHTML;
-
-        let elem = document.createElement("option");
-        elem.textContent = option;
-        elem.value = option;
-        selectFirstElement.appendChild(elem);
-
-        let elem2 = elem.cloneNode(true);
-        selectSecondElement.appendChild(elem2);
-    }
+    model.selectedItemId = "";
+    model.selectedType = "";
 }
 
 // eventlistener to disable option if it's already selected in another dropdown
@@ -393,7 +543,7 @@ function createArrayOfIds(elemId) {
 
     let idArr = [];
 
-    for (i = 0; i <= lineNumber; i++) {
+    for (let i = 0; i <= lineNumber; i++) {
         for (let key in lines["line" + i]) {
             if (((lines["line" + i])[key] == elemId) && (key == "elemId1")) {
                 idArr.push((lines["line" + i])["elemId2"]);
@@ -421,20 +571,6 @@ function createArrayOfTitles(elemId) {
     }
 
     return titleArr;
-}
-
-// clears options in dropdown lists
-
-function clearSelect() {
-    let i = 0;
-    let selectFirstElement = document.getElementById("modal-elem1");
-    let selectSecondElement = document.getElementById("modal-elem2");
-    let num = selectFirstElement.options.length - 1;
-
-    for (i = num; i > 0; i--) {
-        selectFirstElement.remove(i);
-        selectSecondElement.remove(i);
-    }
 }
 
 // creates a line between two selected elements
@@ -556,7 +692,7 @@ function getElemIdFromTitle(selectNumber) {
         }
     }
 
-    for (i = 0; i < elements.length; i++) {
+    for (let i = 0; i < elements.length; i++) {
         if (elements[i].innerHTML == title) {
             divId = elements[i].parentElement.id;
             console.log("parentNode = " + divId);
@@ -623,7 +759,7 @@ function findLineId(draggableElementId, elem, action) {
     let lineId = "";
     let lineArr = [];
 
-    for (i = 0; i <= lineNumber; i++) {
+    for (let i = 0; i <= lineNumber; i++) {
         //showDivs(lines["line" + i], "lines.line" + i);
 
         for (let key in lines["line" + i]) {
@@ -728,89 +864,6 @@ function changeLineCoordinates(lineArr) {
     }
 }
 
-// modal
-
-let createElemBtn = document.getElementById("modal-submit");
-let updateElemBtn = document.getElementById("modal-update");
-
-let createConnBtn = document.getElementById("modal-submit-connection");
-let updateConnBtn = document.getElementById("modal-edit-connection");
-
-let createNoteBtn = document.getElementById("modal-submit-note");
-let updateNoteBtn = document.getElementById("modal-edit-note");
-
-// opens modal window
-
-function openModal(item, action) {
-
-    if (item == "elem") {
-        modalWindow.classList.add("modal__open");
-
-        if (action == "create") {
-            createElemBtn.classList.remove("hidden");
-            updateElemBtn.classList.add("hidden");
-        }
-        else if (action == "edit") {
-            removeBlankClass();
-            // fill inputs with item's data
-            fillElementInputs(selectedItemId);
-
-            updateElemBtn.classList.remove("hidden");
-            createElemBtn.classList.add("hidden");
-        }
-    }
-    else if (item == "connection") {
-        fillSelect();
-
-        modalWindowConnection.classList.add("modal__open");
-
-        if (action == "create") {
-            createConnBtn.classList.remove("hidden");
-            updateConnBtn.classList.add("hidden");
-        }
-        else if (action == "edit") {
-            // fill inputs with item's data
-            fillConnectionInputs(selectedItemId);
-
-            updateConnBtn.classList.remove("hidden");
-            createConnBtn.classList.add("hidden");
-
-            disableUnavalilableSelectOptions("first");
-            disableUnavalilableSelectOptions("second");
-        }
-    }
-    else if (item == "note") {
-        modalWindowNote.classList.add("modal__open");
-
-        if (action == "create") {
-            createNoteBtn.classList.remove("hidden");
-            updateNoteBtn.classList.add("hidden");
-        }
-        else if (action == "edit") {
-            // fill inputs with item's data
-            fillNotesInputs(selectedItemId);
-
-            updateNoteBtn.classList.remove("hidden");
-            createNoteBtn.classList.add("hidden");
-        }
-    }
-}
-
-setPreviewImgtoBlank();
-
-function setPreviewImgtoBlank() {
-    let previewImg = document.getElementById("modal-load-img");
-
-    previewImg.src = "img/add-image.png";
-    previewImg.classList.add("blank");
-}
-
-function removeBlankClass() {
-    let previewImg = document.getElementById("modal-load-img");
-
-    previewImg.classList.remove("blank");
-}
-
 function fillElementInputs(selectedItemId) {
 
     let previewImg = document.getElementById("modal-load-img");
@@ -909,55 +962,6 @@ function findNoteObjValue(id, valueName) {
             }
         }
     } 
-}
-
-// closes modal window
-
-function closeModal(item) {
-
-    if (item == "elem") {
-        modalWindow.classList.remove("modal__open");
-
-        // clear all fields
-        clearInputs("elem");
-    }
-    else if (item == "connection") {
-        modalWindowConnection.classList.remove("modal__open");
-
-        // clear all fields
-        clearInputs("connection");
-        clearSelect();
-    }
-    else if (item == "note") {
-        modalWindowNote.classList.remove("modal__open");
-
-        clearInputs("note");
-    }
-}
-
-function clearInputs(itemType) {
-    let titleInput = document.getElementById("modal-input");
-    let messageInput = document.getElementById("message-input");
-
-    let titleInputConnection = document.getElementById("modal-connection-title");
-    let messageInputConnection = document.getElementById("message-input-connection");
-
-    let titleInputNote = document.getElementById("modal-note-title");
-    let textInputNote = document.getElementById("modal-note-text");
-
-    if (itemType == "elem") {
-        setPreviewImgtoBlank();
-        titleInput.value = "";
-        messageInput.innerHTML = "";
-    }
-    else if (itemType == "connection") {
-        titleInputConnection.value = "";
-        messageInputConnection.innerHTML = "";
-    }
-    else if (itemType == "note") {
-        titleInputNote.value = "";
-        textInputNote.value = "";
-    }
 }
 
 // creates new element
@@ -1152,6 +1156,7 @@ function checkDropdownOptions() {
 function checkIfInputIsEmpty(inputId) {
     
     let regex = /^[^\s]+[A-Za-z\d\s]+[^\s]$/;
+    let inputValue = "";
     
     // checks which input we need to test
 

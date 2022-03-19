@@ -5,34 +5,31 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evidence board</title>
-    <link rel="stylesheet" type="text/css" href="css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Homemade+Apple&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <div class="header">
         <div class="header__container">
-            <div class="header__content">
-                <div class="header__logo">
-                    <a href="#">Evidence board</a>
-                </div>
-                <div class="header__menu">
-                    <a class="toolbar-item" id="zoom-in" title="Zoom In" onclick="zoom('in')">
-                        <img class="toolbar-item__img" src="img/zoom-in-3.png" alt="Zoom In">
-                    </a>
-                    <a class="toolbar-item" id="zoom-out" title="Zoom Out" onclick="zoom('out')">
-                        <img class="toolbar-item__img" src="img/zoom-out-3.png" alt="Zoom Out">
-                    </a>
-                    <a class="toolbar-item" id="edit-item" title="Edit">
-                        <img class="toolbar-item__img" src="img/edit.png" alt="Edit">
-                    </a>
-                    <a class="toolbar-item" id="delete-item" title="Delete">
-                        <img class="toolbar-item__img" src="img/delete.png" alt="Delete">
-                    </a>
-                    <button class="menu__item" id="new-element" onclick="openModal('elem', 'create')">new element</button>
-                    <button class="menu__item" id="new-connection" onclick="openModal('connection', 'create')">new connection</button>
-                    <button class="menu__item" id="new-note" onclick="openModal('note', 'create')">new note</button>
-                    <button class="menu__item" id="clear-db">CLEAR</button>
-                </div>
+            <div class="header__logo">
+                <a href="#">Evidence board</a>
+            </div>
+            <div class="header__menu">
+                <a class="toolbar-item" id="zoom-in" title="Zoom In" onclick="zoom('in')">
+                    <img class="toolbar-item__img" src="img/zoom-in-3.png" alt="Zoom In">
+                </a>
+                <a class="toolbar-item" id="zoom-out" title="Zoom Out" onclick="zoom('out')">
+                    <img class="toolbar-item__img" src="img/zoom-out-3.png" alt="Zoom Out">
+                </a>
+                <a class="toolbar-item" id="edit-item" title="Edit">
+                    <img class="toolbar-item__img" src="img/edit.png" alt="Edit">
+                </a>
+                <a class="toolbar-item" id="delete-item" title="Delete">
+                    <img class="toolbar-item__img" src="img/delete.png" alt="Delete">
+                </a>
+                <button class="menu__item" id="new-element">new element</button>
+                <button class="menu__item" id="new-connection">new connection</button>
+                <button class="menu__item" id="new-note">new note</button>
+                <button class="menu__item" id="clear-db">CLEAR</button>
             </div>
         </div>
     </div>
@@ -41,7 +38,7 @@
         <!-- modal for "new element" button -->
         <div class="modal" id="modal-element">
             <div class="modal__content">
-                <div class="modal__close" id="close-btn" onclick="closeModal('elem')">
+                <div class="modal__close" id="close-btn">
                     <img class="modal__close-img" src="img/close-button.png" alt="close-button">
                 </div>
 
@@ -57,16 +54,16 @@
                 <span class="modal__message" id="message-input"></span>
                 
                 <!-- create element -->
-                <button class="modal__submit" id="modal-submit">Create element</button>
+                <button class="modal__submit" id="create-elem-btn">Create element</button>
                 <!-- update element -->
-                <button class="modal__submit" id="modal-update">Update element</button>
+                <button class="modal__submit" id="update-elem-btn">Update element</button>
             </div>
         </div>
 
         <!-- modal for "new connection" button -->
         <div class="modal" id="modal-connection">
             <div class="modal__content">
-                <div class="modal__close" id="close-btn-connection" onclick="closeModal('connection')">
+                <div class="modal__close" id="close-btn-connection">
                     <img class="modal__close-img" src="img/close-button.png" alt="close-button">
                 </div>
 
@@ -85,9 +82,9 @@
                 <span class="modal__message" id="message-input-connection"></span>
 
                 <!-- create connection -->
-                <button class="modal__submit" id="modal-submit-connection">Create connection</button>
+                <button class="modal__submit" id="create-conn-btn">Create connection</button>
                 <!-- update connection -->
-                <button class="modal__submit" id="modal-edit-connection">Update connection</button>
+                <button class="modal__submit" id="update-conn-btn">Update connection</button>
             </div>
         </div>
 
@@ -105,9 +102,9 @@
                 <input type="text" class="modal__input" name="modal__note-text" id="modal-note-text" placeholder="Note text">
 
                 <!-- create note -->
-                <button class="modal__submit" id="modal-submit-note">Create note</button>
+                <button class="modal__submit" id="create-note-btn">Create note</button>
                 <!-- update note -->
-                <button class="modal__submit" id="modal-edit-note">Update note</button>
+                <button class="modal__submit" id="update-note-btn">Update note</button>
             </div>
         </div>
     </div>
@@ -120,12 +117,7 @@
 
         <div class="elements__container"></div>
 
-        <div class="notes__container">
-            <!-- <div class="note" id="note1">
-                <p class="note__title">Title</p>
-                <textarea class="note__text">Lorem ipsum dolor, sit amet consectetur adipisicing elit. Tenetur, iusto optio beatae facilis vel itaque provident ipsam nobis quam cumque dolor sapiente nisi obcaecati at qui cupiditate laborum delectus ullam!</textarea>
-            </div> -->
-        </div>
+        <div class="notes__container"></div>
         
         <canvas id="canvas" width="300" height="150"></canvas>
 
