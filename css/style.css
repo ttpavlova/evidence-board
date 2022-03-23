@@ -391,10 +391,10 @@ h1, h2, h3, h4, h5, h6 {
 
 .item__icon {
     position: absolute;
-    top: -30px;
-    left: -30px;
-    width: 64px;
-    height: 64px;
+    top: -20px;
+    left: -20px;
+    width: 50px;
+    height: 50px;
     display: none;
     transition: opacity 5s, visibility 5s;
 }

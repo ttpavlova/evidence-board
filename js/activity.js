@@ -23,7 +23,72 @@ let model = {
     noteWidth: 150,
     selectedItemId: "", // id of the latest selected item
     selectedType: "", // type (element, line or note) of the latest selected item
+    elements: [
+        // id: id,
+        // title: title,
+        // img: img,
+        // x: x,
+        // y: y,
+    ],
+    lines: [],
+    notes: [],
+
+    ifSelectedItemExists: function() {
+        if (this.selectedItemId != "") {
+            return true;
+        }
+        return false;
+    },
 };
+
+let view = {
+    // disable edit and delete buttons on toolbar when nothing is selected
+    setEditDeleteBtnState: function() {
+        if (model.ifSelectedItemExists()) {
+            editBtn.classList.remove("iconDisabled");
+            deleteBtn.classList.remove("iconDisabled");
+        }
+        else {
+            editBtn.classList.add("iconDisabled");
+            deleteBtn.classList.add("iconDisabled");
+        }
+    },
+
+    removeSelection: function(itemId) {
+        // the latest selected item
+        let itemSelected = document.getElementById(model.selectedItemId);
+
+        // if the item clicked just now is not selected already, we need to remove previous item's selection
+        if (model.selectedItemId != itemId) {
+            if ((model.selectedType == "elem") || (model.selectedType == "note")) {
+                itemSelected.classList.remove("item__selected");
+                this.hideIcon();
+            }
+            else if (model.selectedType == "line") {
+                itemSelected.classList.remove("line__selected");
+            }
+        }
+
+        model.selectedItemId = "";
+        model.selectedType = "";
+    },
+
+    showIcon: function(itemId) {
+        // the element selected now
+        let item = document.getElementById(itemId);
+        let ideaIcon = item.querySelector(".item__icon");
+
+        ideaIcon.classList.add("icon__visible");
+    },
+
+    hideIcon: function() {
+        // the latest selected item
+        let itemSelected = document.getElementById(model.selectedItemId);
+        let ideaIcon = itemSelected.querySelector(".item__icon");
+        
+        ideaIcon.classList.remove("icon__visible");
+    },
+}
 
 // modal
 
@@ -60,6 +125,7 @@ Modal.prototype.showCreateBtn = function() {
     this.updateBtn.classList.add("hidden");
 }
 
+// show update btn, hide create btn
 Modal.prototype.showUpdateBtn = function() {
     this.updateBtn.classList.remove("hidden");
     this.createBtn.classList.add("hidden");
@@ -77,6 +143,7 @@ Modal.prototype.clear = function() {
 
 let elemModal = new Modal("modal-element", "create-elem-btn", "update-elem-btn");
 
+// shows that image isn't selected yet
 elemModal.setPreviewImgtoBlank = function() {
     let previewImg = document.getElementById("modal-load-img");
 
@@ -84,10 +151,17 @@ elemModal.setPreviewImgtoBlank = function() {
     previewImg.classList.add("blank");
 }
 
+// removes default icon when image is selected
 elemModal.removeBlankClass = function() {
     let previewImg = document.getElementById("modal-load-img");
 
     previewImg.classList.remove("blank");
+}
+
+elemModal.fillImg = function() {
+    let previewImg = document.getElementById("modal-load-img");
+
+    // previewImg.src = 
 }
 
 let newElemBtn = document.getElementById("new-element");
@@ -172,7 +246,52 @@ closeNoteModalBtn.addEventListener("click", function() {
     noteModal.clear();
 });
 
-// element constuctor
+// item constructor
+
+function Item() {
+    selected: false;
+}
+
+// select item onclick
+Item.prototype.selectItem = function(itemId, itemType) {
+    // the element selected now
+    let item = document.getElementById(itemId);
+    let className = "";
+
+    if ((itemType == "elem") || (itemType == "note")) {
+        className = "item__selected";
+        view.showIcon(itemId);
+    }
+    else if (itemType == "line") {
+        className = "line__selected";
+    }
+
+    view.removeSelection(itemId);
+    item.classList.add(className);
+
+    model.selectedItemId = itemId; // remember id of the latest selected element
+    model.selectedType = itemType; // remember if the latest selected item was element, line or note
+
+    view.setEditDeleteBtnState();
+}
+
+Item.prototype.removeSelection = function() {
+    // ...
+}
+
+// draggableItem constructor
+
+function draggableItem() {
+    // ...
+}
+
+draggableItem.prototype = new Item();
+
+draggableItem.prototype.dragItem = function() {
+    // ...
+}
+
+// element constructor
 
 function Element(id, img, title, x, y) {
     this.id = id;
@@ -182,7 +301,36 @@ function Element(id, img, title, x, y) {
     this.y = y;
 }
 
-Element.prototype.selected = false;
+Element.prototype = new draggableItem();
+
+// Element.prototype.selected = false;
+
+// connection constructor
+
+function Connection(id, title, elemId1, elemId2, x1, y1, x2, y2) {
+    this.id = id;
+    this. title = title;
+    this.elemId1 = elemId1;
+    this.elemId2 = elemId2;
+    this.x1 = x1;
+    this.y1 = y1;
+    this.x2 = x2;
+    this.y2 = y2;
+}
+
+Connection.prototype = new Item();
+
+// note constructor
+
+function Note(id, title, text, x, y) {
+    this.id = id;
+    this.title = title;
+    this.text = text;
+    this.x = x;
+    this.y = y;
+}
+
+Note.prototype = new draggableItem();
 
 let draggableElements = document.getElementsByClassName("element");
 
@@ -233,9 +381,6 @@ function dragElement(elem, i, itemType) {
             // определим id элемента, который мы передвигаем
             console.log(draggableElements[i].id);
 
-            // function to select the element
-            selectItem(draggableElements[i].id, "elem");
-
             // edit element's coordinates in db
             editItem("elements", draggableElements[i].id, "x", elem.style.left);
             editItem("elements", draggableElements[i].id, "y", elem.style.top);
@@ -250,9 +395,6 @@ function dragElement(elem, i, itemType) {
         }
         else if (itemType == "note") {
             console.log(draggableNotes[i].id);
-
-            // function to select the element
-            selectItem(draggableNotes[i].id, "note");
 
             // edit element's coordinates in db
             editItem("notes", draggableNotes[i].id, "x", elem.style.left);
@@ -387,107 +529,18 @@ function ifSelectedItemExists() {
 }
 
 // set edit and delete buttons to disabled by default
-ifSelectedItemExists();
-
-// select item onclick/onmove
-
-function selectItem(itemId, itemType) {
-
-    // the element selected now
-    let item = document.getElementById(itemId);
-    let ideaIcon = item.querySelector(".item__icon");
-    // latest selected element
-    let itemSelected = document.getElementById(model.selectedItemId);
-    
-    let className = "";
-
-    if ((itemType == "elem") || (itemType == "note")) {
-        className = "item__selected";
-    }
-    else if (itemType == "line") {
-        className = "line__selected";
-    }
-
-    // if the item clicked just now is not selected already, we need to remove previous item's selection
-    if (model.selectedItemId != "") {
-        let ideaIconSelected = itemSelected.querySelector(".item__icon");
-        if (model.selectedType != itemType) {
-            // if previously selected item has deifferent type
-            if (itemType == "elem") {
-                if (model.selectedType == "line") {
-                    itemSelected.classList.remove("line__selected");
-                }
-                else if (model.selectedType == "note") {
-                    itemSelected.classList.remove("item__selected");
-                    ideaIconSelected.classList.remove("icon__visible");
-                }
-            }
-            else if (itemType == "line") {
-                if (model.selectedType == "elem") {
-                    itemSelected.classList.remove("item__selected");
-                }
-                else if (model.selectedType == "note") {
-                    itemSelected.classList.remove("item__selected");
-                }
-                ideaIconSelected.classList.remove("icon__visible");
-            }
-            else if (itemType == "note") {
-                if (model.selectedType == "elem") {
-                    itemSelected.classList.remove("item__selected");
-                    ideaIconSelected.classList.remove("icon__visible");
-                }
-                else if (model.selectedType == "line") {
-                    itemSelected.classList.remove("line__selected");
-                }
-            }
-        }
-        else {
-            itemSelected.classList.remove(className);
-            ideaIconSelected.classList.remove("icon__visible");
-        }
-    }
-
-    if ((itemType == "elem") || (itemType == "note")) {
-        item.classList.add(className);
-        ideaIcon.classList.add("icon__visible");
-    }
-    else if (itemType == "line") {
-        item.classList.add(className);
-    }
-
-    model.selectedItemId = itemId; // remember id of the latest selected element
-    model.selectedType = itemType; // remember if the latest selected item was element or line
-
-    ifSelectedItemExists();
-}
+view.setEditDeleteBtnState();
 
 // area that doesn't include svg lines
 let background = document.getElementById("background");
 
 background.addEventListener("click", function() {
     if (model.selectedItemId != "") {
-        removeSelection();
+        view.removeSelection();
     }
 
-    ifSelectedItemExists();
+    view.setEditDeleteBtnState();
 });
-
-function removeSelection() {
-    // latest selected item
-    let itemSelected = document.getElementById(model.selectedItemId);
-    let ideaIcon = itemSelected.querySelector(".item__icon");
-
-    if ((model.selectedType == "elem") || (model.selectedType == "note")) {
-        itemSelected.classList.remove("item__selected");
-        ideaIcon.classList.remove("icon__visible");
-    }
-    else if (model.selectedType == "line") {
-        itemSelected.classList.remove("line__selected");
-    }
-
-    model.selectedItemId = "";
-    model.selectedType = "";
-}
 
 // eventlistener to disable option if it's already selected in another dropdown
 
@@ -638,7 +691,10 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     line.setAttribute("y2", y2);
     line.setAttribute("stroke", "black");
 
-    line.onclick = function onclick(event) {selectItem(line.id, "line")};
+    line.onclick = function onclick(event) {conn.selectItem(line.id, "line")};
+
+    let conn = new Connection(line.id, inputValueConnection, divId1, divId2, x1, y1, x2, y2);
+    model.lines.push(conn);
 
     createLineObj(line.id, inputValueConnection, divId1, divId2);
 
@@ -710,7 +766,7 @@ function getElemCenterCoordinates(id) {
 
 // object "elements" contains information about each element's id and title
 
-let elements = new Object();
+let elements = {};
 
 function createElemObj(elemId, title) {
     elements[elemId] = {
@@ -721,7 +777,7 @@ function createElemObj(elemId, title) {
 
 // object "lines" contains information about which elements connected to which lines
 
-let lines = new Object();
+let lines = {};
 
 // creates child objects in "lines"
 
@@ -739,7 +795,7 @@ function createLineObj(lineId, title, divId1, divId2) {
 
 // object "notes"
 
-let notes = new Object();
+let notes = {};
 
 function createNoteObj(noteId, title, text) {
     notes[noteId] = {
@@ -1034,6 +1090,8 @@ function newElement(id, title, src, x, y, createFrom) {
                 elem.id = "elem" + divNum;
             }
 
+            div.onclick = function onclick(event) {element.selectItem(div.id, "elem")};
+
             document.getElementById(div.id).appendChild(elem);
 
             // add element's image
@@ -1095,6 +1153,9 @@ function newElement(id, title, src, x, y, createFrom) {
         }
 
         createElemObj(div.id, elem_title.innerHTML);
+
+        let element = new Element(div.id, elem_title.innerHTML, src, div.style.left, div.style.top);
+        model.elements.push(element);
     }
     check();
 }
@@ -1330,10 +1391,10 @@ function previewFile() {
   
     if (file) {
         reader.readAsDataURL(file);
-        removeBlankClass();
+        elemModal.removeBlankClass();
     }
     else {
-        setPreviewImgtoBlank();
+        elemModal.setPreviewImgtoBlank();
     }
 }
 
@@ -1529,6 +1590,8 @@ function newNote(id, title, text, x, y, createFrom) {
         div.style.left = windowWidth / 2 - elementWidth / 2 + "px";
     }
 
+    div.onclick = function onclick(event) {note.selectItem(div.id, "note")};
+
     // put new div to container class
     document.getElementsByClassName("notes__container")[0].appendChild(div);
 
@@ -1583,6 +1646,9 @@ function newNote(id, title, text, x, y, createFrom) {
     else {
         addNoteToDB(div.id, note_title.innerHTML, note_text.innerHTML, div.style.left, div.style.top);
     }
+
+    let note = new Note(div.id, note_title.innerHTML, note_text.innerHTML, div.style.left, div.style.top);
+    model.lines.push(note);
 
     createNoteObj(div.id, note_title.innerHTML, note_text.innerHTML);
 }
@@ -1868,6 +1934,7 @@ clearDbButton.addEventListener("click", function() {
         // delete items from db
         deleteItems("elements");
         deleteItems("lines");
+        deleteItems("notes");
         // reload the page
         document.location.reload();
     }
