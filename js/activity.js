@@ -136,7 +136,7 @@ Modal.prototype.showUpdateBtn = function() {
 Modal.prototype.clear = function() {
     this.window.querySelector(".modal__input").value = "";
     if (this.window.querySelector(".modal__message") != null) {
-        this.window.querySelector(".modal__message").value = "";
+        this.window.querySelector(".modal__message").innerHTML = "";
     }
 }
 
@@ -159,10 +159,15 @@ elemModal.removeBlankClass = function() {
     previewImg.classList.remove("blank");
 }
 
-elemModal.fillImg = function() {
+elemModal.fillInputs = function() {
     let previewImg = document.getElementById("modal-load-img");
+    let titleInput = document.getElementById("modal-input");
 
-    // previewImg.src = 
+    let img = findObjValue(model.elements, "img");
+    let title = findObjValue(model.elements, "title");
+
+    previewImg.src = img;
+    titleInput.value = title;
 }
 
 let newElemBtn = document.getElementById("new-element");
@@ -175,9 +180,9 @@ newElemBtn.addEventListener("click", function() {
 let closeElemModalBtn = document.getElementById("close-btn");
 
 closeElemModalBtn.addEventListener("click", function() {
-    elemModal.close();
     elemModal.clear();
     elemModal.setPreviewImgtoBlank();
+    elemModal.close();
 });
 
 // connection modal window
@@ -213,6 +218,21 @@ connModal.clearSelectOptions = function() {
     }
 }
 
+connModal.fillInputs = function() {
+    let titleInput = document.getElementById("modal-connection-title");
+
+    let elemId1 = findObjValue(model.lines, "elemId1");
+    let elemId2 = findObjValue(model.lines, "elemId2");
+    let title = findObjValue(model.lines, "title");
+
+    let elemTitle1 = findObjValueByKeyValue(model.elements, "id", elemId1, "title");
+    let elemTitle2 = findObjValueByKeyValue(model.elements, "id", elemId2, "title");
+
+    selectFirstElement.value = elemTitle1;
+    selectSecondElement.value = elemTitle2;
+    titleInput.value = title;
+}
+
 let newConnBtn = document.getElementById("new-connection");
 
 newConnBtn.addEventListener("click", function() {
@@ -224,14 +244,25 @@ newConnBtn.addEventListener("click", function() {
 let closeConnModalBtn = document.getElementById("close-btn-connection");
 
 closeConnModalBtn.addEventListener("click", function() {
-    connModal.close();
     connModal.clear();
     connModal.clearSelectOptions();
+    connModal.close();
 });
 
 // note modal window
 
 let noteModal = new Modal("modal-note", "create-note-btn", "update-note-btn");
+
+noteModal.fillInputs = function() {
+    let titleInput = document.getElementById("modal-note-title");
+    let textInput = document.getElementById("modal-note-text");
+
+    let title = findObjValue(model.notes, "title");
+    let text = findObjValue(model.notes, "text");
+
+    titleInput.value = title;
+    textInput.value = text;
+}
 
 let newNoteBtn = document.getElementById("new-note");
 
@@ -243,8 +274,8 @@ newNoteBtn.addEventListener("click", function() {
 let closeNoteModalBtn = document.getElementById("close-btn-note");
 
 closeNoteModalBtn.addEventListener("click", function() {
-    noteModal.close();
     noteModal.clear();
+    noteModal.close();
 });
 
 // item constructor
@@ -294,10 +325,10 @@ draggableItem.prototype.dragItem = function() {
 
 // element constructor
 
-function Element(id, img, title, x, y) {
+function Element(id, title, img, x, y) {
     this.id = id;
-    this.img = img;
     this.title = title;
+    this.img = img;
     this.x = x;
     this.y = y;
 }
@@ -484,36 +515,43 @@ editBtn.addEventListener("click", function() {
     // open modal for editing selected item
     if (model.selectedType == "elem") {
         elemModal.open();
+        elemModal.fillInputs();
+        elemModal.removeBlankClass();
         elemModal.showUpdateBtn();
     }
     else if (model.selectedType == "line") {
         connModal.open();
         connModal.fillSelectOptions();
+        disableUnavalilableSelectOptions("first");
+        disableUnavalilableSelectOptions("second");
+        connModal.fillInputs();
         connModal.showUpdateBtn();
     }
     else if (model.selectedType == "note") {
         noteModal.open();
+        noteModal.fillInputs();
         noteModal.showUpdateBtn();
     }
 });
 
 deleteBtn.addEventListener("click", function() {
     // delete item
-    if (selectedType == "elem") {
-        deleteElement(selectedItemId);
+    if (model.selectedType == "elem") {
+        deleteElement(model.selectedItemId);
     }
-    else if (selectedType == "line") {
-        let id = selectedItemId.slice(4);
-        deleteLineObject(lines["line" + id], "line" + id);
+    else if (model.selectedType == "line") {
+        let id = model.selectedItemId.slice(4);
+        let key = findObjKey(model.lines, "line" + id);
+        deleteLineObject(model.lines[key], "line" + id);
         deleteConnection("line" + id);
-        deleteLineTitle("text" + id);
+        deleteLineTitle("line" + id);
     }
-    else if (selectedType == "note") {
-        deleteNote(selectedItemId);
+    else if (model.selectedType == "note") {
+        deleteNote(model.selectedItemId);
     }
 
-    selectedItemId = "";
-    selectedType = "";
+    model.selectedItemId = "";
+    model.selectedType = "";
 });
 
 // set edit and delete buttons to disabled by default
@@ -559,7 +597,7 @@ function disableUnavalilableSelectOptions(select) {
         elemTitle = secondElement.value;
     }
 
-    let elemId = findElemObjValue(elemTitle, "id");
+    let elemId = findObjValueByKeyValue(model.elements, "title", elemTitle, "id");
     let titleArr = createArrayOfTitles(elemId);
     
     for (let i = 1; i < elems.length; i++) {
@@ -585,12 +623,12 @@ function createArrayOfIds(elemId) {
     let idArr = [];
 
     for (let i = 0; i <= lineNumber; i++) {
-        for (let key in lines["line" + i]) {
-            if (((lines["line" + i])[key] == elemId) && (key == "elemId1")) {
-                idArr.push((lines["line" + i])["elemId2"]);
+        for (let key in model.lines[i]) {
+            if (((model.lines[i])[key] == elemId) && (key == "elemId1")) {
+                idArr.push((model.lines[i])["elemId2"]);
             }
-            else if (((lines["line" + i])[key] == elemId) && (key == "elemId2")) {
-                idArr.push((lines["line" + i])["elemId1"]);
+            else if (((model.lines[i])[key] == elemId) && (key == "elemId2")) {
+                idArr.push((model.lines[i])["elemId1"]);
             }
         }
     }
@@ -607,7 +645,7 @@ function createArrayOfTitles(elemId) {
     let idArr = createArrayOfIds(elemId);
 
     for (let i = 0; i < idArr.length; i++) {
-        let title = findElemObjValue(idArr[i], "title");
+        let title = findObjValueByKeyValue(model.elements, "id", idArr[i], "title");
         titleArr.push(title);
     }
 
@@ -684,8 +722,6 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     let conn = new Connection(line.id, inputValueConnection, divId1, divId2, x1, y1, x2, y2);
     model.lines.push(conn);
 
-    createLineObj(line.id, inputValueConnection, divId1, divId2);
-
     document.getElementsByTagName('svg')[0].appendChild(line);
 
     // create text tag for line's title
@@ -702,6 +738,7 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
 
     // clear input and close modal window if new connection is created
     connModal.clear();
+    connModal.clearSelectOptions();
     connModal.close();
 }
 
@@ -752,47 +789,6 @@ function getElemCenterCoordinates(id) {
     return [x, y];
 }
 
-// object "elements" contains information about each element's id and title
-
-let elements = {};
-
-function createElemObj(elemId, title) {
-    elements[elemId] = {
-        id: elemId,
-        title: title
-    };
-}
-
-// object "lines" contains information about which elements connected to which lines
-
-let lines = {};
-
-// creates child objects in "lines"
-
-function createLineObj(lineId, title, divId1, divId2) {
-
-    // child object
-
-    lines[lineId] = {
-        id: lineId,
-        title: title,
-        elemId1: divId1,
-        elemId2: divId2
-    };
-}
-
-// object "notes"
-
-let notes = {};
-
-function createNoteObj(noteId, title, text) {
-    notes[noteId] = {
-        id: noteId,
-        title: title,
-        text: text
-    };
-}
-
 // finds all identifiers of lines which are connected to the draggable element
 
 function findLineId(draggableElementId, elem, action) {
@@ -803,22 +799,24 @@ function findLineId(draggableElementId, elem, action) {
     for (let i = 0; i <= lineNumber; i++) {
         //showDivs(lines["line" + i], "lines.line" + i);
 
-        for (let key in lines["line" + i]) {
+        for (let key in model.lines[i]) {
             // console.log("lines.line" + i + "." + key + " = " + (lines["line" + i])[key]);
-            if ((lines["line" + i])[key] == draggableElementId) {
-                // console.log("key = " + key);
-                // console.log("lineId = line" + i);
+
+            if ((model.lines[i])[key] == draggableElementId) {
+                // console.log("key = " + i);
+                // console.log("innerKey = " + key);
+                // console.log("lineId = " + model.lines[i].id);
+                lineId = model.lines[i].id;
                 if (action == 'find') {
-                    lineId = "line" + i;
                     lineArr.push(lineId);
                 }
                 else if (action == 'move') {
-                    moveLines("line" + i, elem, key);
+                    moveLines(lineId, elem, key);
                 }
                 else if (action == 'delete') {
-                    deleteLineObject(lines["line" + i], "line" + i);
-                    deleteConnection("line" + i);
-                    deleteLineTitle("text" + i);
+                    deleteLineObject(model.lines[i], lineId);
+                    deleteConnection(lineId);
+                    deleteLineTitle(lineId);
                     // if the line is connected to the deleted element at the start point (divId1), we don't need to read the key (elemId2) that defines the element to which the line is connected at the end point (divId2)
                     break;
                 }
@@ -905,104 +903,31 @@ function changeLineCoordinates(lineArr) {
     }
 }
 
-function fillElementInputs(selectedItemId) {
-
-    let previewImg = document.getElementById("modal-load-img");
-    let titleInput = document.getElementById("modal-input");
-
-    let img = getImgSrc(selectedItemId);
-    let title = getTitle(selectedItemId);
-
-    previewImg.src = img;
-    titleInput.value = title;
-}
-
-function fillConnectionInputs(selectedItemId) {
-
-    let firstElement = document.getElementById("modal-elem1");
-    let secondElement = document.getElementById("modal-elem2");
-    let titleInput = document.getElementById("modal-connection-title");
-
-    let select1 = getSelectTitle(selectedItemId, "elemId1");
-    let select2 = getSelectTitle(selectedItemId, "elemId2");
-    let title = findLineObjValue(selectedItemId, "title");
-
-    firstElement.value = select1;
-    secondElement.value = select2;
-    titleInput.value = title;
-}
-
-function fillNotesInputs(selectedItemId) {
-    let titleInput = document.getElementById("modal-note-title");
-    let textInput = document.getElementById("modal-note-text");
-
-    let title = findNoteObjValue(selectedItemId, "title");
-    let text = findNoteObjValue(selectedItemId, "text");
-
-    titleInput.value = title;
-    textInput.value = text;
-}
-
-function getImgSrc(elemId) {
-
-    let item = document.getElementById(elemId);
-    let imgSrc = item.querySelector(".element__img").src;
-
-    return imgSrc;
-}
-
-function getTitle(elemId) {
-
-    let item = document.getElementById(elemId);
-
-    let titleValue = item.querySelector(".element__title").innerHTML;
-
-    return titleValue;
-}
-
-function getSelectTitle(selectedItemId, elemIdNumber) {
-
-    let elemId = findLineObjValue(selectedItemId, elemIdNumber);
-
-    let title = getTitle(elemId);
-
-    return title;
-}
-
-function findElemObjValue(keyValue, keyName) {
-    for (let i = 0; i <= divNumber; i++) {
-        for (let key in elements["div" + i]) {
-            if ((elements["div" + i])[key] == keyValue) {
-                let value = (elements["div" + i])[keyName];
-
-                return value;
-            }
+function findObjValue(obj, keyName) {
+    for (let key in obj) {
+        if (obj[key].id == model.selectedItemId) {
+            return((obj[key])[keyName]);
         }
-    } 
+    }
 }
 
-function findLineObjValue(id, valueName) {
+// finds searchKey's value with knownKey and knownValue
+function findObjValueByKeyValue(obj, knownKey, knownValue, searchKey) {
+    for (let key in obj) {
+        if ((obj[key])[knownKey] == knownValue) {
+            return((obj[key])[searchKey]);
+        }
+    }
+}
+
+function findObjKey(obj, keyValue) {
     for (let i = 0; i <= lineNumber; i++) {
-        for (let key in lines["line" + i]) {
-            if ((lines["line" + i])[key] == id) {
-                let value = (lines["line" + i])[valueName];
-
-                return value;
+        for (let key in obj[i]) {
+            if ((obj[i])[key] == keyValue) {
+                return(i);
             }
         }
-    } 
-}
-
-function findNoteObjValue(id, valueName) {
-    for (let i = 0; i <= noteNumber; i++) {
-        for (let key in notes["note" + i]) {
-            if ((notes["note" + i])[key] == id) {
-                let value = (notes["note" + i])[valueName];
-
-                return value;
-            }
-        }
-    } 
+    }
 }
 
 // creates new element
@@ -1019,7 +944,7 @@ function newElement(id, title, src, x, y, createFrom) {
 
         let ifTitleExists = 0;
 
-        let div, elem_title;
+        let div, elem_title, img;
 
         for (let i = 0; i < draggableElements.length; i++) {
             if (document.getElementsByClassName("element__title")[i].innerHTML === inputValue) {
@@ -1084,7 +1009,7 @@ function newElement(id, title, src, x, y, createFrom) {
 
             // add element's image
 
-            let img = document.createElement("img");
+            img = document.createElement("img");
             img.className = "element__img";
             if (createFrom == "db") {
                 img.src = src;
@@ -1123,6 +1048,7 @@ function newElement(id, title, src, x, y, createFrom) {
             // clear input and close modal window if new element is created
             fileInput.value = "";
             elemModal.clear();
+            elemModal.setPreviewImgtoBlank();
             elemModal.close();
         } 
 
@@ -1140,15 +1066,11 @@ function newElement(id, title, src, x, y, createFrom) {
             addItem(div.id, elem_title.innerHTML, img.src, div.style.left, div.style.top);
         }
 
-        createElemObj(div.id, elem_title.innerHTML);
-
         let element = new Element(div.id, elem_title.innerHTML, src, div.style.left, div.style.top);
         model.elements.push(element);
     }
     check();
 }
-
-// checks if image in "new element" modal window is selected
 
 // add event listeners
 
@@ -1479,7 +1401,7 @@ function deleteLineObject(obj, lineId) {
     for (let key in obj) {
         if ((key == "id") && (obj[key] == lineId)) {
             console.log("id = " + key + " lineId = " + lineId);
-            delete lines[lineId];
+            delete model.lines[key];
         }
     }
 }
@@ -1532,7 +1454,9 @@ function defineLineTitleCoordinates(x1, y1, x2, y2, title) {
     return [x, y];
 }
 
-function deleteLineTitle(titleId) {
+function deleteLineTitle(lineId) {
+
+    let titleId = "text" + lineId.slice(4); 
     console.log("deleteLineTitleFunction");
     console.log("titleId = " + titleId);
 
@@ -1636,9 +1560,7 @@ function newNote(id, title, text, x, y, createFrom) {
     }
 
     let note = new Note(div.id, note_title.innerHTML, note_text.innerHTML, div.style.left, div.style.top);
-    model.lines.push(note);
-
-    createNoteObj(div.id, note_title.innerHTML, note_text.innerHTML);
+    model.notes.push(note);
 }
 
 let noteNumArr = [];
