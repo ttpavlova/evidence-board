@@ -33,6 +33,7 @@ let model = {
     lines: [],
     notes: [],
 
+    // checks if any item is selected
     ifSelectedItemExists: function() {
         if (this.selectedItemId != "") {
             return true;
@@ -514,19 +515,6 @@ deleteBtn.addEventListener("click", function() {
     selectedItemId = "";
     selectedType = "";
 });
-
-// add/remove disabled state to icons on toolbar
-
-function ifSelectedItemExists() {
-    if (model.selectedItemId == "") {
-        editBtn.classList.add("iconDisabled");
-        deleteBtn.classList.add("iconDisabled");
-    }
-    else {
-        editBtn.classList.remove("iconDisabled");
-        deleteBtn.classList.remove("iconDisabled");
-    } 
-}
 
 // set edit and delete buttons to disabled by default
 view.setEditDeleteBtnState();
