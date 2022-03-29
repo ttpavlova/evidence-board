@@ -140,6 +140,18 @@ Modal.prototype.clear = function() {
     }
 }
 
+// checks if text input is empty
+Modal.prototype.checkIfInputIsEmpty = function() {
+    let regex = /^[^\s]+[A-Za-z\d\s]+[^\s]$/;
+    let inputValue = this.window.querySelector(".modal__input").value;
+
+    console.log("in check " + inputValue);    
+
+    if (regex.test(inputValue)) {
+        return true;
+    }
+}
+
 // element modal window
 
 let elemModal = new Modal("modal-element", "create-elem-btn", "update-elem-btn");
@@ -168,6 +180,19 @@ elemModal.fillInputs = function() {
 
     previewImg.src = img;
     titleInput.value = title;
+}
+
+// checks if image in "new element" modal window is selected
+elemModal.checkIfImageIsSelected = function() {
+    let imgPreview = document.getElementById("modal-load-img");
+
+    if (imgPreview.classList.contains("blank")) {
+        console.log("no files selected");
+    }
+    else {
+        console.log("image is selected");
+        return true;
+    }
 }
 
 let newElemBtn = document.getElementById("new-element");
@@ -231,6 +256,19 @@ connModal.fillInputs = function() {
     selectFirstElement.value = elemTitle1;
     selectSecondElement.value = elemTitle2;
     titleInput.value = title;
+}
+
+// checks if dropdown options in "new connection" modal window are selected
+connModal.checkDropdownOptions = function() {
+    let index1 = selectFirstElement.selectedIndex;
+    let index2 = selectSecondElement.selectedIndex;
+    console.log("index1 = " + index1);
+    console.log("index2 = " + index2);
+
+    if ((index1 != 0) && (index2 != 0)) {
+        // both options are selected
+        return true;
+    }
 }
 
 let newConnBtn = document.getElementById("new-connection");
@@ -1082,69 +1120,6 @@ fileInput.addEventListener('change', function() {
     previewFile();
 });
 
-// checks if image in "new element" modal window is selected
-
-function checkIfImageIsSelected() {
-    let imgPreview = document.getElementById("modal-load-img");
-
-    if (imgPreview.classList.contains("blank")) {
-        console.log("no files selected");
-    }
-    else {
-        console.log("image is selected");
-        return true;
-    }
-}
-
-// checks if dropdown options in "new connection" modal window are selected
-
-function checkDropdownOptions() {
-
-    let selectFirstElement = document.getElementById("modal-elem1");
-    let selectSecondElement = document.getElementById("modal-elem2");
-
-    let index1 = selectFirstElement.selectedIndex;
-    let index2 = selectSecondElement.selectedIndex;
-    console.log("index1 = " + index1);
-    console.log("index2 = " + index2);
-
-    if ((index1 != 0) && (index2 != 0)) {
-        // both options are selected
-        return true;
-    }
-    else {
-        // one of options isn't selected
-    }
-}
-
-// checks if text input is empty
-
-function checkIfInputIsEmpty(inputId) {
-    
-    let regex = /^[^\s]+[A-Za-z\d\s]+[^\s]$/;
-    let inputValue = "";
-    
-    // checks which input we need to test
-
-    // new element modal window
-    if (inputId == "modal-input") {
-        inputValue = document.getElementById("modal-input").value;
-    }
-    // new connection modal window
-    else if (inputId == "modal-connection-title") {
-        inputValue = document.getElementById("modal-connection-title").value;
-    }
-
-    console.log("in check " + inputValue);    
-
-    if (regex.test(inputValue)) {
-        return true;
-    }
-    else {
-        // ...
-    }
-}
-
 // event listeners for create elements, lines and notes buttons
 
 createElemBtn.addEventListener("click", function() {
@@ -1231,11 +1206,10 @@ function updateNote() {
 
 function checkNewElementInputs() {
 
-    let message = messageInput;
-    let inputId = "modal-input";    
+    let message = messageInput;   
 
-    if (checkIfImageIsSelected()) {
-        if (checkIfInputIsEmpty(inputId)) {
+    if (elemModal.checkIfImageIsSelected()) {
+        if (elemModal.checkIfInputIsEmpty()) {
             return true;
         }
         else {
@@ -1243,7 +1217,7 @@ function checkNewElementInputs() {
         }
     }
     else {
-        if (checkIfInputIsEmpty(inputId)) {
+        if (elemModal.checkIfInputIsEmpty()) {
             message.innerHTML = "No image was selected";
         }
         else {
@@ -1256,11 +1230,10 @@ function checkNewElementInputs() {
 
 function checkNewConnectionInputs() {
 
-    let message = messageInputConnection; 
-    let inputId = "modal-connection-title";
+    let message = messageInputConnection;
 
-    if (checkDropdownOptions()) {
-        if (checkIfInputIsEmpty(inputId)) {
+    if (connModal.checkDropdownOptions()) {
+        if (connModal.checkIfInputIsEmpty()) {
             return true;
         }
         else {
@@ -1268,7 +1241,7 @@ function checkNewConnectionInputs() {
         }
     }
     else {
-        if (checkIfInputIsEmpty(inputId)) {
+        if (connModal.checkIfInputIsEmpty()) {
             message.innerHTML = "One of elements isn't selected";
         }
         else {
@@ -1623,7 +1596,7 @@ function deleteNote(noteID) {
 
 var db;
 
-var openRequest = indexedDB.open("db", 4);
+var openRequest = indexedDB.open("db", 5);
 
 openRequest.onupgradeneeded = function(e) {
     var db = e.target.result;
