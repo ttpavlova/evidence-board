@@ -42,6 +42,48 @@ let model = {
     },
 };
 
+function itemType() {
+    this.number = 0; // number of items
+    this.numArr = []; // array of numbers corresponding to items' ids
+    this.maxNumId = 0; // max number in numArr[]
+}
+
+// get id of the latest created item
+itemType.prototype.getLatestItemId = function() {
+    return this.maxNumId;
+}
+
+// count id of the latest created item
+itemType.prototype.countLatestItemId = function() {
+    if (this.numArr.length > 0) {
+        this.maxNumId = Math.max.apply(null, this.numArr);
+        console.log(this.maxNumId);
+    }
+}
+
+// update array of ids when new item is created
+itemType.prototype.addIdToArray = function(id) {
+    this.numArr.push(id.toString());
+    // update max id
+    this.countLatestItemId();
+}
+
+// remove id from array when item is deleted
+itemType.prototype.removeIdFromArray = function(id) {
+    let index = this.numArr.indexOf(id);
+
+    if (index > -1) {
+        this.numArr.splice(index, 1);
+    }
+
+    // update max id
+    this.countLatestItemId();
+}
+
+let elements = new itemType();
+let lines = new itemType();
+let notes = new itemType();
+
 let view = {
     // disable edit and delete buttons on toolbar when nothing is selected
     setEditDeleteBtnState: function() {
@@ -407,7 +449,7 @@ closeNoteModalBtn.addEventListener("click", function() {
 // item constructor
 
 function Item() {
-    selected: false;
+    // selected: false;
 }
 
 // select item onclick
@@ -543,8 +585,6 @@ function dragElement(elem, i, itemType) {
             editItem("elements", draggableElements[i].id, "x", elem.style.left);
             editItem("elements", draggableElements[i].id, "y", elem.style.top);
 
-            console.log("lineNumber = " + lineNumber);
-
             // lineArr stores identifiers of the lines connected to the draggable element 
             let lineArr = findLineId(draggableElements[i].id, elem, 'find');
 
@@ -577,10 +617,6 @@ let modalWindowNote = document.getElementById("modal-note");
 let closeBtn = document.querySelector("modal__close");
 
 let messageInput = document.getElementById("message-elem");
-
-let divNumber = 0;
-let lineNumber = 0;
-let noteNumber = 0;
 
 // toolbar
 
@@ -747,7 +783,7 @@ function createArrayOfIds(elemId) {
 
     let idArr = [];
 
-    for (let i = 0; i <= lineNumber; i++) {
+    for (let i = 0; i <= lines.maxNumId; i++) {
         for (let key in model.lines[i]) {
             if (((model.lines[i])[key] == elemId) && (key == "elemId1")) {
                 idArr.push((model.lines[i])["elemId2"]);
@@ -802,7 +838,7 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
         y2 = line_y2;
 
         // update array of lines' id
-        findLatestLineID(lineId.slice(4), "db");
+        lines.addIdToArray(lineId.slice(4));
 
         line.id = lineId;
 
@@ -821,7 +857,9 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
         [x1, y1] = getElemCenterCoordinates(divId1);
         [x2, y2] = getElemCenterCoordinates(divId2);
 
-        linesNum = findLatestLineID();
+        linesNum = lines.getLatestItemId();
+        linesNum++;
+        lines.addIdToArray(linesNum);
 
         line.id = "line" + linesNum;
 
@@ -921,7 +959,7 @@ function findLineId(draggableElementId, elem, action) {
     let lineId = "";
     let lineArr = [];
 
-    for (let i = 0; i <= lineNumber; i++) {
+    for (let i = 0; i <= lines.maxNumId; i++) {
         //showDivs(lines["line" + i], "lines.line" + i);
 
         for (let key in model.lines[i]) {
@@ -1046,7 +1084,7 @@ function findObjValueByKeyValue(obj, knownKey, knownValue, searchKey) {
 }
 
 function findObjKey(obj, keyValue) {
-    for (let i = 0; i <= lineNumber; i++) {
+    for (let i = 0; i <= lines.maxNumId; i++) {
         for (let key in obj[i]) {
             if ((obj[i])[key] == keyValue) {
                 return(i);
@@ -1061,6 +1099,7 @@ function newElement(id, title, src, x, y, createFrom) {
 
     let divNum = 0;
 
+    let imgPreview = document.getElementById("modal-load-img");
     let inputValue = document.getElementById("modal-input").value;
 
     console.log("submit" + inputValue);
@@ -1089,12 +1128,16 @@ function newElement(id, title, src, x, y, createFrom) {
             if (createFrom == "db") {
                 // if we load data from db
                 // update array of elements' id
-                findLatestDivId(id.slice(3), "db");
+                elements.addIdToArray(id.slice(3));
+
                 // define id
                 div.id = "div" + id.slice(3);
             }
-            else {
-                divNum = findLatestDivId();
+            else {               
+                divNum = elements.getLatestItemId();
+                divNum++;
+                elements.addIdToArray(divNum);
+
                 // define id
                 div.id = "div" + divNum;
             }
@@ -1167,8 +1210,6 @@ function newElement(id, title, src, x, y, createFrom) {
             }
 
             document.getElementById(div.id).appendChild(elem_title);
-
-            // console.log(divNumber);
 
             // clear input and close modal window if new element is created
             fileInput.value = "";
@@ -1279,57 +1320,18 @@ function updateNote() {
     editItem("notes", selectedItemId, "text", textInput);
 }
 
-// find latest div's id
-
-const divNumArr = [];
-
-function findLatestDivId(divId, createdFrom) {
-
-    if (createdFrom == "db") {
-        divNumArr.push(divId);
-        // update max id from elements' array
-        divNumber = Math.max.apply(null, divNumArr);
-        // console.log("divNumber = " + divNumber);
-    }
-    else {
-        if (draggableElements.length == 0) {
-            divNumber = 1;
-            console.log("divNumber = " + divNumber);
-        }
-        else {
-            divNumber = Math.max.apply(null, divNumArr);
-            divNumber++;
-            divNumArr.push(divNumber.toString());
-            console.log("divNumber = " + divNumber);
-        }
-    }
-
-    return divNumber;
-}
-
 function deleteElement(divId) {
 
     // find lines connected to this element and delete them
-
     findLineId(divId, "", 'delete');
 
     // delete id from array of all elements
-    let number = divId.slice(3);
-
-    const index = divNumArr.indexOf(number);
-
-    if (index > -1) {
-        divNumArr.splice(index, 1);
-    }
-
-    // delete the element
-
-    console.log("deleteFunction");
-    console.log("divId = " + divId);
+    elements.removeIdFromArray(divId.slice(3));
 
     // delete data from db
     deleteItem("elements", divId);
 
+    // delete the element
     let elem = document.getElementById(divId);
     elem.parentNode.removeChild(elem);
 
@@ -1337,35 +1339,6 @@ function deleteElement(divId) {
     for (let i = 0; i < draggableElements.length; i++) {
         dragElement(draggableElements[i], i, "element");
     }
-}
-
-// find latest line's id
-
-let lineNumArr = [];
-
-function findLatestLineID(lineId, createdFrom) {
-    let linesAll = document.getElementsByTagName("line");
-
-    if (createdFrom == "db") {
-        lineNumArr.push(lineId);
-        // update max id from lines' array
-        lineNumber = Math.max.apply(null, lineNumArr);
-        // console.log("lineNumber = " + lineNumber);
-    }
-    else {
-        if (linesAll.length == 0) {
-            lineNumber = 1;
-            console.log("lineNumber = " + lineNumber);
-        }
-        else {
-            lineNumber = Math.max.apply(null, lineNumArr);
-            lineNumber++;
-            lineNumArr.push(lineNumber.toString());
-            console.log("lineNumber = " + lineNumber);
-        }
-    }
-
-    return lineNumber;
 }
 
 function deleteLineObject(obj, lineId) {
@@ -1380,16 +1353,7 @@ function deleteLineObject(obj, lineId) {
 function deleteConnection(lineId) {
 
     // delete id from array of all lines
-    let number = lineId.slice(4);
-
-    const index = lineNumArr.indexOf(number);
-
-    if (index > -1) {
-        lineNumArr.splice(index, 1);
-    }
-
-    console.log("deleteConnectionFunction");
-    console.log("lineId = " + lineId);
+    lines.removeIdFromArray(lineId.slice(4));
 
     // delete data from db
     deleteItem("lines", lineId);
@@ -1449,12 +1413,16 @@ function newNote(id, title, text, x, y, createFrom) {
     if (createFrom == "db") {
         // if we load data from db
         // update array of elements' id
-        findLatestNoteID(id.slice(4), "db");
+        notes.addIdToArray(id.slice(4));
+
         // define id
         div.id = "note" + id.slice(4);
     }
     else {
-        noteNum = findLatestNoteID();
+        noteNum = notes.getLatestItemId();
+        noteNum++;
+        notes.addIdToArray(noteNum);
+
         div.id = "note" + noteNum;
     }
 
@@ -1534,54 +1502,16 @@ function newNote(id, title, text, x, y, createFrom) {
     model.notes.push(note);
 }
 
-let noteNumArr = [];
-
-function findLatestNoteID(noteID, createdFrom) {
-
-    if (createdFrom == "db") {
-        noteNumArr.push(noteID);
-        // update max id from notes' array
-        noteNumber = Math.max.apply(null, noteNumArr);
-    }
-    else {
-        if (draggableNotes.length == 0) {
-            noteNumber = 1;
-            noteNumArr.push(noteNumber.toString());
-            console.log("noteNumber = " + noteNumber);
-        }
-        else {
-            noteNumber = Math.max.apply(null, noteNumArr);
-            console.log("noteNumber = " + noteNumber);
-            noteNumber++;
-            noteNumArr.push(noteNumber.toString());
-            console.log("noteNumber = " + noteNumber);
-            console.log(noteNumArr);
-        }
-    }
-
-    return noteNumber;
-}
-
-function deleteNote(noteID) {
+function deleteNote(noteId) {
 
     // delete id from array of all notes
-    let number = noteID.slice(4);
-
-    const index = noteNumArr.indexOf(number);
-
-    if (index > -1) {
-        noteNumArr.splice(index, 1);
-    }
-
-    // delete the note
-
-    console.log("deleteFunction");
-    console.log("noteId = " + noteID);
+    notes.removeIdFromArray(noteId.slice(4));
 
     // delete data from db
-    deleteItem("notes", noteID);
+    deleteItem("notes", noteId);
 
-    let note = document.getElementById(noteID);
+    // delete the note
+    let note = document.getElementById(noteId);
     note.parentNode.removeChild(note);
 
     // calling drag function again after deleting a div
