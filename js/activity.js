@@ -140,8 +140,8 @@ Modal.prototype.clear = function() {
     }
 }
 
-// checks if text input is empty
-Modal.prototype.checkIfInputIsEmpty = function() {
+// checks if text input is valid
+Modal.prototype.inputIsValid = function() {
     let regex = /^[^\s]+[A-Za-z\d\s]+[^\s]$/;
     let inputValue = this.window.querySelector(".modal__input").value;
 
@@ -171,6 +171,26 @@ elemModal.removeBlankClass = function() {
     previewImg.classList.remove("blank");
 }
 
+// adds a file preview and representes the file's data as a base64 encoded string
+elemModal.previewFile = function() {
+    let previewImg = document.getElementById("modal-load-img");
+    let file = document.getElementById("modal-load-file").files[0];
+    let reader = new FileReader();
+  
+    reader.onloadend = function () {
+        previewImg.src = reader.result;
+    }
+  
+    if (file) {
+        reader.readAsDataURL(file);
+        elemModal.removeBlankClass();
+    }
+    else {
+        elemModal.setPreviewImgtoBlank();
+    }
+}
+
+// fills inputs with data from db
 elemModal.fillInputs = function() {
     let previewImg = document.getElementById("modal-load-img");
     let titleInput = document.getElementById("modal-input");
@@ -182,8 +202,8 @@ elemModal.fillInputs = function() {
     titleInput.value = title;
 }
 
-// checks if image in "new element" modal window is selected
-elemModal.checkIfImageIsSelected = function() {
+// checks if image is selected
+elemModal.imageIsSelected = function() {
     let imgPreview = document.getElementById("modal-load-img");
 
     if (imgPreview.classList.contains("blank")) {
@@ -192,6 +212,35 @@ elemModal.checkIfImageIsSelected = function() {
     else {
         console.log("image is selected");
         return true;
+    }
+}
+
+// checks if inputs are valid
+elemModal.allInputsAreValid = function() {
+    if (elemModal.imageIsSelected() && elemModal.inputIsValid()) {
+        return true;
+    }
+    else {
+        elemModal.showErrorMessages();
+    }
+}
+
+// shows error message that explains which input is empty or incorrect
+elemModal.showErrorMessages = function() {
+    let message = document.getElementById("message-elem");
+
+    if (elemModal.imageIsSelected()) {
+        if (!elemModal.inputIsValid()) {
+            message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
+        }
+    }
+    else {
+        if (elemModal.inputIsValid()) {
+            message.innerHTML = "No image was selected";
+        }
+        else {
+            message.innerHTML = "All fields must contain data";
+        }
     }
 }
 
@@ -243,6 +292,7 @@ connModal.clearSelectOptions = function() {
     }
 }
 
+// fills inputs with data from db
 connModal.fillInputs = function() {
     let titleInput = document.getElementById("modal-connection-title");
 
@@ -258,16 +308,43 @@ connModal.fillInputs = function() {
     titleInput.value = title;
 }
 
-// checks if dropdown options in "new connection" modal window are selected
-connModal.checkDropdownOptions = function() {
+// checks if dropdown options are selected
+connModal.dropdownOptionsAreSelected = function() {
     let index1 = selectFirstElement.selectedIndex;
     let index2 = selectSecondElement.selectedIndex;
-    console.log("index1 = " + index1);
-    console.log("index2 = " + index2);
 
     if ((index1 != 0) && (index2 != 0)) {
         // both options are selected
         return true;
+    }
+}
+
+// checks if inputs are valid
+connModal.allInputsAreValid = function() {
+    if (connModal.dropdownOptionsAreSelected() && connModal.inputIsValid()) {
+        return true;
+    }
+    else {
+        connModal.showErrorMessages();
+    }
+}
+
+// shows error message that explains which input is empty or incorrect
+connModal.showErrorMessages = function() {
+    let message = document.getElementById("message-conn");
+
+    if (connModal.dropdownOptionsAreSelected()) {
+        if (!connModal.inputIsValid()) {
+            message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
+        }
+    }
+    else {
+        if (connModal.inputIsValid()) {
+            message.innerHTML = "One of elements isn't selected";
+        }
+        else {
+            message.innerHTML = "All fields must contain data";
+        }
     }
 }
 
@@ -291,6 +368,7 @@ closeConnModalBtn.addEventListener("click", function() {
 
 let noteModal = new Modal("modal-note", "create-note-btn", "update-note-btn");
 
+// fills inputs with data from db
 noteModal.fillInputs = function() {
     let titleInput = document.getElementById("modal-note-title");
     let textInput = document.getElementById("modal-note-text");
@@ -300,6 +378,16 @@ noteModal.fillInputs = function() {
 
     titleInput.value = title;
     textInput.value = text;
+}
+
+// checks if inputs are empty
+noteModal.inputsAreEmpty = function() {
+    let titleInput = document.getElementById("modal-note-title").value;
+    let textInput = document.getElementById("modal-note-text").value;
+
+    if ((titleInput == "") && (textInput == "")) {
+        return true;
+    }
 }
 
 let newNoteBtn = document.getElementById("new-note");
@@ -488,8 +576,7 @@ let modalWindowNote = document.getElementById("modal-note");
 
 let closeBtn = document.querySelector("modal__close");
 
-let messageInput = document.getElementById("message-input");
-let messageInputConnection = document.getElementById("message-input-connection");
+let messageInput = document.getElementById("message-elem");
 
 let divNumber = 0;
 let lineNumber = 0;
@@ -1113,58 +1200,48 @@ function newElement(id, title, src, x, y, createFrom) {
 // add event listeners
 
 let fileInput = document.getElementById("modal-load-file");
-let imgPreview = document.getElementById("modal-load-img");
-let modalElementInput = document.getElementById("modal-input");
 
 fileInput.addEventListener('change', function() {
-    previewFile();
+    elemModal.previewFile();
 });
 
 // event listeners for create elements, lines and notes buttons
 
 createElemBtn.addEventListener("click", function() {
-    if (checkNewElementInputs()) {
+    if (elemModal.allInputsAreValid()) {
         newElement();
     }
 });
 
 createConnBtn.addEventListener("click", function() {
-    if (checkNewConnectionInputs()) {
+    if (connModal.allInputsAreValid()) {
         createConnection();
     }
 });
 
 createNoteBtn.addEventListener("click", function() {
-    if (checkNewNoteInputs()) {
-        newNote();
-    }
+    newNote();
 });
 
 // event listeners for update elements, lines and notes buttons
 
 updateElemBtn.addEventListener("click", function() {
-    console.log("clicked");
-    if (checkNewElementInputs()) {
-        // update element function
+    if (elemModal.allInputsAreValid()) {
         updateElem();
         elemModal.close();
     }
 });
 
 updateConnBtn.addEventListener("click", function() {
-    if (checkNewConnectionInputs()) {
-        // update connection function
+    if (connModal.allInputsAreValid()) {
         updateConn();
         connModal.close();
     }
 });
 
 updateNoteBtn.addEventListener("click", function() {
-    if (checkNewNoteInputs()) {
-        // update element function
-        updateNote();
-        noteModal.close();
-    }
+    updateNote();
+    noteModal.close();
 });
 
 function updateElem() {
@@ -1200,85 +1277,6 @@ function updateNote() {
 
     editItem("notes", selectedItemId, "title", titleInput);
     editItem("notes", selectedItemId, "text", textInput);
-}
-
-// checks inputs in "new element" modal window
-
-function checkNewElementInputs() {
-
-    let message = messageInput;   
-
-    if (elemModal.checkIfImageIsSelected()) {
-        if (elemModal.checkIfInputIsEmpty()) {
-            return true;
-        }
-        else {
-            message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
-        }
-    }
-    else {
-        if (elemModal.checkIfInputIsEmpty()) {
-            message.innerHTML = "No image was selected";
-        }
-        else {
-            message.innerHTML = "All fields must contain data";
-        }
-    }
-}
-
-// checks inputs in "new connection" modal window
-
-function checkNewConnectionInputs() {
-
-    let message = messageInputConnection;
-
-    if (connModal.checkDropdownOptions()) {
-        if (connModal.checkIfInputIsEmpty()) {
-            return true;
-        }
-        else {
-            message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
-        }
-    }
-    else {
-        if (connModal.checkIfInputIsEmpty()) {
-            message.innerHTML = "One of elements isn't selected";
-        }
-        else {
-            message.innerHTML = "All fields must contain data";
-        }
-    }
-}
-
-// checks inputs in "new note" modal window
-
-function checkNewNoteInputs() {
-    let titleInput = document.getElementById("modal__note-title");
-    let textInput = document.getElementById("modal__note-text");
-
-    // should we allow creating empty notes?
-
-    return true;
-}
-
-// adds a file preview and representes the file's data as a base64 encoded string
-
-function previewFile() {
-
-    let file = document.getElementById("modal-load-file").files[0];
-    let reader = new FileReader();
-  
-    reader.onloadend = function () {
-        imgPreview.src = reader.result;
-    }
-  
-    if (file) {
-        reader.readAsDataURL(file);
-        elemModal.removeBlankClass();
-    }
-    else {
-        elemModal.setPreviewImgtoBlank();
-    }
 }
 
 // find latest div's id
