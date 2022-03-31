@@ -334,6 +334,32 @@ connModal.clearSelectOptions = function() {
     }
 }
 
+// sets disabled state to options which cannot be selected
+connModal.disableUnavalilableSelectOptions = function(currentSelectId, anotherSelectId) {
+    let elems = document.querySelector("#modal-elem1").getElementsByTagName("option");
+    let select1 = document.getElementById(currentSelectId);
+    let select2 = document.getElementById(anotherSelectId);
+    let elemTitle = select1.value;
+
+    let elemId = findObjValueByKeyValue(model.elements, "title", elemTitle, "id");
+    let titleArr = createArrayOfTitles(elemId);
+
+    for (let i = 1; i < elems.length; i++) {
+        // remove disabled state on every element until we find the new chosen one
+        select2[i].disabled = false;
+        // disable the same element in another dropdown list
+        if (select1.selectedIndex == i) {
+            select2[i].disabled = true;
+        }
+        // disable all elements which already have connection with the selected element
+        for (let j = 0; j < titleArr.length; j++) {
+            if (select2.options[i].text == titleArr[j]) {
+                select2[i].disabled = true;
+            }
+        }
+    }
+}
+
 // fills inputs with data from db
 connModal.fillInputs = function() {
     let titleInput = document.getElementById("modal-connection-title");
@@ -682,10 +708,10 @@ editBtn.addEventListener("click", function() {
     }
     else if (model.selectedType == "line") {
         connModal.open();
-        connModal.fillSelectOptions();
-        disableUnavalilableSelectOptions("first");
-        disableUnavalilableSelectOptions("second");
+        connModal.fillSelectOptions();        
         connModal.fillInputs();
+        connModal.disableUnavalilableSelectOptions("modal-elem1", "modal-elem2");
+        connModal.disableUnavalilableSelectOptions("modal-elem2", "modal-elem1");
         connModal.showUpdateBtn();
     }
     else if (model.selectedType == "note") {
@@ -732,49 +758,12 @@ background.addEventListener("click", function() {
 // eventlistener to disable option if it's already selected in another dropdown
 
 selectFirstElement.addEventListener("change", function() {
-    disableUnavalilableSelectOptions("first");
+    connModal.disableUnavalilableSelectOptions("modal-elem1", "modal-elem2");
 });
 
 selectSecondElement.addEventListener("change", function() {
-    disableUnavalilableSelectOptions("second");
+    connModal.disableUnavalilableSelectOptions("modal-elem2", "modal-elem1");
 });
-
-function disableUnavalilableSelectOptions(select) {
-
-    let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
-
-    let firstElement = document.getElementById("modal-elem1");
-    let secondElement = document.getElementById("modal-elem2");
-    let elemTitle = "";
-
-    if (select == "first") {
-        selectFirstElement = document.getElementById("modal-elem1");
-        selectSecondElement = document.getElementById("modal-elem2");
-        elemTitle = firstElement.value;
-    }
-    else if (select == "second") {
-        selectSecondElement = document.getElementById("modal-elem1");
-        selectFirstElement = document.getElementById("modal-elem2");
-        elemTitle = secondElement.value;
-    }
-
-    let elemId = findObjValueByKeyValue(model.elements, "title", elemTitle, "id");
-    let titleArr = createArrayOfTitles(elemId);
-    
-    for (let i = 1; i < elems.length; i++) {
-        // remove disabled state on every element until we find the new chosen one
-        selectSecondElement[i].disabled = false;
-        if (selectFirstElement.selectedIndex == i) {
-            selectSecondElement[i].disabled = true;
-        }
-
-        for (let j = 0; j < titleArr.length; j++) {
-            if (selectSecondElement.options[i].text == titleArr[j]) {
-                selectSecondElement[i].disabled = true;
-            }
-        }
-    }
-}
 
 // generates an array of elements' identifiers
 // includes all elements connected to the element selected in the dropdown list
@@ -823,6 +812,8 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     let inputValueConnection = "";
     let divId1 = "";
     let divId2 = "";
+    let elemTitle1 = document.getElementById("modal-elem1").value;
+    let elemTitle2 = document.getElementById("modal-elem2").value;
 
     // create text tag for line's title
     let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -849,8 +840,8 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     else {
         inputValueConnection = document.getElementById("modal-connection-title").value;
 
-        divId1 = getElemIdFromTitle("first");
-        divId2 = getElemIdFromTitle("second");
+        divId1 = findObjValueByKeyValue(model.elements, "title", elemTitle1, "id");
+        divId2 = findObjValueByKeyValue(model.elements, "title", elemTitle2, "id");
 
         // get (x;y) of div1 and div2
 
@@ -905,49 +896,10 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     connModal.close();
 }
 
-function getElemIdFromTitle(selectNumber) {
-
-    let divId = "";
-    let title = "";
-    let select = "";
-
-    let elements = document.getElementsByClassName("element__title");
-
-    if (selectNumber == "first") {
-        select = document.getElementById("modal-elem1");
-    }
-    else if (selectNumber == "second") {
-        select = document.getElementById("modal-elem2");
-    }
-
-    let elems = document.querySelector('#modal-elem1').getElementsByTagName('option');
-
-    let index = select.selectedIndex;
-    console.log("index = " + index);
-
-    for (let i = 0; i < elems.length; i++) {
-        
-        if (index == i) {
-            title = elems[i].value;
-            console.log("elems.value = " + title);
-        }
-    }
-
-    for (let i = 0; i < elements.length; i++) {
-        if (elements[i].innerHTML == title) {
-            divId = elements[i].parentElement.id;
-            console.log("parentNode = " + divId);
-        }
-    }
-
-    return divId;
-}
-
 function getElemCenterCoordinates(id) {
     let elemPosition = window.getComputedStyle(document.getElementById(id));
     let x = parseFloat(elemPosition.getPropertyValue("left")) + elementWidth/2;
     let y = parseFloat(elemPosition.getPropertyValue("top")) + elementWidth/2;
-    console.log("x = " + x + " y = " + y);
 
     return [x, y];
 }
@@ -1066,6 +1018,7 @@ function changeLineCoordinates(lineArr) {
     }
 }
 
+// finds value by selected item's id
 function findObjValue(obj, keyName) {
     for (let key in obj) {
         if (obj[key].id == model.selectedItemId) {
@@ -1269,6 +1222,8 @@ createNoteBtn.addEventListener("click", function() {
 updateElemBtn.addEventListener("click", function() {
     if (elemModal.allInputsAreValid()) {
         updateElem();
+        elemModal.clear();
+        elemModal.setPreviewImgtoBlank();
         elemModal.close();
     }
 });
@@ -1276,12 +1231,15 @@ updateElemBtn.addEventListener("click", function() {
 updateConnBtn.addEventListener("click", function() {
     if (connModal.allInputsAreValid()) {
         updateConn();
+        connModal.clear();
+        connModal.clearSelectOptions();
         connModal.close();
     }
 });
 
 updateNoteBtn.addEventListener("click", function() {
     updateNote();
+    noteModal.clear();
     noteModal.close();
 });
 
@@ -1290,34 +1248,36 @@ function updateElem() {
     let titleInput = document.getElementById("modal-input").value;
     // let inputId = "modal-input";
 
-    editItem("elements", selectedItemId, "img", previewImg);
-    editItem("elements", selectedItemId, "title", titleInput);
+    editItem("elements", model.selectedItemId, "img", previewImg);
+    editItem("elements", model.selectedItemId, "title", titleInput);
 }
 
 function updateConn() {
+    let elemTitle1 = document.getElementById("modal-elem1").value;
+    let elemTitle2 = document.getElementById("modal-elem2").value;
     let title = document.getElementById("modal-connection-title").value;
 
-    let divId1 = getElemIdFromTitle("first");
-    let divId2 = getElemIdFromTitle("second");
+    let divId1 = findObjValueByKeyValue(model.elements, "title", elemTitle1, "id");
+    let divId2 = findObjValueByKeyValue(model.elements, "title", elemTitle2, "id");
 
     let [x1, y1] = getElemCenterCoordinates(divId1);
     let [x2, y2] = getElemCenterCoordinates(divId2);
 
-    editItem("lines", selectedItemId, "elem1", divId1);
-    editItem("lines", selectedItemId, "elem2", divId2);
-    editItem("lines", selectedItemId, "title", title);
-    editItem("lines", selectedItemId, "x1", x1);
-    editItem("lines", selectedItemId, "y1", y1);
-    editItem("lines", selectedItemId, "x2", x2);
-    editItem("lines", selectedItemId, "y2", y2);
+    editItem("lines", model.selectedItemId, "elem1", divId1);
+    editItem("lines", model.selectedItemId, "elem2", divId2);
+    editItem("lines", model.selectedItemId, "title", title);
+    editItem("lines", model.selectedItemId, "x1", x1);
+    editItem("lines", model.selectedItemId, "y1", y1);
+    editItem("lines", model.selectedItemId, "x2", x2);
+    editItem("lines", model.selectedItemId, "y2", y2);
 }
 
 function updateNote() {
     let titleInput = document.getElementById("modal-note-title").value;
     let textInput = document.getElementById("modal-note-text").value;
 
-    editItem("notes", selectedItemId, "title", titleInput);
-    editItem("notes", selectedItemId, "text", textInput);
+    editItem("notes", model.selectedItemId, "title", titleInput);
+    editItem("notes", model.selectedItemId, "text", textInput);
 }
 
 function deleteElement(divId) {
