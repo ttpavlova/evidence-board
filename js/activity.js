@@ -23,13 +23,7 @@ let model = {
     noteWidth: 150,
     selectedItemId: "", // id of the latest selected item
     selectedType: "", // type (element, line or note) of the latest selected item
-    elements: [
-        // id: id,
-        // title: title,
-        // img: img,
-        // x: x,
-        // y: y,
-    ],
+    elements: [],
     lines: [],
     notes: [],
 
@@ -57,7 +51,7 @@ itemType.prototype.getLatestItemId = function() {
 itemType.prototype.countLatestItemId = function() {
     if (this.numArr.length > 0) {
         this.maxNumId = Math.max.apply(null, this.numArr);
-        console.log(this.maxNumId);
+        console.log("maxNumId = " + this.maxNumId);
     }
 }
 
@@ -608,8 +602,8 @@ function dragElement(elem, i, itemType) {
             console.log(draggableElements[i].id);
 
             // edit element's coordinates in db
-            editItem("elements", draggableElements[i].id, "x", elem.style.left);
-            editItem("elements", draggableElements[i].id, "y", elem.style.top);
+            editItemInDb("elements", draggableElements[i].id, "x", elem.style.left);
+            editItemInDb("elements", draggableElements[i].id, "y", elem.style.top);
 
             // lineArr stores identifiers of the lines connected to the draggable element 
             let lineArr = findLineId(draggableElements[i].id, elem, 'find');
@@ -621,8 +615,8 @@ function dragElement(elem, i, itemType) {
             console.log(draggableNotes[i].id);
 
             // edit element's coordinates in db
-            editItem("notes", draggableNotes[i].id, "x", elem.style.left);
-            editItem("notes", draggableNotes[i].id, "y", elem.style.top);
+            editItemInDb("notes", draggableNotes[i].id, "x", elem.style.left);
+            editItemInDb("notes", draggableNotes[i].id, "y", elem.style.top);
         }
 
         document.onmouseup = null;
@@ -641,8 +635,6 @@ let modalWindowConnection = document.getElementById("modal-connection");
 let modalWindowNote = document.getElementById("modal-note");
 
 let closeBtn = document.querySelector("modal__close");
-
-let messageInput = document.getElementById("message-elem");
 
 // toolbar
 
@@ -802,6 +794,92 @@ function createArrayOfTitles(elemId) {
     return titleArr;
 }
 
+// gets data from element modal window
+function getElementData() {
+    let imgPreview = document.getElementById("modal-load-img").src;
+    let inputValue = document.getElementById("modal-input").value;
+    let messageInput = document.getElementById("message-elem");
+
+    // checks if title is already taken
+    if (isValueTaken(model.elements, "title", inputValue)) {
+        messageInput.innerHTML = "This title has already been taken. Choose another one.";
+    }
+    else {
+        // calculate id
+        let id = elements.getLatestItemId();
+        id++;
+        id = "elem" + id;
+
+        // get img src
+        let img = imgPreview;
+
+        // get title
+        let title = inputValue;
+
+        // set coordinates
+        let windowWidth = window.innerWidth;
+        let x = windowWidth / 2 - model.elemWidth / 2 + "px";
+        let y = "100px";
+
+        // add data to db
+        addElementToDb(id, title, img, x, y);
+
+        return [id, title, img, x, y];
+    }
+}
+
+// creates new element and adds it to the page
+function addElementToPage(id, title, img, x, y) {
+    // create an object
+    let element = new Element(id, title, img, x, y);
+    model.elements.push(element);
+    console.log(model.elements);
+    // update array of ids
+    elements.addIdToArray(id.slice(4));
+
+    // add element
+    let elem = document.createElement("div");
+    elem.id = id;
+    elem.className = "element";
+    elem.style.left = x;
+    elem.style.top = y;
+    document.getElementsByClassName("elements__container")[0].appendChild(elem);
+    elem.onclick = function() {
+        element.selectItem(elem.id, "elem");
+    }
+
+    // add image container
+    let pic = document.createElement("div");
+    pic.className = "element__picture";
+    pic.id = "pic" + elem.id.toString().slice(4);
+    document.getElementById(elem.id).appendChild(pic);
+
+    // add image
+    let image = document.createElement("img");
+    image.className = "element__img";
+    image.src = img;
+    image.alt = "image";
+    document.getElementById(pic.id).appendChild(image);
+
+    // add icon for displaying selected state
+    let icon = document.createElement("img");
+    icon.className = "item__icon";
+    icon.src = "img/icons8-idea.svg";
+    icon.alt = "selected";
+    document.getElementById(elem.id).appendChild(icon);
+
+    // add title
+    let elem_title = document.createElement("div");
+    elem_title.className = "element__title";
+    elem_title.innerHTML = title;
+    document.getElementById(elem.id).appendChild(elem_title);
+
+    // calling drag function again after creating a new div
+    for (let i = 0; i < draggableElements.length; i++) {
+        dragElement(draggableElements[i], i, "element");
+    }
+}
+
 // creates a line between two selected elements
 
 function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1, line_x2, line_y2, createFrom) {
@@ -814,6 +892,7 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
     let divId2 = "";
     let elemTitle1 = document.getElementById("modal-elem1").value;
     let elemTitle2 = document.getElementById("modal-elem2").value;
+    // lineId = lineId.toString();
 
     // create text tag for line's title
     let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
@@ -860,7 +939,7 @@ function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1,
         text.id = "text" + linesNum;
 
         // add line data to db
-        addLine(line.id, inputValueConnection, divId1, divId2, x1, y1, x2, y2);
+        addLineToDb(line.id, inputValueConnection, divId1, divId2, x1, y1, x2, y2);
     }
 
     line.setAttribute("class", "lines");
@@ -1011,10 +1090,10 @@ function changeLineCoordinates(lineArr) {
         let y2 = line.getAttribute("y2");
 
         // updates coordinates in db
-        editItem("lines", lineId, "x1", x1);
-        editItem("lines", lineId, "y1", y1);
-        editItem("lines", lineId, "x2", x2);
-        editItem("lines", lineId, "y2", y2);
+        editItemInDb("lines", lineId, "x1", x1);
+        editItemInDb("lines", lineId, "y1", y1);
+        editItemInDb("lines", lineId, "x2", x2);
+        editItemInDb("lines", lineId, "y2", y2);
     }
 }
 
@@ -1036,6 +1115,16 @@ function findObjValueByKeyValue(obj, knownKey, knownValue, searchKey) {
     }
 }
 
+// checks if value is taken
+function isValueTaken(obj, knownKey, knownValue) {
+    for (let key in obj) {
+        if ((obj[key])[knownKey] == knownValue) {
+            console.log((obj[key])[knownKey] + " ?= " + knownValue);
+            return true;
+        }
+    }
+}
+
 function findObjKey(obj, keyValue) {
     for (let i = 0; i <= lines.maxNumId; i++) {
         for (let key in obj[i]) {
@@ -1044,151 +1133,6 @@ function findObjKey(obj, keyValue) {
             }
         }
     }
-}
-
-// creates new element
-
-function newElement(id, title, src, x, y, createFrom) {
-
-    let divNum = 0;
-
-    let imgPreview = document.getElementById("modal-load-img");
-    let inputValue = document.getElementById("modal-input").value;
-
-    console.log("submit" + inputValue);
-
-    function check() {
-
-        let ifTitleExists = 0;
-
-        let div, elem_title, img;
-
-        for (let i = 0; i < draggableElements.length; i++) {
-            if (document.getElementsByClassName("element__title")[i].innerHTML === inputValue) {
-                // if an element with the same title is found, suggests to enter a different title
-                ifTitleExists++;
-                messageInput.innerHTML = "This title has already been taken. Choose another one.";
-                break;
-            }
-        }
-
-        if (ifTitleExists == 0) {
-
-            // add element
-            div = document.createElement("div");
-
-            // define latest div's number
-            if (createFrom == "db") {
-                // if we load data from db
-                // update array of elements' id
-                elements.addIdToArray(id.slice(3));
-
-                // define id
-                div.id = "div" + id.slice(3);
-            }
-            else {               
-                divNum = elements.getLatestItemId();
-                divNum++;
-                elements.addIdToArray(divNum);
-
-                // define id
-                div.id = "div" + divNum;
-            }
-            
-            // define className
-            div.className = "element";
-
-            // define positions
-            if (createFrom == "db") {
-                div.style.left = x;
-                div.style.top = y;
-            }
-            else {
-                let windowWidth = window.innerWidth;
-                
-                div.style.top = "100px";
-                div.style.left = windowWidth / 2 - elementWidth / 2 + "px";
-            }
-            
-            // put new div to container class
-            document.getElementsByClassName("elements__container")[0].appendChild(div);
-
-            // add image and title
-
-            let elem = document.createElement("div");
-            elem.className = "element__picture";
-            if (createFrom == "db") {
-                elem.id = "elem" + id.slice(3);
-            }
-            else {
-                elem.id = "elem" + divNum;
-            }
-
-            div.onclick = function onclick(event) {element.selectItem(div.id, "elem")};
-
-            document.getElementById(div.id).appendChild(elem);
-
-            // add element's image
-
-            img = document.createElement("img");
-            img.className = "element__img";
-            if (createFrom == "db") {
-                img.src = src;
-            }
-            else {
-                img.src = imgPreview.src;
-            }
-            img.alt = "image";
-            document.getElementById(elem.id).appendChild(img);
-
-            // add icon for displaying selected state
-
-            let icon = document.createElement("img");
-            icon.className = "item__icon";
-            icon.src = "img/icons8-idea.svg";
-            icon.alt = "selected";
-            document.getElementById(div.id).appendChild(icon);
-
-            // add element's title
-
-            elem_title = document.createElement("div");
-            elem_title.className = "element__title";
-            elem_title.innerHTML = "void_value";
-
-            if (createFrom == "db") {
-                elem_title.innerHTML = title;
-            }
-            else {
-                elem_title.innerHTML = inputValue;
-            }
-
-            document.getElementById(div.id).appendChild(elem_title);
-
-            // clear input and close modal window if new element is created
-            fileInput.value = "";
-            elemModal.clear();
-            elemModal.setPreviewImgtoBlank();
-            elemModal.close();
-        } 
-
-        // calling drag function again after creating new div
-        for (let i = 0; i < draggableElements.length; i++) {
-            dragElement(draggableElements[i], i, "element");
-        }
-
-        // add data to db
-
-        if (createFrom == "db") {
-            // do nothing
-        }
-        else {
-            addItem(div.id, elem_title.innerHTML, img.src, div.style.left, div.style.top);
-        }
-
-        let element = new Element(div.id, elem_title.innerHTML, src, div.style.left, div.style.top);
-        model.elements.push(element);
-    }
-    check();
 }
 
 // add event listeners
@@ -1203,7 +1147,15 @@ fileInput.addEventListener('change', function() {
 
 createElemBtn.addEventListener("click", function() {
     if (elemModal.allInputsAreValid()) {
-        newElement();
+        // get the data from modal window and put the new item into the db
+        let [id, title, img, x, y] = getElementData();
+        // create an item
+        addElementToPage(id, title, img, x, y);
+        
+        // clear the inputs and close modal window if a new element is created
+        elemModal.clear();
+        elemModal.setPreviewImgtoBlank();
+        elemModal.close();
     }
 });
 
@@ -1248,8 +1200,8 @@ function updateElem() {
     let titleInput = document.getElementById("modal-input").value;
     // let inputId = "modal-input";
 
-    editItem("elements", model.selectedItemId, "img", previewImg);
-    editItem("elements", model.selectedItemId, "title", titleInput);
+    editItemInDb("elements", model.selectedItemId, "img", previewImg);
+    editItemInDb("elements", model.selectedItemId, "title", titleInput);
 }
 
 function updateConn() {
@@ -1263,21 +1215,21 @@ function updateConn() {
     let [x1, y1] = getElemCenterCoordinates(divId1);
     let [x2, y2] = getElemCenterCoordinates(divId2);
 
-    editItem("lines", model.selectedItemId, "elem1", divId1);
-    editItem("lines", model.selectedItemId, "elem2", divId2);
-    editItem("lines", model.selectedItemId, "title", title);
-    editItem("lines", model.selectedItemId, "x1", x1);
-    editItem("lines", model.selectedItemId, "y1", y1);
-    editItem("lines", model.selectedItemId, "x2", x2);
-    editItem("lines", model.selectedItemId, "y2", y2);
+    editItemInDb("lines", model.selectedItemId, "elem1", divId1);
+    editItemInDb("lines", model.selectedItemId, "elem2", divId2);
+    editItemInDb("lines", model.selectedItemId, "title", title);
+    editItemInDb("lines", model.selectedItemId, "x1", x1);
+    editItemInDb("lines", model.selectedItemId, "y1", y1);
+    editItemInDb("lines", model.selectedItemId, "x2", x2);
+    editItemInDb("lines", model.selectedItemId, "y2", y2);
 }
 
 function updateNote() {
     let titleInput = document.getElementById("modal-note-title").value;
     let textInput = document.getElementById("modal-note-text").value;
 
-    editItem("notes", model.selectedItemId, "title", titleInput);
-    editItem("notes", model.selectedItemId, "text", textInput);
+    editItemInDb("notes", model.selectedItemId, "title", titleInput);
+    editItemInDb("notes", model.selectedItemId, "text", textInput);
 }
 
 function deleteElement(divId) {
@@ -1489,10 +1441,12 @@ var openRequest = indexedDB.open("db", 5);
 openRequest.onupgradeneeded = function(e) {
     var db = e.target.result;
     console.log("running onupgradeneeded");
-    // the database did not previously exist, so create object stores
-    db.createObjectStore("elements", {keyPath: "id"});
-    db.createObjectStore("lines", {keyPath: "id"});
-    db.createObjectStore("notes", {keyPath: "id"});
+    // create object stores if they don't exist yet
+    if (e.oldVersion < 1) {
+        db.createObjectStore("elements", {keyPath: "id"});
+        db.createObjectStore("lines", {keyPath: "id"});
+        db.createObjectStore("notes", {keyPath: "id"});
+    }
 };
 
 openRequest.onsuccess = function(e) {
@@ -1510,17 +1464,16 @@ openRequest.onerror = function(e) {
     console.dir(e);
 };
 
-// add item in db
-
-function addItem(elemId, elemTitle, elemImg, elemX, elemY) {
+// add an element to the db
+function addElementToDb(id, title, img, x, y) {
     var transaction = db.transaction(["elements"], "readwrite");
     var elements = transaction.objectStore("elements");
     var item = {
-        id: elemId,
-        title: elemTitle,
-        img: elemImg,
-        x: elemX,
-        y: elemY,
+        id: id,
+        title: title,
+        img: img,
+        x: x,
+        y: y,
         created: new Date().getTime()
     };
 
@@ -1535,14 +1488,13 @@ function addItem(elemId, elemTitle, elemImg, elemX, elemY) {
     };
 }
 
-// add line in db
-
-function addLine(lineId, lineTitle, elemId1, elemId2, x1, y1, x2, y2) {
+// add a line to the db
+function addLineToDb(id, title, elemId1, elemId2, x1, y1, x2, y2) {
     var transaction = db.transaction(["lines"], "readwrite");
     var lines = transaction.objectStore("lines");
     var item = {
-        id: lineId,
-        title: lineTitle,
+        id: id,
+        title: title,
         elem1: elemId1,
         elem2: elemId2,
         x1: parseFloat(x1),
@@ -1563,8 +1515,7 @@ function addLine(lineId, lineTitle, elemId1, elemId2, x1, y1, x2, y2) {
     };
 }
 
-// add note in db
-
+// add a note to the db
 function addNoteToDB(id, title, text, x, y) {
     let transaction = db.transaction(["notes"], "readwrite");
     let notes = transaction.objectStore("notes");
@@ -1588,12 +1539,11 @@ function addNoteToDB(id, title, text, x, y) {
     };
 }
 
-// find item in db
-
-function findItem(objectStoreName, elemId) {
+// find an item in the db
+function findItem(objectStoreName, key) {
     var transaction = db.transaction([objectStoreName], "readonly");
     var elements = transaction.objectStore(objectStoreName);
-    let request = elements.get(elemId);
+    let request = elements.get(key);
 
     request.onerror = function(e) {
         console.log("error", e.target.error.name);
@@ -1614,12 +1564,11 @@ function findItem(objectStoreName, elemId) {
     };    
 }
 
-// edit item's value in db
-
-function editItem(objectStoreName, elemId, elemTitle, elemValue) {
+// edit the item's value in the db
+function editItemInDb(objectStoreName, key, indexName, value) {
     let transaction = db.transaction([objectStoreName], "readwrite");
     let items = transaction.objectStore(objectStoreName);
-    let request = items.get(elemId);
+    let request = items.get(key);
 
     request.onerror = function(e) {
         console.log("error", e.target.error.name);
@@ -1629,7 +1578,7 @@ function editItem(objectStoreName, elemId, elemTitle, elemValue) {
 
         const data = request.result;
 
-        data[elemTitle] = elemValue;
+        data[indexName] = value;
 
         let requestUpdate = items.put(data);
 
@@ -1640,17 +1589,16 @@ function editItem(objectStoreName, elemId, elemTitle, elemValue) {
         
         requestUpdate.onsuccess = function(e) {
             // success
-            // console.log("item in '" + objectStoreName + "' moved, " + "elemTitle is " + elemTitle + ", elemValue is " + elemValue);
+            // console.log("item in '" + objectStoreName + "' moved, " + "indexName is " + indexName + ", value is " + value);
         }
     }
 }
 
-// delete item from db
-
-function deleteItem(objectStoreName, elemId) {
+// delete an item from the db
+function deleteItem(objectStoreName, key) {
     let request = db.transaction([objectStoreName], "readwrite")
                     .objectStore(objectStoreName)
-                    .delete(elemId);
+                    .delete(key);
 
     request.onerror = function(e) {
         console.log("error", e.target.error.name);
@@ -1661,8 +1609,7 @@ function deleteItem(objectStoreName, elemId) {
     }
 }
 
-// function to read info from db
-
+// read info from the db
 function readItems(objectStoreName) {
     // check if there is anything in db
     let request = db.transaction([objectStoreName], "readwrite")
@@ -1680,13 +1627,16 @@ function readItems(objectStoreName) {
             // console.log("preparing to load data");
 
             if (objectStoreName == "elements") {
-                newElement(cursor.key, cursor.value.title, cursor.value.img, cursor.value.x, cursor.value.y, "db");
+                addElementToPage(cursor.key, cursor.value.title, cursor.value.img, cursor.value.x, cursor.value.y);
+                console.log("element was created");
             }
             else if (objectStoreName == "lines") {
                 createConnection(cursor.key, cursor.value.title, cursor.value.elem1, cursor.value.elem2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2, "db");
+                console.log("line was created");
             }
             else if (objectStoreName == "notes") {
                 newNote(cursor.key, cursor.value.title, cursor.value.text, cursor.value.x, cursor.value.y, "db");
+                console.log("note was created");
             }
             cursor.continue();
         }
@@ -1711,8 +1661,7 @@ clearDbButton.addEventListener("click", function() {
     }
 });
 
-// function to delete all data from db
-
+// delete all data from the db
 function deleteItems(objectStoreName) {
     let request = db.transaction([objectStoreName], "readwrite").objectStore(objectStoreName).clear();
 
