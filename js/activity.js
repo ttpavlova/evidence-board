@@ -626,8 +626,6 @@ function dragElement(elem, i, itemType) {
 
 // variables
 
-let elementWidth = 150;
-
 let newItem = document.getElementById("new-element");
 
 let modalWindow = document.getElementById("modal-element");
@@ -913,7 +911,7 @@ function addLineToPage(id, title, elemId1, elemId2, x1, y1, x2, y2) {
     let connection = new Connection(id, title, elemId1, elemId2, x1, y1, x2, y2);
     model.lines.push(connection);
     // update array of ids
-    lines.addIdToArray(id.slice(4));
+    lines.addIdToArray(id.toString().slice(4));
 
     // add line
     let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -944,8 +942,8 @@ function addLineToPage(id, title, elemId1, elemId2, x1, y1, x2, y2) {
 
 function getElemCenterCoordinates(id) {
     let elemPosition = window.getComputedStyle(document.getElementById(id));
-    let x = parseFloat(elemPosition.getPropertyValue("left")) + elementWidth/2;
-    let y = parseFloat(elemPosition.getPropertyValue("top")) + elementWidth/2;
+    let x = parseFloat(elemPosition.getPropertyValue("left")) + model.elemWidth/2;
+    let y = parseFloat(elemPosition.getPropertyValue("top")) + model.elemWidth/2;
 
     return [x, y];
 }
@@ -987,14 +985,6 @@ function findLineId(draggableElementId, elem, action) {
     return lineArr;
 }
 
-// shows all properties of an object and their values
-
-function showDivs(obj, objName) {
-    for (let key in obj) {
-        console.log(objName + "." + key + " = " + obj[key]);
-    }
-}
-
 // moves lines connected to the draggable element
 
 function moveLines(lineId, elem, key) {
@@ -1002,8 +992,8 @@ function moveLines(lineId, elem, key) {
 
     for (let i = 0; i < linesAll.length; i++) {
         if ((linesAll[i].id == lineId) && (key == "elemId1")) {
-            let x1 = parseFloat(elem.style.left) + elementWidth/2;
-            let y1 = parseFloat(elem.style.top) + elementWidth/2;
+            let x1 = parseFloat(elem.style.left) + model.elemWidth/2;
+            let y1 = parseFloat(elem.style.top) + model.elemWidth/2;
 
             linesAll[i].setAttribute("x1", x1);
             linesAll[i].setAttribute("y1", y1);
@@ -1023,8 +1013,8 @@ function moveLines(lineId, elem, key) {
             text.setAttribute("y", y);
         }
         else if ((linesAll[i].id == lineId) && (key == "elemId2")) {
-            let x2 = parseFloat(elem.style.left) + elementWidth/2;
-            let y2 = parseFloat(elem.style.top) + elementWidth/2;
+            let x2 = parseFloat(elem.style.left) + model.elemWidth/2;
+            let y2 = parseFloat(elem.style.top) + model.elemWidth/2;
             linesAll[i].setAttribute("x2", x2);
             linesAll[i].setAttribute("y2", y2);
 
@@ -1064,6 +1054,77 @@ function changeLineCoordinates(lineArr) {
     }
 }
 
+// gets data from note modal window
+function getNoteData() {
+    let titleInput = document.getElementById("modal-note-title").value;
+    let textInput = document.getElementById("modal-note-text").value;
+
+    // calculate id
+    let id = notes.getLatestItemId();
+    id++;
+    id = "note" + id;
+
+    // get title
+    let title = titleInput;
+
+    // get text
+    let text = textInput;
+
+    // get coordinates
+    let windowWidth = window.innerWidth;
+    let x = windowWidth / 2 - model.noteWidth / 2 + "px";
+    let y = "100px";
+
+    // add data to db
+    addNoteToDb(id, title, text, x, y);
+
+    return [id, title, text, x, y];
+}
+
+// creates new note and adds it to the page
+function addNoteToPage(id, title, text, x, y) {
+    // create an object
+    let noteObj = new Note(id, title, text, x, y);
+    model.notes.push(noteObj);
+    // update array of ids
+    notes.addIdToArray(id.toString().slice(4));
+
+    // add note
+    let note = document.createElement("div");
+    note.id = id;
+    note.className = "note";
+    note.style.left = x;
+    note.style.top = y;
+    document.getElementsByClassName("notes__container")[0].appendChild(note);
+    note.onclick = function() {
+        noteObj.selectItem(note.id, "note");
+    }
+
+    // add title
+    let note_title = document.createElement("p");
+    note_title.className = "note__title";
+    note_title.innerHTML = title;
+    document.getElementById(note.id).appendChild(note_title);
+
+    // add text
+    let note_text = document.createElement("textarea");
+    note_text.className = "note__text";
+    note_text.innerHTML = text;
+    document.getElementById(note.id).appendChild(note_text);
+
+    // add icon for displaying selected state
+    let icon = document.createElement("img");
+    icon.className = "item__icon";
+    icon.src = "img/icons8-idea.svg";
+    icon.alt = "selected";
+    document.getElementById(note.id).appendChild(icon);
+
+    // calling drag function again after creating a new div
+    for (let i = 0; i < draggableNotes.length; i++) {
+        dragElement(draggableNotes[i], i, "note");
+    }
+}
+
 // finds value by selected item's id
 function findObjValue(obj, keyName) {
     for (let key in obj) {
@@ -1092,6 +1153,7 @@ function isValueTaken(obj, knownKey, knownValue) {
     }
 }
 
+// finds key by keyValue
 function findObjKey(obj, keyValue) {
     for (let i = 0; i <= lines.maxNumId; i++) {
         for (let key in obj[i]) {
@@ -1099,6 +1161,13 @@ function findObjKey(obj, keyValue) {
                 return(i);
             }
         }
+    }
+}
+
+// prints all properties of an object and their values
+function printObj(obj, objName) {
+    for (let key in obj) {
+        console.log(objName + "." + key + " = " + obj[key]);
     }
 }
 
@@ -1119,7 +1188,7 @@ createElemBtn.addEventListener("click", function() {
         // create an item
         addElementToPage(id, title, img, x, y);
         
-        // clear the inputs and close modal window if a new element is created
+        // clear the inputs and close modal window
         elemModal.clear();
         elemModal.setPreviewImgtoBlank();
         elemModal.close();
@@ -1131,7 +1200,7 @@ createConnBtn.addEventListener("click", function() {
         let [id, title, elemId1, elemId2, x1, y1, x2, y2] = getConnectionData();
         addLineToPage(id, title, elemId1, elemId2, x1, y1, x2, y2);
 
-        // clear the inputs and close modal window if a new connection is created
+        // clear the inputs and close modal window
         connModal.clear();
         connModal.clearSelectOptions();
         connModal.close();
@@ -1139,7 +1208,12 @@ createConnBtn.addEventListener("click", function() {
 });
 
 createNoteBtn.addEventListener("click", function() {
-    newNote();
+    let [id, title, text, x, y] = getNoteData();
+    addNoteToPage(id, title, text, x, y);
+
+    // clear the inputs and close modal window
+    noteModal.clear();
+    noteModal.close();
 });
 
 // event listeners for update elements, lines and notes buttons
@@ -1283,109 +1357,6 @@ function deleteLineTitle(lineId) {
     title.parentNode.removeChild(title);
 }
 
-// notes
-
-function newNote(id, title, text, x, y, createFrom) {
-
-    let noteNum = 0;
-    let titleInput = document.getElementById("modal-note-title").value;
-    let textInput = document.getElementById("modal-note-text").value;
-
-    // add element
-    let div = document.createElement("div");
-
-    if (createFrom == "db") {
-        // if we load data from db
-        // update array of elements' id
-        notes.addIdToArray(id.slice(4));
-
-        // define id
-        div.id = "note" + id.slice(4);
-    }
-    else {
-        noteNum = notes.getLatestItemId();
-        noteNum++;
-        notes.addIdToArray(noteNum);
-
-        div.id = "note" + noteNum;
-    }
-
-    // define className
-    div.className = "note";
-
-    // define positions
-    if (createFrom == "db") {
-        div.style.left = x;
-        div.style.top = y;
-    }
-    else {
-        let windowWidth = window.innerWidth;
-        
-        div.style.top = "100px";
-        div.style.left = windowWidth / 2 - elementWidth / 2 + "px";
-    }
-
-    div.onclick = function onclick(event) {note.selectItem(div.id, "note")};
-
-    // put new div to container class
-    document.getElementsByClassName("notes__container")[0].appendChild(div);
-
-    // add icon for displaying selected state
-
-    let icon = document.createElement("img");
-    icon.className = "item__icon";
-    icon.src = "img/icons8-idea.svg";
-    icon.alt = "selected";
-    document.getElementById(div.id).appendChild(icon);
-
-    // add title
-
-    let note_title = document.createElement("div");
-    note_title.className = "note__title";
-    note_title.innerHTML = "void_value";
-    if (createFrom == "db") {
-        note_title.innerHTML = title;
-    }
-    else {
-        note_title.innerHTML = titleInput;
-    }
-    document.getElementById(div.id).appendChild(note_title);
-
-    // add text
-
-    let note_text = document.createElement("textarea");
-    note_text.className = "note__text";
-    note_text.innerHTML = "void_value";
-    if (createFrom == "db") {
-        note_text.innerHTML = text;
-    }
-    else {
-        note_text.innerHTML = textInput;
-    }
-    document.getElementById(div.id).appendChild(note_text);
-
-    // clear input and close modal window if new note is created
-    noteModal.clear();
-    noteModal.close();
-
-    // calling drag function again after creating new div
-    for (let i = 0; i < draggableNotes.length; i++) {
-        dragElement(draggableNotes[i], i, "note");
-    }
-
-    // add data to db
-
-    if (createFrom == "db") {
-        // do nothing
-    }
-    else {
-        addNoteToDB(div.id, note_title.innerHTML, note_text.innerHTML, div.style.left, div.style.top);
-    }
-
-    let note = new Note(div.id, note_title.innerHTML, note_text.innerHTML, div.style.left, div.style.top);
-    model.notes.push(note);
-}
-
 function deleteNote(noteId) {
 
     // delete id from array of all notes
@@ -1488,7 +1459,7 @@ function addLineToDb(id, title, elemId1, elemId2, x1, y1, x2, y2) {
 }
 
 // add a note to the db
-function addNoteToDB(id, title, text, x, y) {
+function addNoteToDb(id, title, text, x, y) {
     let transaction = db.transaction(["notes"], "readwrite");
     let notes = transaction.objectStore("notes");
     let item = {
@@ -1607,7 +1578,7 @@ function readItems(objectStoreName) {
                 console.log("line was created");
             }
             else if (objectStoreName == "notes") {
-                newNote(cursor.key, cursor.value.title, cursor.value.text, cursor.value.x, cursor.value.y, "db");
+                addNoteToPage(cursor.key, cursor.value.title, cursor.value.text, cursor.value.x, cursor.value.y);
                 console.log("note was created");
             }
             cursor.continue();
