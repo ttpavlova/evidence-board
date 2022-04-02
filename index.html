@@ -51,7 +51,7 @@
 
                 <label for="modal__input" class="modal__label">Enter element title: </label>
 
-                <input type="text" id="modal-input" name="modal__input" class="modal__input" placeholder="Element name">
+                <input type="text" class="modal__input" id="modal-elem-title" name="modal__input" placeholder="Element name">
                 <span class="modal__message" id="message-elem"></span>
                 
                 <!-- create element -->
@@ -78,8 +78,8 @@
                     <option>Choose an element</option>
                 </select>
 
-                <label for="modal__connection-title" class="modal__label">Connection title: </label>
-                <input type="text" id="modal-connection-title" name="modal__connection-title" class="modal__input" placeholder="Connection name">
+                <label for="modal__conn-title" class="modal__label">Connection title: </label>
+                <input type="text" class="modal__input" id="modal-conn-title" name="modal__conn-title" placeholder="Connection name">
                 <span class="modal__message" id="message-conn"></span>
 
                 <!-- create connection -->
@@ -114,6 +114,8 @@
 
         <svg id="svg" width="1500" height="1500" viewBox="0 0 1500 1500">
             <rect id="background" x="0" y="0" width="1500" height="1500" fill="transparent"></rect>
+            <g class="lines__container"></g>
+            <g class="lines-text__container"></g>
         </svg>
 
         <div class="elements__container"></div>

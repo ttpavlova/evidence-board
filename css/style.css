@@ -297,17 +297,17 @@ h1, h2, h3, h4, h5, h6 {
 
 /* lines */
 
-.lines {
+.line {
     stroke-width: 2px;
     stroke: #342617;
 }
 
-.lines:hover {
+.line:hover {
     stroke-width: 3px;
     cursor: pointer;
 }
 
-.lines__text {
+.line__text {
     font-size: 18px;
 }
 

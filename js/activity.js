@@ -229,7 +229,7 @@ elemModal.previewFile = function() {
 // fills inputs with data from db
 elemModal.fillInputs = function() {
     let previewImg = document.getElementById("modal-load-img");
-    let titleInput = document.getElementById("modal-input");
+    let titleInput = document.getElementById("modal-elem-title");
 
     let img = findObjValue(model.elements, "img");
     let title = findObjValue(model.elements, "title");
@@ -356,7 +356,7 @@ connModal.disableUnavalilableSelectOptions = function(currentSelectId, anotherSe
 
 // fills inputs with data from db
 connModal.fillInputs = function() {
-    let titleInput = document.getElementById("modal-connection-title");
+    let titleInput = document.getElementById("modal-conn-title");
 
     let elemId1 = findObjValue(model.lines, "elemId1");
     let elemId2 = findObjValue(model.lines, "elemId2");
@@ -797,7 +797,7 @@ function createArrayOfTitles(elemId) {
 // gets data from element modal window
 function getElementData() {
     let imgPreview = document.getElementById("modal-load-img").src;
-    let inputValue = document.getElementById("modal-input").value;
+    let inputValue = document.getElementById("modal-elem-title").value;
     let messageInput = document.getElementById("message-elem");
 
     // checks if title is already taken
@@ -816,7 +816,7 @@ function getElementData() {
         // get title
         let title = inputValue;
 
-        // set coordinates
+        // get coordinates
         let windowWidth = window.innerWidth;
         let x = windowWidth / 2 - model.elemWidth / 2 + "px";
         let y = "100px";
@@ -833,7 +833,6 @@ function addElementToPage(id, title, img, x, y) {
     // create an object
     let element = new Element(id, title, img, x, y);
     model.elements.push(element);
-    console.log(model.elements);
     // update array of ids
     elements.addIdToArray(id.slice(4));
 
@@ -880,99 +879,67 @@ function addElementToPage(id, title, img, x, y) {
     }
 }
 
-// creates a line between two selected elements
-
-function createConnection(lineId, lineTitle, elemId1, elemId2, line_x1, line_y1, line_x2, line_y2, createFrom) {
-
-    let line = document.createElementNS('http://www.w3.org/2000/svg','line');
-    let linesNum = 0;
-    let x1, y1, x2, y2 = 0;
-    let inputValueConnection = "";
-    let divId1 = "";
-    let divId2 = "";
+// gets data from connection modal window
+function getConnectionData() {
     let elemTitle1 = document.getElementById("modal-elem1").value;
     let elemTitle2 = document.getElementById("modal-elem2").value;
-    // lineId = lineId.toString();
+    let inputValue = document.getElementById("modal-conn-title").value;
 
-    // create text tag for line's title
-    let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
-    let title = "";
+    // calculate id
+    let id = lines.getLatestItemId();
+    id++;
+    id = "line" + id;
 
-    if (createFrom == "db") {
-        inputValueConnection = lineTitle;
-        divId1 = elemId1;
-        divId2 = elemId2;
-        x1 = line_x1;
-        y1 = line_y1;
-        x2 = line_x2;
-        y2 = line_y2;
+    // get the ids of the elements connected by the selected line
+    let elemId1 = findObjValueByKeyValue(model.elements, "title", elemTitle1, "id");
+    let elemId2 = findObjValueByKeyValue(model.elements, "title", elemTitle2, "id");
 
-        // update array of lines' id
-        lines.addIdToArray(lineId.slice(4));
+    // get title
+    let title = inputValue;
 
-        line.id = lineId;
+    // get coordinates
+    let [x1, y1] = getElemCenterCoordinates(elemId1);
+    let [x2, y2] = getElemCenterCoordinates(elemId2);
 
-        text.id = "text" + lineId.slice(4);
-        // text title
-        title = lineTitle;
-    }
-    else {
-        inputValueConnection = document.getElementById("modal-connection-title").value;
+    // add data to db
+    addLineToDb(id, title, elemId1, elemId2, x1, y1, x2, y2);
 
-        divId1 = findObjValueByKeyValue(model.elements, "title", elemTitle1, "id");
-        divId2 = findObjValueByKeyValue(model.elements, "title", elemTitle2, "id");
+    return [id, title, elemId1, elemId2, x1, y1, x2, y2];
+}
 
-        // get (x;y) of div1 and div2
+// creates a new connection between two selected elements and adds it to the page
+function addLineToPage(id, title, elemId1, elemId2, x1, y1, x2, y2) {
+    // create an object
+    let connection = new Connection(id, title, elemId1, elemId2, x1, y1, x2, y2);
+    model.lines.push(connection);
+    // update array of ids
+    lines.addIdToArray(id.slice(4));
 
-        [x1, y1] = getElemCenterCoordinates(divId1);
-        [x2, y2] = getElemCenterCoordinates(divId2);
-
-        linesNum = lines.getLatestItemId();
-        linesNum++;
-        lines.addIdToArray(linesNum);
-
-        line.id = "line" + linesNum;
-
-        // create text tag for line's title
-        title = document.getElementById("modal-connection-title").value;
-
-        text.id = "text" + linesNum;
-
-        // add line data to db
-        addLineToDb(line.id, inputValueConnection, divId1, divId2, x1, y1, x2, y2);
-    }
-
-    line.setAttribute("class", "lines");
-
+    // add line
+    let line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+    line.id = id;
+    line.setAttribute("class", "line");
     line.setAttribute("x1", x1);
     line.setAttribute("y1", y1);
     line.setAttribute("x2", x2);
     line.setAttribute("y2", y2);
     line.setAttribute("stroke", "black");
+    document.getElementsByClassName("lines__container")[0].appendChild(line);
+    line.onclick = function () {
+        connection.selectItem(line.id, "line");
+    }
 
-    line.onclick = function onclick(event) {conn.selectItem(line.id, "line")};
-
-    let conn = new Connection(line.id, inputValueConnection, divId1, divId2, x1, y1, x2, y2);
-    model.lines.push(conn);
-
-    document.getElementsByTagName('svg')[0].appendChild(line);
-
-    // create text tag for line's title
+    // create a text tag for line's title
+    let text = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    text.id = "text" + id.slice(4);
+    text.setAttribute("class", "line__text");
     text.innerHTML = title;
-
-    const [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, title);
-
-    text.setAttribute("class", "lines__text");
-    
+    // get text coordinates
+    let [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, title);
+    // set coordinates
     text.setAttribute("x", x);
     text.setAttribute("y", y);
-
-    document.getElementsByTagName('svg')[0].appendChild(text);
-
-    // clear input and close modal window if new connection is created
-    connModal.clear();
-    connModal.clearSelectOptions();
-    connModal.close();
+    document.getElementsByClassName("lines-text__container")[0].appendChild(text);
 }
 
 function getElemCenterCoordinates(id) {
@@ -1161,7 +1128,13 @@ createElemBtn.addEventListener("click", function() {
 
 createConnBtn.addEventListener("click", function() {
     if (connModal.allInputsAreValid()) {
-        createConnection();
+        let [id, title, elemId1, elemId2, x1, y1, x2, y2] = getConnectionData();
+        addLineToPage(id, title, elemId1, elemId2, x1, y1, x2, y2);
+
+        // clear the inputs and close modal window if a new connection is created
+        connModal.clear();
+        connModal.clearSelectOptions();
+        connModal.close();
     }
 });
 
@@ -1197,8 +1170,7 @@ updateNoteBtn.addEventListener("click", function() {
 
 function updateElem() {
     let previewImg = document.getElementById("modal-load-img").src;
-    let titleInput = document.getElementById("modal-input").value;
-    // let inputId = "modal-input";
+    let titleInput = document.getElementById("modal-elem-title").value;
 
     editItemInDb("elements", model.selectedItemId, "img", previewImg);
     editItemInDb("elements", model.selectedItemId, "title", titleInput);
@@ -1207,7 +1179,7 @@ function updateElem() {
 function updateConn() {
     let elemTitle1 = document.getElementById("modal-elem1").value;
     let elemTitle2 = document.getElementById("modal-elem2").value;
-    let title = document.getElementById("modal-connection-title").value;
+    let title = document.getElementById("modal-conn-title").value;
 
     let divId1 = findObjValueByKeyValue(model.elements, "title", elemTitle1, "id");
     let divId2 = findObjValueByKeyValue(model.elements, "title", elemTitle2, "id");
@@ -1631,7 +1603,7 @@ function readItems(objectStoreName) {
                 console.log("element was created");
             }
             else if (objectStoreName == "lines") {
-                createConnection(cursor.key, cursor.value.title, cursor.value.elem1, cursor.value.elem2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2, "db");
+                addLineToPage(cursor.key, cursor.value.title, cursor.value.elem1, cursor.value.elem2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2);
                 console.log("line was created");
             }
             else if (objectStoreName == "notes") {
