@@ -756,19 +756,15 @@ selectSecondElement.addEventListener("change", function() {
 
 // generates an array of elements' identifiers
 // includes all elements connected to the element selected in the dropdown list
-
 function createArrayOfIds(elemId) {
 
     let idArr = [];
-
-    for (let i = 0; i <= lines.maxNumId; i++) {
-        for (let key in model.lines[i]) {
-            if (((model.lines[i])[key] == elemId) && (key == "elemId1")) {
-                idArr.push((model.lines[i])["elemId2"]);
-            }
-            else if (((model.lines[i])[key] == elemId) && (key == "elemId2")) {
-                idArr.push((model.lines[i])["elemId1"]);
-            }
+    for (let key in model.lines) {
+        if (model.lines[key].elemId1 == elemId) {
+            idArr.push(model.lines[key].elemId2);
+        }
+        else if (model.lines[key].elemId2 == elemId) {
+            idArr.push(model.lines[key].elemId1);
         }
     }
 
@@ -776,7 +772,6 @@ function createArrayOfIds(elemId) {
 }
 
 // generates an array of elements' titles from an array of elements' identifiers
-
 function createArrayOfTitles(elemId) {
     
     let titleArr = [];
@@ -1346,10 +1341,13 @@ function updateNote() {
 function deleteElement(id) {
 
     // find lines connected to this element and delete them
-    findLineId(id, "", 'delete');
+    findLineId(id, "", "delete");
 
     // delete id from array of all elements
     elements.removeIdFromArray(id.slice(4));
+
+    // delete an object
+    deleteObj(model.elements, "id", id);
 
     // delete data from db
     deleteItem("elements", id);
@@ -1369,6 +1367,9 @@ function deleteConnection(id) {
     // delete id from array of all lines
     lines.removeIdFromArray(id.slice(4));
 
+    // delete an object
+    deleteObj(model.lines, "id", id);
+
     // delete data from db
     deleteItem("lines", id);
 
@@ -1379,7 +1380,6 @@ function deleteConnection(id) {
 function countLineTitleCoordinates(x1, y1, x2, y2, title) {
 
     // calculate the width of the text above the line
-
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
 
@@ -1389,7 +1389,6 @@ function countLineTitleCoordinates(x1, y1, x2, y2, title) {
     // console.log("text.width = " + text.width);
 
     // result
-
     x1 = parseFloat(x1);
     y1 = parseFloat(y1);
     x2 = parseFloat(x2);
@@ -1403,9 +1402,9 @@ function countLineTitleCoordinates(x1, y1, x2, y2, title) {
     return [x, y];
 }
 
-function deleteLineTitle(lineId) {
+function deleteLineTitle(id) {
 
-    let titleId = "text" + lineId.slice(4); 
+    let titleId = "text" + id.slice(4); 
     console.log("deleteLineTitleFunction");
     console.log("titleId = " + titleId);
 
@@ -1417,6 +1416,9 @@ function deleteNote(id) {
 
     // delete id from array of all notes
     notes.removeIdFromArray(id.slice(4));
+
+    // delete an object
+    deleteObj(model.notes, "id", id);
 
     // delete data from db
     deleteItem("notes", id);
