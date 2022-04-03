@@ -718,8 +718,7 @@ deleteBtn.addEventListener("click", function() {
     }
     else if (model.selectedType == "line") {
         let id = model.selectedItemId.slice(4);
-        let key = findObjKey(model.lines, "line" + id);
-        deleteLineObject(model.lines[key], "line" + id);
+        deleteObj(model.lines, "id", "line" + id);
         deleteConnection("line" + id);
         deleteLineTitle("line" + id);
     }
@@ -933,7 +932,7 @@ function addLineToPage(id, title, elemId1, elemId2, x1, y1, x2, y2) {
     text.setAttribute("class", "line__text");
     text.innerHTML = title;
     // get text coordinates
-    let [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, title);
+    let [x, y] = countLineTitleCoordinates(x1, y1, x2, y2, title);
     // set coordinates
     text.setAttribute("x", x);
     text.setAttribute("y", y);
@@ -973,7 +972,7 @@ function findLineId(draggableElementId, elem, action) {
                     moveLines(lineId, elem, key);
                 }
                 else if (action == 'delete') {
-                    deleteLineObject(model.lines[i], lineId);
+                    deleteObj(model.lines, "id", lineId);
                     deleteConnection(lineId);
                     deleteLineTitle(lineId);
                     // if the line is connected to the deleted element at the start point (divId1), we don't need to read the key (elemId2) that defines the element to which the line is connected at the end point (divId2)
@@ -1007,7 +1006,7 @@ function moveLines(lineId, elem, key) {
             let text = document.getElementById(textId);
             // console.log("text = " + textId);
 
-            const [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, text.innerHTML);
+            const [x, y] = countLineTitleCoordinates(x1, y1, x2, y2, text.innerHTML);
 
             text.setAttribute("x", x);
             text.setAttribute("y", y);
@@ -1027,7 +1026,7 @@ function moveLines(lineId, elem, key) {
             let text = document.getElementById(textId);
             // console.log("text = " + textId);
 
-            const [x, y] = defineLineTitleCoordinates(x2, y2, x1, y1, text.innerHTML);
+            const [x, y] = countLineTitleCoordinates(x2, y2, x1, y1, text.innerHTML);
 
             text.setAttribute("x", x);
             text.setAttribute("y", y);
@@ -1143,10 +1142,20 @@ function findObjValueByKeyValue(obj, knownKey, knownValue, searchKey) {
     }
 }
 
+// sets new object value
 function setObjValue(obj, indexName, value) {
     for (let key in obj) {
         if (obj[key].id == model.selectedItemId) {
             (obj[key])[indexName] = value;
+        }
+    }
+}
+
+// deletes an object
+function deleteObj(obj, indexName, value) {
+    for (let key in obj) {
+        if ((obj[key])[indexName] == value) {
+            delete obj[key];
         }
     }
 }
@@ -1308,8 +1317,8 @@ function updateConn() {
     // update text tag
     let textId = "text" + model.selectedItemId.slice(4);
     let text = document.getElementById(textId);
-    text.innerHTML = title;
-    let [x, y] = defineLineTitleCoordinates(x1, y1, x2, y2, title);
+    text.innerHTML = titleInput;
+    let [x, y] = countLineTitleCoordinates(x1, y1, x2, y2, titleInput);
     text.setAttribute("x", x);
     text.setAttribute("y", y);
 }
@@ -1334,19 +1343,19 @@ function updateNote() {
     text.innerHTML = textInput;
 }
 
-function deleteElement(divId) {
+function deleteElement(id) {
 
     // find lines connected to this element and delete them
-    findLineId(divId, "", 'delete');
+    findLineId(id, "", 'delete');
 
     // delete id from array of all elements
-    elements.removeIdFromArray(divId.slice(3));
+    elements.removeIdFromArray(id.slice(4));
 
     // delete data from db
-    deleteItem("elements", divId);
+    deleteItem("elements", id);
 
     // delete the element
-    let elem = document.getElementById(divId);
+    let elem = document.getElementById(id);
     elem.parentNode.removeChild(elem);
 
     // calling drag function again after deleting a div
@@ -1355,28 +1364,19 @@ function deleteElement(divId) {
     }
 }
 
-function deleteLineObject(obj, lineId) {
-    for (let key in obj) {
-        if ((key == "id") && (obj[key] == lineId)) {
-            console.log("id = " + key + " lineId = " + lineId);
-            delete model.lines[key];
-        }
-    }
-}
-
-function deleteConnection(lineId) {
+function deleteConnection(id) {
 
     // delete id from array of all lines
-    lines.removeIdFromArray(lineId.slice(4));
+    lines.removeIdFromArray(id.slice(4));
 
     // delete data from db
-    deleteItem("lines", lineId);
+    deleteItem("lines", id);
 
-    let line = document.getElementById(lineId);
+    let line = document.getElementById(id);
     line.parentNode.removeChild(line);
 }
 
-function defineLineTitleCoordinates(x1, y1, x2, y2, title) {
+function countLineTitleCoordinates(x1, y1, x2, y2, title) {
 
     // calculate the width of the text above the line
 
@@ -1413,16 +1413,16 @@ function deleteLineTitle(lineId) {
     title.parentNode.removeChild(title);
 }
 
-function deleteNote(noteId) {
+function deleteNote(id) {
 
     // delete id from array of all notes
-    notes.removeIdFromArray(noteId.slice(4));
+    notes.removeIdFromArray(id.slice(4));
 
     // delete data from db
-    deleteItem("notes", noteId);
+    deleteItem("notes", id);
 
     // delete the note
-    let note = document.getElementById(noteId);
+    let note = document.getElementById(id);
     note.parentNode.removeChild(note);
 
     // calling drag function again after deleting a div
@@ -1494,8 +1494,8 @@ function addLineToDb(id, title, elemId1, elemId2, x1, y1, x2, y2) {
     var item = {
         id: id,
         title: title,
-        elem1: elemId1,
-        elem2: elemId2,
+        elemId1: elemId1,
+        elemId2: elemId2,
         x1: parseFloat(x1),
         y1: parseFloat(y1),
         x2: parseFloat(x2),
@@ -1630,7 +1630,7 @@ function readItems(objectStoreName) {
                 console.log("element was created");
             }
             else if (objectStoreName == "lines") {
-                addLineToPage(cursor.key, cursor.value.title, cursor.value.elem1, cursor.value.elem2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2);
+                addLineToPage(cursor.key, cursor.value.title, cursor.value.elemId1, cursor.value.elemId2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2);
                 console.log("line was created");
             }
             else if (objectStoreName == "notes") {
