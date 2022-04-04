@@ -19,7 +19,7 @@ let model = {
     elemNumber: 0,
     connNumber: 0,
     noteNumber: 0,
-    elemWidth: 200,
+    elemWidth: 150,
     noteWidth: 150,
     selectedItemId: "", // id of the latest selected item
     selectedType: "", // type (element, line or note) of the latest selected item
@@ -587,10 +587,9 @@ function dragElement(elem, i, itemType) {
         elem.style.top = (elem.offsetTop - pos2) + "px";
         elem.style.left = (elem.offsetLeft - pos1) + "px";
 
-        // получим id линий, которые присоединены к этому элементу
-
+        // move all lines connected to the draggable element
         if (itemType == "element") {
-            findLineId(draggableElements[i].id, elem, 'move');
+            moveLines(elem.id);
         }
     }
 
@@ -605,8 +604,8 @@ function dragElement(elem, i, itemType) {
             editItemInDb("elements", draggableElements[i].id, "x", elem.style.left);
             editItemInDb("elements", draggableElements[i].id, "y", elem.style.top);
 
-            // lineArr stores identifiers of the lines connected to the draggable element 
-            let lineArr = findLineId(draggableElements[i].id, elem, 'find');
+            // lineArr stores identifiers of the lines connected to the draggable element
+            let lineArr = getLineIdArr(elem.id);
 
             // updates new coordinates to db after moving an element
             changeLineCoordinates(lineArr);
@@ -717,10 +716,7 @@ deleteBtn.addEventListener("click", function() {
         deleteElement(model.selectedItemId);
     }
     else if (model.selectedType == "line") {
-        let id = model.selectedItemId.slice(4);
-        deleteObj(model.lines, "id", "line" + id);
-        deleteConnection("line" + id);
-        deleteLineTitle("line" + id);
+        deleteConnection(model.selectedItemId);
     }
     else if (model.selectedType == "note") {
         deleteNote(model.selectedItemId);
@@ -942,87 +938,51 @@ function getElemCenterCoordinates(id) {
     return [x, y];
 }
 
-// finds all identifiers of lines which are connected to the draggable element
-
-function findLineId(draggableElementId, elem, action) {
-
-    let lineId = "";
+// gets all identifiers of lines which are connected to the selected/draggable element
+function getLineIdArr(elemId) {
     let lineArr = [];
-
-    for (let i = 0; i <= lines.maxNumId; i++) {
-        //showDivs(lines["line" + i], "lines.line" + i);
-
-        for (let key in model.lines[i]) {
-            // console.log("lines.line" + i + "." + key + " = " + (lines["line" + i])[key]);
-
-            if ((model.lines[i])[key] == draggableElementId) {
-                // console.log("key = " + i);
-                // console.log("innerKey = " + key);
-                // console.log("lineId = " + model.lines[i].id);
-                lineId = model.lines[i].id;
-                if (action == 'find') {
-                    lineArr.push(lineId);
-                }
-                else if (action == 'move') {
-                    moveLines(lineId, elem, key);
-                }
-                else if (action == 'delete') {
-                    deleteObj(model.lines, "id", lineId);
-                    deleteConnection(lineId);
-                    deleteLineTitle(lineId);
-                    // if the line is connected to the deleted element at the start point (divId1), we don't need to read the key (elemId2) that defines the element to which the line is connected at the end point (divId2)
-                    break;
-                }
-            }   
-        }
+    for (let key in model.lines) {
+        if ((model.lines[key].elemId1 == elemId) || (model.lines[key].elemId2 == elemId)) {
+            lineArr.push(model.lines[key].id);
+        } 
     }
+
     return lineArr;
 }
 
 // moves lines connected to the draggable element
-
-function moveLines(lineId, elem, key) {
-    let linesAll = document.getElementsByTagName("line");
-
-    for (let i = 0; i < linesAll.length; i++) {
-        if ((linesAll[i].id == lineId) && (key == "elemId1")) {
-            let x1 = parseFloat(elem.style.left) + model.elemWidth/2;
-            let y1 = parseFloat(elem.style.top) + model.elemWidth/2;
-
-            linesAll[i].setAttribute("x1", x1);
-            linesAll[i].setAttribute("y1", y1);
+function moveLines(elemId) {
+    for (let key in model.lines) {
+        if (model.lines[key].elemId1 == elemId) {
+            // if index is elemId1, the line is connected to the element at the start point, so only x1 and y1 has to be changed
+            let [x1, y1] = getElemCenterCoordinates(elemId);
+            let lineId = model.lines[key].id;
+            let line = document.getElementById(lineId);
+            line.setAttribute("x1", x1);
+            line.setAttribute("y1", y1);
 
             // move line's title
-
-            let x2 = linesAll[i].getAttribute("x2");
-            let y2 = linesAll[i].getAttribute("y2");
-
+            let x2 = line.getAttribute("x2");
+            let y2 = line.getAttribute("y2");
             let textId = "text" + lineId.slice(4);
             let text = document.getElementById(textId);
-            // console.log("text = " + textId);
-
             const [x, y] = countLineTitleCoordinates(x1, y1, x2, y2, text.innerHTML);
-
             text.setAttribute("x", x);
             text.setAttribute("y", y);
         }
-        else if ((linesAll[i].id == lineId) && (key == "elemId2")) {
-            let x2 = parseFloat(elem.style.left) + model.elemWidth/2;
-            let y2 = parseFloat(elem.style.top) + model.elemWidth/2;
-            linesAll[i].setAttribute("x2", x2);
-            linesAll[i].setAttribute("y2", y2);
+        else if (model.lines[key].elemId2 == elemId) {
+            let [x2, y2] = getElemCenterCoordinates(elemId);
+            let lineId = model.lines[key].id;
+            let line = document.getElementById(lineId);
+            line.setAttribute("x2", x2);
+            line.setAttribute("y2", y2);
 
             // move line's title
-
-            let x1 = linesAll[i].getAttribute("x1");
-            let y1 = linesAll[i].getAttribute("y1");
-
-            let textId= "text" + lineId.slice(4);
+            let x1 = line.getAttribute("x1");
+            let y1 = line.getAttribute("y1");
+            let textId = "text" + lineId.slice(4);
             let text = document.getElementById(textId);
-            // console.log("text = " + textId);
-
             const [x, y] = countLineTitleCoordinates(x2, y2, x1, y1, text.innerHTML);
-
             text.setAttribute("x", x);
             text.setAttribute("y", y);
         }
@@ -1120,19 +1080,19 @@ function addNoteToPage(id, title, text, x, y) {
 }
 
 // finds value by selected item's id
-function findObjValue(obj, keyName) {
+function findObjValue(obj, indexName) {
     for (let key in obj) {
         if (obj[key].id == model.selectedItemId) {
-            return((obj[key])[keyName]);
+            return((obj[key])[indexName]);
         }
     }
 }
 
-// finds searchKey's value with knownKey and knownValue
-function findObjValueByKeyValue(obj, knownKey, knownValue, searchKey) {
+// finds searchIndex's value with knownIndex and knownValue
+function findObjValueByKeyValue(obj, knownIndex, knownValue, searchIndex) {
     for (let key in obj) {
-        if ((obj[key])[knownKey] == knownValue) {
-            return((obj[key])[searchKey]);
+        if ((obj[key])[knownIndex] == knownValue) {
+            return((obj[key])[searchIndex]);
         }
     }
 }
@@ -1156,22 +1116,10 @@ function deleteObj(obj, indexName, value) {
 }
 
 // checks if value is taken
-function isValueTaken(obj, knownKey, knownValue) {
+function isValueTaken(obj, indexName, value) {
     for (let key in obj) {
-        if ((obj[key])[knownKey] == knownValue) {
-            console.log((obj[key])[knownKey] + " ?= " + knownValue);
+        if ((obj[key])[indexName] == value) {
             return true;
-        }
-    }
-}
-
-// finds key by keyValue
-function findObjKey(obj, keyValue) {
-    for (let i = 0; i <= lines.maxNumId; i++) {
-        for (let key in obj[i]) {
-            if ((obj[i])[key] == keyValue) {
-                return(i);
-            }
         }
     }
 }
@@ -1340,8 +1288,11 @@ function updateNote() {
 
 function deleteElement(id) {
 
-    // find lines connected to this element and delete them
-    findLineId(id, "", "delete");
+    // finds lines connected to this element and deletes them
+    let lineArr = getLineIdArr(id);
+    for (let i = 0; i < lineArr.length; i++) {
+        deleteConnection(lineArr[i]);
+    }
 
     // delete id from array of all elements
     elements.removeIdFromArray(id.slice(4));
@@ -1375,6 +1326,17 @@ function deleteConnection(id) {
 
     let line = document.getElementById(id);
     line.parentNode.removeChild(line);
+
+    // delete line title
+    deleteLineTitle(id);
+}
+
+function deleteLineTitle(id) {
+
+    let titleId = "text" + id.slice(4); 
+
+    let title = document.getElementById(titleId);
+    title.parentNode.removeChild(title);
 }
 
 function countLineTitleCoordinates(x1, y1, x2, y2, title) {
@@ -1400,16 +1362,6 @@ function countLineTitleCoordinates(x1, y1, x2, y2, title) {
     // console.log("x = " + x + ", y = " + y);
 
     return [x, y];
-}
-
-function deleteLineTitle(id) {
-
-    let titleId = "text" + id.slice(4); 
-    console.log("deleteLineTitleFunction");
-    console.log("titleId = " + titleId);
-
-    let title = document.getElementById(titleId);
-    title.parentNode.removeChild(title);
 }
 
 function deleteNote(id) {
