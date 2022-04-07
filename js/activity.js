@@ -1,15 +1,6 @@
 'use strict';
 
 function init() {
-    // drag'n'drop elements
-    for (let i = 0; i < draggableElements.length; i++) {
-        dragElement(draggableElements[i], i, "element");
-    }
-    
-    for (let i = 0; i < draggableNotes.length; i++) {
-        dragElement(draggableNotes[i], i, "note");
-    }
-
     elemModal.setPreviewImgtoBlank();
 }
 
@@ -556,82 +547,55 @@ let draggableElements = document.getElementsByClassName("element");
 
 let draggableNotes = document.getElementsByClassName("note");
 
-function dragElement(elem, i, itemType) {
-    let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+// drag and drop items
+function dragItem(item, e, itemType) {
+    e.preventDefault();
+    // current coordinates of the pointer
+    let pointerX = e.clientX;
+    let pointerY = e.clientY;
 
-    if (document.getElementById(elem.id)) {
-        document.getElementById(elem.id).onmousedown = dragMouseDown;
-    }
-    else {
-        elem.onmousedown = dragMouseDown;
-    }
+    document.onmousemove = itemDrag;
+    document.onmouseup = closeDragItem;
 
-    function dragMouseDown(e) {
-        e = e || window.event;
-        e.preventDefault();
-        
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        document.onmouseup = closeDragElement;
-        document.onmousemove = elementDrag;
-    }
-
-    function elementDrag(e) {
-        e = e || window.event;
-        e.preventDefault();
-
-        pos1 = pos3 - e.clientX;
-        pos2 = pos4 - e.clientY;
-        pos3 = e.clientX;
-        pos4 = e.clientY;
-        elem.style.top = (elem.offsetTop - pos2) + "px";
-        elem.style.left = (elem.offsetLeft - pos1) + "px";
+    function itemDrag(e) {
+        // the distance between previous and new pointer coordinates
+        let shiftX = e.clientX - pointerX;
+        let shiftY = e.clientY - pointerY;
+        // save new pointer coordinates
+        pointerX = e.clientX;
+        pointerY = e.clientY;
+        // set new coordinates of the left-upper corner of an item
+        // offsetLeft/offsetTop are X/Y-coordinates for the left/top edge of the draggable item relative to it's container
+        item.style.left = item.offsetLeft + shiftX + "px";
+        item.style.top = item.offsetTop + shiftY + "px";
 
         // move all lines connected to the draggable element
         if (itemType == "element") {
-            moveLines(elem.id);
+            moveLines(item.id);
         }
     }
 
-    function closeDragElement() {
-
+    function closeDragItem() {
         if (itemType == "element") {
-
-            // определим id элемента, который мы передвигаем
-            console.log(draggableElements[i].id);
-
-            // edit element's coordinates in db
-            editItemInDb("elements", draggableElements[i].id, "x", elem.style.left);
-            editItemInDb("elements", draggableElements[i].id, "y", elem.style.top);
+            // edit item's coordinates in db
+            editItemInDb("elements", item.id, "x", item.style.left);
+            editItemInDb("elements", item.id, "y", item.style.top);
 
             // lineArr stores identifiers of the lines connected to the draggable element
-            let lineArr = getLineIdArr(elem.id);
-
+            let lineArr = getLineIdArr(item.id);
             // updates new coordinates to db after moving an element
             changeLineCoordinates(lineArr);
         }
         else if (itemType == "note") {
-            console.log(draggableNotes[i].id);
-
-            // edit element's coordinates in db
-            editItemInDb("notes", draggableNotes[i].id, "x", elem.style.left);
-            editItemInDb("notes", draggableNotes[i].id, "y", elem.style.top);
+            // edit item's coordinates in db
+            editItemInDb("notes", item.id, "x", item.style.left);
+            editItemInDb("notes", item.id, "y", item.style.top);
         }
-
+        // remove mouse events
         document.onmouseup = null;
         document.onmousemove = null;
     }
 }
-
-// variables
-
-let newItem = document.getElementById("new-element");
-
-let modalWindow = document.getElementById("modal-element");
-let modalWindowConnection = document.getElementById("modal-connection");
-let modalWindowNote = document.getElementById("modal-note");
-
-let closeBtn = document.querySelector("modal__close");
 
 // toolbar
 
@@ -831,9 +795,12 @@ function addElementToPage(id, title, img, x, y) {
     elem.style.left = x;
     elem.style.top = y;
     document.getElementsByClassName("elements__container")[0].appendChild(elem);
-    elem.onclick = function() {
+    elem.addEventListener("click", function() {
         element.selectItem(elem.id, "elem");
-    }
+    });
+    elem.addEventListener("mousedown", function(e) {
+        dragItem(elem, e, "element");
+    });
 
     // add image container
     let pic = document.createElement("div");
@@ -860,11 +827,6 @@ function addElementToPage(id, title, img, x, y) {
     elem_title.className = "element__title";
     elem_title.innerHTML = title;
     document.getElementById(elem.id).appendChild(elem_title);
-
-    // calling drag function again after creating a new div
-    for (let i = 0; i < draggableElements.length; i++) {
-        dragElement(draggableElements[i], i, "element");
-    }
 }
 
 // gets data from connection modal window
@@ -1050,9 +1012,12 @@ function addNoteToPage(id, title, text, x, y) {
     note.style.left = x;
     note.style.top = y;
     document.getElementsByClassName("notes__container")[0].appendChild(note);
-    note.onclick = function() {
+    note.addEventListener("click", function() {
         noteObj.selectItem(note.id, "note");
-    }
+    });
+    note.addEventListener("mousedown", function(e) {
+        dragItem(note, e, "note");
+    });
 
     // add title
     let note_title = document.createElement("p");
@@ -1072,11 +1037,6 @@ function addNoteToPage(id, title, text, x, y) {
     icon.src = "img/icons8-idea.svg";
     icon.alt = "selected";
     document.getElementById(note.id).appendChild(icon);
-
-    // calling drag function again after creating a new div
-    for (let i = 0; i < draggableNotes.length; i++) {
-        dragElement(draggableNotes[i], i, "note");
-    }
 }
 
 // finds value by selected item's id
@@ -1306,11 +1266,6 @@ function deleteElement(id) {
     // delete the element
     let elem = document.getElementById(id);
     elem.parentNode.removeChild(elem);
-
-    // calling drag function again after deleting a div
-    for (let i = 0; i < draggableElements.length; i++) {
-        dragElement(draggableElements[i], i, "element");
-    }
 }
 
 function deleteConnection(id) {
@@ -1378,11 +1333,6 @@ function deleteNote(id) {
     // delete the note
     let note = document.getElementById(id);
     note.parentNode.removeChild(note);
-
-    // calling drag function again after deleting a div
-    for (let i = 0; i < draggableNotes.length; i++) {
-        dragElement(draggableNotes[i], i, "note");
-    }
 }
 
 // indexedDB
