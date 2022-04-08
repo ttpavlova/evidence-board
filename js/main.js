@@ -1,7 +1,16 @@
-'use strict';
+import { addElementToDb, addLineToDb, addNoteToDb, getItemFromDb, editItemInDb, deleteItemFromDb, readItemsFromDb, clearObjStore } from './modules/indexeddb.js';
+import { zoom, setZoomValue, getZoomValue } from './modules/zoom.js';
+import { Modal } from './modules/Modal.js';
+import { ElemModal } from './modules/ElemModal.js';
+import { ConnModal } from './modules/ConnModal.js';
+import { NoteModal } from './modules/NoteModal.js';
+import { Item } from './modules/Item.js';
+import { Element } from './modules/Element.js';
+import { Connection } from './modules/Connection.js';
+import { Note } from './modules/Note.js';
 
 function init() {
-    elemModal.setPreviewImgtoBlank();
+    setZoomValue();
 }
 
 window.onload = init;
@@ -129,147 +138,10 @@ let updateConnBtn = document.getElementById("update-conn-btn");
 let createNoteBtn = document.getElementById("create-note-btn");
 let updateNoteBtn = document.getElementById("update-note-btn");
 
-// modal constructor
-
-function Modal(window, createBtn, updateBtn) {
-    this.window = document.getElementById(window);
-    this.createBtn = document.getElementById(createBtn);
-    this.updateBtn = document.getElementById(updateBtn);
-}
-
-// opens modal window
-Modal.prototype.open = function() {
-    this.window.classList.add("modal__open");
-}
-
-// closes modal window
-Modal.prototype.close = function() {
-    this.window.classList.remove("modal__open");
-}
-
-// show create btn, hide update btn
-Modal.prototype.showCreateBtn = function() {
-    this.createBtn.classList.remove("hidden");
-    this.updateBtn.classList.add("hidden");
-}
-
-// show update btn, hide create btn
-Modal.prototype.showUpdateBtn = function() {
-    this.updateBtn.classList.remove("hidden");
-    this.createBtn.classList.add("hidden");
-}
-
-// clear all text fields and error messages
-Modal.prototype.clear = function() {
-    this.window.querySelector(".modal__input").value = "";
-    if (this.window.querySelector(".modal__message") != null) {
-        this.window.querySelector(".modal__message").innerHTML = "";
-    }
-}
-
-// checks if text input is valid
-Modal.prototype.inputIsValid = function() {
-    let regex = /^[^\s]+[A-Za-z\d\s]+[^\s]$/;
-    let inputValue = this.window.querySelector(".modal__input").value;
-
-    console.log("in check " + inputValue);    
-
-    if (regex.test(inputValue)) {
-        return true;
-    }
-}
-
 // element modal window
 
-let elemModal = new Modal("modal-element", "create-elem-btn", "update-elem-btn");
-
-// shows that image isn't selected yet
-elemModal.setPreviewImgtoBlank = function() {
-    let previewImg = document.getElementById("modal-load-img");
-
-    previewImg.src = "img/add-image.png";
-    previewImg.classList.add("blank");
-}
-
-// removes default icon when image is selected
-elemModal.removeBlankClass = function() {
-    let previewImg = document.getElementById("modal-load-img");
-
-    previewImg.classList.remove("blank");
-}
-
-// adds a file preview and representes the file's data as a base64 encoded string
-elemModal.previewFile = function() {
-    let previewImg = document.getElementById("modal-load-img");
-    let file = document.getElementById("modal-load-file").files[0];
-    let reader = new FileReader();
-  
-    reader.onloadend = function () {
-        previewImg.src = reader.result;
-    }
-  
-    if (file) {
-        reader.readAsDataURL(file);
-        elemModal.removeBlankClass();
-    }
-    else {
-        elemModal.setPreviewImgtoBlank();
-    }
-}
-
-// fills inputs with data from db
-elemModal.fillInputs = function() {
-    let previewImg = document.getElementById("modal-load-img");
-    let titleInput = document.getElementById("modal-elem-title");
-
-    let img = findObjValue(model.elements, "img");
-    let title = findObjValue(model.elements, "title");
-
-    previewImg.src = img;
-    titleInput.value = title;
-}
-
-// checks if image is selected
-elemModal.imageIsSelected = function() {
-    let imgPreview = document.getElementById("modal-load-img");
-
-    if (imgPreview.classList.contains("blank")) {
-        console.log("no files selected");
-    }
-    else {
-        console.log("image is selected");
-        return true;
-    }
-}
-
-// checks if inputs are valid
-elemModal.allInputsAreValid = function() {
-    if (elemModal.imageIsSelected() && elemModal.inputIsValid()) {
-        return true;
-    }
-    else {
-        elemModal.showErrorMessages();
-    }
-}
-
-// shows error message that explains which input is empty or incorrect
-elemModal.showErrorMessages = function() {
-    let message = document.getElementById("message-elem");
-
-    if (elemModal.imageIsSelected()) {
-        if (!elemModal.inputIsValid()) {
-            message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
-        }
-    }
-    else {
-        if (elemModal.inputIsValid()) {
-            message.innerHTML = "No image was selected";
-        }
-        else {
-            message.innerHTML = "All fields must contain data";
-        }
-    }
-}
+let elemModal = new ElemModal("modal-element", "create-elem-btn", "update-elem-btn");
+elemModal.setPreviewImgtoBlank();
 
 let newElemBtn = document.getElementById("new-element");
 
@@ -288,118 +160,10 @@ closeElemModalBtn.addEventListener("click", function() {
 
 // connection modal window
 
-let connModal = new Modal("modal-connection", "create-conn-btn", "update-conn-btn");
+let connModal = new ConnModal("modal-connection", "create-conn-btn", "update-conn-btn");
 
 let selectFirstElement = document.getElementById("modal-elem1");
 let selectSecondElement = document.getElementById("modal-elem2");
-
-// fills both dropdown lists with options
-connModal.fillSelectOptions = function() {
-    let elements = document.getElementsByClassName("element__title");
-
-    for (let i = 0; i < elements.length; i++) {
-        let option = elements[i].innerHTML;
-
-        let elem = document.createElement("option");
-        elem.textContent = option;
-        elem.value = option;
-        selectFirstElement.appendChild(elem);
-
-        let elem2 = elem.cloneNode(true);
-        selectSecondElement.appendChild(elem2);
-    }
-}
-
-// clears options in dropdown lists
-connModal.clearSelectOptions = function() {
-    let num = selectFirstElement.options.length - 1;
-    for (let i = num; i > 0; i--) {
-        selectFirstElement.remove(i);
-        selectSecondElement.remove(i);
-    }
-}
-
-// sets disabled state to options which cannot be selected
-connModal.disableUnavalilableSelectOptions = function(currentSelectId, anotherSelectId) {
-    let elems = document.querySelector("#modal-elem1").getElementsByTagName("option");
-    let select1 = document.getElementById(currentSelectId);
-    let select2 = document.getElementById(anotherSelectId);
-    let elemTitle = select1.value;
-
-    let elemId = findObjValueByKeyValue(model.elements, "title", elemTitle, "id");
-    let titleArr = createArrayOfTitles(elemId);
-
-    for (let i = 1; i < elems.length; i++) {
-        // remove disabled state on every element until we find the new chosen one
-        select2[i].disabled = false;
-        // disable the same element in another dropdown list
-        if (select1.selectedIndex == i) {
-            select2[i].disabled = true;
-        }
-        // disable all elements which already have connection with the selected element
-        for (let j = 0; j < titleArr.length; j++) {
-            if (select2.options[i].text == titleArr[j]) {
-                select2[i].disabled = true;
-            }
-        }
-    }
-}
-
-// fills inputs with data from db
-connModal.fillInputs = function() {
-    let titleInput = document.getElementById("modal-conn-title");
-
-    let elemId1 = findObjValue(model.lines, "elemId1");
-    let elemId2 = findObjValue(model.lines, "elemId2");
-    let title = findObjValue(model.lines, "title");
-
-    let elemTitle1 = findObjValueByKeyValue(model.elements, "id", elemId1, "title");
-    let elemTitle2 = findObjValueByKeyValue(model.elements, "id", elemId2, "title");
-
-    selectFirstElement.value = elemTitle1;
-    selectSecondElement.value = elemTitle2;
-    titleInput.value = title;
-}
-
-// checks if dropdown options are selected
-connModal.dropdownOptionsAreSelected = function() {
-    let index1 = selectFirstElement.selectedIndex;
-    let index2 = selectSecondElement.selectedIndex;
-
-    if ((index1 != 0) && (index2 != 0)) {
-        // both options are selected
-        return true;
-    }
-}
-
-// checks if inputs are valid
-connModal.allInputsAreValid = function() {
-    if (connModal.dropdownOptionsAreSelected() && connModal.inputIsValid()) {
-        return true;
-    }
-    else {
-        connModal.showErrorMessages();
-    }
-}
-
-// shows error message that explains which input is empty or incorrect
-connModal.showErrorMessages = function() {
-    let message = document.getElementById("message-conn");
-
-    if (connModal.dropdownOptionsAreSelected()) {
-        if (!connModal.inputIsValid()) {
-            message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
-        }
-    }
-    else {
-        if (connModal.inputIsValid()) {
-            message.innerHTML = "One of elements isn't selected";
-        }
-        else {
-            message.innerHTML = "All fields must contain data";
-        }
-    }
-}
 
 let newConnBtn = document.getElementById("new-connection");
 
@@ -419,29 +183,7 @@ closeConnModalBtn.addEventListener("click", function() {
 
 // note modal window
 
-let noteModal = new Modal("modal-note", "create-note-btn", "update-note-btn");
-
-// fills inputs with data from db
-noteModal.fillInputs = function() {
-    let titleInput = document.getElementById("modal-note-title");
-    let textInput = document.getElementById("modal-note-text");
-
-    let title = findObjValue(model.notes, "title");
-    let text = findObjValue(model.notes, "text");
-
-    titleInput.value = title;
-    textInput.value = text;
-}
-
-// checks if inputs are empty
-noteModal.inputsAreEmpty = function() {
-    let titleInput = document.getElementById("modal-note-title").value;
-    let textInput = document.getElementById("modal-note-text").value;
-
-    if ((titleInput == "") && (textInput == "")) {
-        return true;
-    }
-}
+let noteModal = new NoteModal("modal-note", "create-note-btn", "update-note-btn");
 
 let newNoteBtn = document.getElementById("new-note");
 
@@ -457,38 +199,9 @@ closeNoteModalBtn.addEventListener("click", function() {
     noteModal.close();
 });
 
-// item constructor
-
-function Item() {
-    // selected: false;
-}
-
-// select item onclick
-Item.prototype.selectItem = function(itemId, itemType) {
-    // the element selected now
-    let item = document.getElementById(itemId);
-    let className = "";
-
-    if ((itemType == "elem") || (itemType == "note")) {
-        className = "item__selected";
-        view.showIcon(itemId);
-    }
-    else if (itemType == "line") {
-        className = "line__selected";
-    }
-
-    view.removeSelection(itemId);
-    item.classList.add(className);
-
-    model.selectedItemId = itemId; // remember id of the latest selected element
-    model.selectedType = itemType; // remember if the latest selected item was element, line or note
-
-    view.setEditDeleteBtnState();
-}
-
-Item.prototype.removeSelection = function() {
-    // ...
-}
+// Item.prototype.removeSelection = function() {
+//     // ...
+// }
 
 // draggableItem constructor
 
@@ -502,50 +215,13 @@ draggableItem.prototype.dragItem = function() {
     // ...
 }
 
-// element constructor
-
-function Element(id, title, img, x, y) {
-    this.id = id;
-    this.title = title;
-    this.img = img;
-    this.x = x;
-    this.y = y;
-}
-
-Element.prototype = new draggableItem();
+// Element.prototype = new draggableItem();
 
 // Element.prototype.selected = false;
 
-// connection constructor
+// Connection.prototype = new Item();
 
-function Connection(id, title, elemId1, elemId2, x1, y1, x2, y2) {
-    this.id = id;
-    this. title = title;
-    this.elemId1 = elemId1;
-    this.elemId2 = elemId2;
-    this.x1 = x1;
-    this.y1 = y1;
-    this.x2 = x2;
-    this.y2 = y2;
-}
-
-Connection.prototype = new Item();
-
-// note constructor
-
-function Note(id, title, text, x, y) {
-    this.id = id;
-    this.title = title;
-    this.text = text;
-    this.x = x;
-    this.y = y;
-}
-
-Note.prototype = new draggableItem();
-
-let draggableElements = document.getElementsByClassName("element");
-
-let draggableNotes = document.getElementsByClassName("note");
+// Note.prototype = new draggableItem();
 
 // drag and drop items
 function dragItem(item, e, itemType) {
@@ -598,53 +274,6 @@ function dragItem(item, e, itemType) {
 }
 
 // toolbar
-
-// zoom
-
-setZoomValue();
-
-function zoom(name) {
-
-    let scale = Number(getZoomValue());
-    
-    // 1.0 is default value
-    if (name == 'in') {
-        // if zoom is not max yet
-        if (scale < 1) {
-            scale = (scale + 0.1).toFixed(1);
-        }
-    }
-    else if (name == 'out') {
-        if (scale > 0.6) {
-            scale = (scale - 0.1).toFixed(1);
-        }
-    }
-
-    container.style.transform = "scale(" + scale + ")";
-
-    localStorage.setItem("zoom", scale);
-}
-
-function setZoomValue() {
-
-    let scale = getZoomValue();
-
-    container.style.transform = "scale(" + scale + ")";
-}
-
-function getZoomValue() {
-
-    let scale = "";
-
-    if (isNaN(localStorage.getItem("zoom")) || (localStorage.getItem("zoom") == null)) {
-        scale = localStorage.setItem("zoom", 1);
-    }
-    else {
-        scale = localStorage.getItem("zoom");
-    }
-
-    return scale;
-}
 
 // edit item
 
@@ -952,7 +581,6 @@ function moveLines(elemId) {
 }
 
 // gets all coordinates from the lines connected to the draggable element and writes them to db
-
 function changeLineCoordinates(lineArr) {
     for (let i = 0; i < lineArr.length; i++) {
         let lineId = lineArr[i];
@@ -1248,7 +876,7 @@ function updateNote() {
 
 function deleteElement(id) {
 
-    // finds lines connected to this element and deletes them
+    // find lines connected to this element and delete them
     let lineArr = getLineIdArr(id);
     for (let i = 0; i < lineArr.length; i++) {
         deleteConnection(lineArr[i]);
@@ -1261,7 +889,7 @@ function deleteElement(id) {
     deleteObj(model.elements, "id", id);
 
     // delete data from db
-    deleteItem("elements", id);
+    deleteItemFromDb("elements", id);
 
     // delete the element
     let elem = document.getElementById(id);
@@ -1277,7 +905,7 @@ function deleteConnection(id) {
     deleteObj(model.lines, "id", id);
 
     // delete data from db
-    deleteItem("lines", id);
+    deleteItemFromDb("lines", id);
 
     let line = document.getElementById(id);
     line.parentNode.removeChild(line);
@@ -1328,227 +956,11 @@ function deleteNote(id) {
     deleteObj(model.notes, "id", id);
 
     // delete data from db
-    deleteItem("notes", id);
+    deleteItemFromDb("notes", id);
 
     // delete the note
     let note = document.getElementById(id);
     note.parentNode.removeChild(note);
-}
-
-// indexedDB
-
-var db;
-
-var openRequest = indexedDB.open("db", 5);
-
-openRequest.onupgradeneeded = function(e) {
-    var db = e.target.result;
-    console.log("running onupgradeneeded");
-    // create object stores if they don't exist yet
-    if (e.oldVersion < 1) {
-        db.createObjectStore("elements", {keyPath: "id"});
-        db.createObjectStore("lines", {keyPath: "id"});
-        db.createObjectStore("notes", {keyPath: "id"});
-    }
-};
-
-openRequest.onsuccess = function(e) {
-    console.log("running onsuccess");
-    db = e.target.result;
-
-    // checks if anything is in db
-    readItems("elements");
-    readItems("lines");
-    readItems("notes");
-};
-
-openRequest.onerror = function(e) {
-    console.log("onerror!");
-    console.dir(e);
-};
-
-// add an element to the db
-function addElementToDb(id, title, img, x, y) {
-    var transaction = db.transaction(["elements"], "readwrite");
-    var elements = transaction.objectStore("elements");
-    var item = {
-        id: id,
-        title: title,
-        img: img,
-        x: x,
-        y: y,
-        created: new Date().getTime()
-    };
-
-    var request = elements.add(item);
-
-    request.onerror = function(e) {
-        console.log("error", e.target.error.name);
-    };
-
-    request.onsuccess = function(e) {
-        // console.log("the element was added to db successfully");
-    };
-}
-
-// add a line to the db
-function addLineToDb(id, title, elemId1, elemId2, x1, y1, x2, y2) {
-    var transaction = db.transaction(["lines"], "readwrite");
-    var lines = transaction.objectStore("lines");
-    var item = {
-        id: id,
-        title: title,
-        elemId1: elemId1,
-        elemId2: elemId2,
-        x1: parseFloat(x1),
-        y1: parseFloat(y1),
-        x2: parseFloat(x2),
-        y2: parseFloat(y2),
-        created: new Date().getTime()
-    };
-
-    var request = lines.add(item);
-
-    request.onerror = function(e) {
-        console.log("error", e.target.error.name);
-    };
-
-    request.onsuccess = function(e) {
-        // console.log("the line was added to db successfully");
-    };
-}
-
-// add a note to the db
-function addNoteToDb(id, title, text, x, y) {
-    let transaction = db.transaction(["notes"], "readwrite");
-    let notes = transaction.objectStore("notes");
-    let item = {
-        id: id,
-        title: title,
-        text: text,
-        x: x,
-        y: y,
-        created: new Date().getTime()
-    };
-
-    let request = notes.add(item);
-
-    request.onerror = function(e) {
-        console.log("error", e.target.error.name);
-    };
-
-    request.onsuccess = function(e) {
-        // console.log("the element was added to db successfully");
-    };
-}
-
-// find an item in the db
-function findItem(objectStoreName, key) {
-    var transaction = db.transaction([objectStoreName], "readonly");
-    var elements = transaction.objectStore(objectStoreName);
-    let request = elements.get(key);
-
-    request.onerror = function(e) {
-        console.log("error", e.target.error.name);
-    };
-
-    request.onsuccess = function(e) {
-
-        const matching = request.result;
-
-        if (matching !== undefined) {
-            // a match was found
-            // console.log("a match was found");
-        }
-        else {
-            // no match was found
-            console.log("no match was found");
-        }
-    };    
-}
-
-// edit the item's value in the db
-function editItemInDb(objectStoreName, key, indexName, value) {
-    let transaction = db.transaction([objectStoreName], "readwrite");
-    let items = transaction.objectStore(objectStoreName);
-    let request = items.get(key);
-
-    request.onerror = function(e) {
-        console.log("error", e.target.error.name);
-    }
-
-    request.onsuccess = function(e) {
-
-        const data = request.result;
-
-        data[indexName] = value;
-
-        let requestUpdate = items.put(data);
-
-        requestUpdate.onerror = function(e) {
-            // error
-            console.log("error while editing data in db");
-        }
-        
-        requestUpdate.onsuccess = function(e) {
-            // success
-            // console.log("item in '" + objectStoreName + "' moved, " + "indexName is " + indexName + ", value is " + value);
-        }
-    }
-}
-
-// delete an item from the db
-function deleteItem(objectStoreName, key) {
-    let request = db.transaction([objectStoreName], "readwrite")
-                    .objectStore(objectStoreName)
-                    .delete(key);
-
-    request.onerror = function(e) {
-        console.log("error", e.target.error.name);
-    }
-
-    request.onsuccess = function(e) {
-        console.log("item was deleted successfully from db");
-    }
-}
-
-// read info from the db
-function readItems(objectStoreName) {
-    // check if there is anything in db
-    let request = db.transaction([objectStoreName], "readwrite")
-                .objectStore(objectStoreName)
-                .openCursor();
-
-    request.onerror = function(e) {
-        console.log("error", e.target.error.name);
-    }
-            
-    request.onsuccess = function(e) {
-        const cursor = request.result;
-        if (cursor) {
-            // store is not empty
-            // console.log("preparing to load data");
-
-            if (objectStoreName == "elements") {
-                addElementToPage(cursor.key, cursor.value.title, cursor.value.img, cursor.value.x, cursor.value.y);
-                console.log("element was created");
-            }
-            else if (objectStoreName == "lines") {
-                addLineToPage(cursor.key, cursor.value.title, cursor.value.elemId1, cursor.value.elemId2, cursor.value.x1, cursor.value.y1, cursor.value.x2, cursor.value.y2);
-                console.log("line was created");
-            }
-            else if (objectStoreName == "notes") {
-                addNoteToPage(cursor.key, cursor.value.title, cursor.value.text, cursor.value.x, cursor.value.y);
-                console.log("note was created");
-            }
-            cursor.continue();
-        }
-        else {
-            // store is empty
-            console.log("nothing to restore");
-        }
-        // console.log("data from db was successfully read");
-    }
 }
 
 let clearDbButton = document.getElementById("clear-db");
@@ -1556,23 +968,15 @@ let clearDbButton = document.getElementById("clear-db");
 clearDbButton.addEventListener("click", function() {
     if (window.confirm("Are you sure you want to clear the data? After deletion, the page will be reloaded.")) {
         // delete items from db
-        deleteItems("elements");
-        deleteItems("lines");
-        deleteItems("notes");
+        clearObjStore("elements");
+        clearObjStore("lines");
+        clearObjStore("notes");
         // reload the page
         document.location.reload();
     }
 });
 
-// delete all data from the db
-function deleteItems(objectStoreName) {
-    let request = db.transaction([objectStoreName], "readwrite").objectStore(objectStoreName).clear();
-
-    request.onerror = function(e) {
-        console.log("error", e.target.error.name);
-    }
-
-    request.onsuccess = function(e) {
-        console.log("all items were deleted successfully from db");
-    }
-}
+export { model, view };
+export { findObjValue, findObjValueByKeyValue };
+export { createArrayOfTitles };
+export { addElementToPage, addLineToPage, addNoteToPage };
