@@ -1,7 +1,7 @@
 import { Modal } from './Modal.js';
-import { model } from '../main.js';
-import { findObjValue, findObjValueByKeyValue } from '../main.js';
-import { createArrayOfTitles } from '../main.js';
+import { model, lines } from '../main.js';
+import { findObjValue, findObjValueByKeyValue, getElemCenterCoordinates, createArrayOfTitles } from './functions.js';
+import { addLineToDb } from './indexeddb.js'; 
 
 let selectFirstElement = document.getElementById("modal-elem1");
 let selectSecondElement = document.getElementById("modal-elem2");
@@ -118,6 +118,34 @@ class ConnModal extends Modal {
                 message.innerHTML = "All fields must contain data";
             }
         }
+    }
+
+    // get data from connection modal window
+    getItemData() {
+        let elemTitle1 = document.getElementById("modal-elem1").value;
+        let elemTitle2 = document.getElementById("modal-elem2").value;
+        let inputValue = document.getElementById("modal-conn-title").value;
+
+        // calculate id
+        let id = lines.getLatestItemId();
+        id++;
+        id = "line" + id;
+
+        // get the ids of the elements connected by the selected line
+        let elemId1 = findObjValueByKeyValue(model.elements, "title", elemTitle1, "id");
+        let elemId2 = findObjValueByKeyValue(model.elements, "title", elemTitle2, "id");
+
+        // get title
+        let title = inputValue;
+
+        // get coordinates
+        let [x1, y1] = getElemCenterCoordinates(elemId1);
+        let [x2, y2] = getElemCenterCoordinates(elemId2);
+
+        // add data to db
+        addLineToDb(id, title, elemId1, elemId2, x1, y1, x2, y2);
+
+        return [id, title, elemId1, elemId2, x1, y1, x2, y2];
     }
 }
 

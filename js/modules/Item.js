@@ -1,4 +1,5 @@
-import { model, view } from '../main.js';
+import { model } from '../main.js';
+import { view } from './view.js';
 
 // item class
 class Item {

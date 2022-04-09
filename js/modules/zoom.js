@@ -1,15 +1,4 @@
-// zoom
-
-let zoomInBtn = document.getElementById("zoom-in");
-let zoomOutBtn = document.getElementById("zoom-out");
 let container = document.getElementById("container");
-
-zoomInBtn.addEventListener("click", function() {
-    zoom("in");
-});
-zoomOutBtn.addEventListener("click", function() {
-    zoom("out");
-});
 
 function zoom(name) {
 
@@ -54,4 +43,4 @@ function getZoomValue() {
     return scale;
 }
 
-export { zoom, setZoomValue, getZoomValue };
+export { zoom, setZoomValue };

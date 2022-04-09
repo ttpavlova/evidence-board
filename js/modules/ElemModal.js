@@ -1,6 +1,7 @@
 import { Modal } from './Modal.js';
-import { model } from '../main.js';
-import { findObjValue } from '../main.js';
+import { model, elements } from '../main.js';
+import { findObjValue, isValueTaken } from './functions.js';
+import { addElementToDb } from './indexeddb.js';
 
 // class for element modal window
 class ElemModal extends Modal {
@@ -93,6 +94,40 @@ class ElemModal extends Modal {
             else {
                 message.innerHTML = "All fields must contain data";
             }
+        }
+    }
+
+    // get data from element modal window
+    getItemData() {
+        let imgPreview = document.getElementById("modal-load-img").src;
+        let inputValue = document.getElementById("modal-elem-title").value;
+        let messageInput = document.getElementById("message-elem");
+    
+        // checks if title is already taken
+        if (isValueTaken(model.elements, "title", inputValue)) {
+            messageInput.innerHTML = "This title has already been taken. Choose another one.";
+        }
+        else {
+            // calculate id
+            let id = elements.getLatestItemId();
+            id++;
+            id = "elem" + id;
+    
+            // get img src
+            let img = imgPreview;
+    
+            // get title
+            let title = inputValue;
+    
+            // get coordinates
+            let windowWidth = window.innerWidth;
+            let x = windowWidth / 2 - model.elemWidth / 2 + "px";
+            let y = "100px";
+    
+            // add data to db
+            addElementToDb(id, title, img, x, y);
+    
+            return [id, title, img, x, y];
         }
     }
 }

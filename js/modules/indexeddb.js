@@ -1,4 +1,4 @@
-import { addElementToPage, addLineToPage, addNoteToPage } from '../main.js';
+import { addElementToPage, addLineToPage, addNoteToPage } from './addItemToPage.js';
 
 // indexedDB
 

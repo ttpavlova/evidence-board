@@ -1,6 +1,7 @@
 import { Modal } from './Modal.js';
-import { model } from '../main.js';
-import { findObjValue } from '../main.js';
+import { model, notes } from '../main.js';
+import { findObjValue } from './functions.js';
+import { addNoteToDb } from './indexeddb.js';
 
 // class for note modal window
 class NoteModal extends Modal {
@@ -28,6 +29,33 @@ class NoteModal extends Modal {
         if ((titleInput == "") && (textInput == "")) {
             return true;
         }
+    }
+
+    // get data from note modal window
+    getItemData() {
+        let titleInput = document.getElementById("modal-note-title").value;
+        let textInput = document.getElementById("modal-note-text").value;
+
+        // calculate id
+        let id = notes.getLatestItemId();
+        id++;
+        id = "note" + id;
+
+        // get title
+        let title = titleInput;
+
+        // get text
+        let text = textInput;
+
+        // get coordinates
+        let windowWidth = window.innerWidth;
+        let x = windowWidth / 2 - model.noteWidth / 2 + "px";
+        let y = "100px";
+
+        // add data to db
+        addNoteToDb(id, title, text, x, y);
+
+        return [id, title, text, x, y];
     }
 }
 
