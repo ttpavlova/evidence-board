@@ -7,6 +7,7 @@
     <title>Evidence board</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="img/zoom-in-3.png">
+    <link href="https://fonts.googleapis.com/css2?family=Courgette&family=Oswald&display=swap" rel="stylesheet">
 </head>
 <body>
     <div class="header">
@@ -22,14 +23,29 @@
                     <img class="toolbar-item__img" src="img/zoom-out-3.png" alt="Zoom Out">
                 </a>
                 <a class="toolbar-item" id="edit-item" title="Edit">
-                    <img class="toolbar-item__img" src="img/edit.png" alt="Edit">
+                    <img class="toolbar-item__img" src="img/edit.png" alt="Edit" aria-label="Edit item">
                 </a>
                 <a class="toolbar-item" id="delete-item" title="Delete">
-                    <img class="toolbar-item__img" src="img/delete.png" alt="Delete">
+                    <img class="toolbar-item__img" src="img/delete.png" alt="Delete" aria-label="Delete item">
                 </a>
-                <button class="menu__item" id="new-element">new element</button>
-                <button class="menu__item" id="new-connection">new connection</button>
-                <button class="menu__item" id="new-note">new note</button>
+                <button class="menu__item" id="new-element">
+                    <div class="btn-container">
+                        <span class="plus-sign">+</span>
+                        <span class="item-word"> element</span>
+                    </div>
+                </button>
+                <button class="menu__item" id="new-connection">
+                    <div class="btn-container">
+                        <span class="plus-sign">+</span>
+                        <span class="item-word"> connection</span>
+                    </div>
+                </button>
+                <button class="menu__item" id="new-note">
+                    <div class="btn-container">
+                        <span class="plus-sign">+</span>
+                        <span class="item-word"> note</span>
+                    </div>
+                </button>
                 <button class="menu__item" id="clear-db">CLEAR</button>
             </div>
         </div>
