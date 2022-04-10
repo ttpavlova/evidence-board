@@ -1,5 +1,5 @@
 import { model } from '../main.js';
-import { setObjValue, findObjValueByKeyValue, getElemCenterCoordinates, countLineTitleCoordinates } from './functions.js';
+import { getObj, findObjValueByKeyValue, getElemCenterCoordinates, countLineTitleCoordinates } from './functions.js';
 import { editItemInDb } from './indexeddb.js';
 
 function updateElem() {
@@ -11,8 +11,9 @@ function updateElem() {
     editItemInDb("elements", model.selectedItemId, "title", titleInput);
 
     // update data in object
-    setObjValue(model.elements, "img", previewImg);
-    setObjValue(model.elements, "title", titleInput);
+    let obj = getObj(model.elements, model.selectedItemId);
+    obj.img = previewImg;
+    obj.title = titleInput;
 
     // update data on screen
     let item = document.getElementById(model.selectedItemId);
@@ -43,13 +44,14 @@ function updateConn() {
     editItemInDb("lines", model.selectedItemId, "y2", y2);
 
     // update data in object
-    setObjValue(model.lines, "elemId1", elemId1);
-    setObjValue(model.lines, "elemId2", elemId2);
-    setObjValue(model.lines, "title", titleInput);
-    setObjValue(model.lines, "x1", x1);
-    setObjValue(model.lines, "y1", y1);
-    setObjValue(model.lines, "x2", x2);
-    setObjValue(model.lines, "y2", y2);
+    let obj = getObj(model.lines, model.selectedItemId);
+    obj.elemId1 = elemId1;
+    obj.elemId2 = elemId2;
+    obj.title = titleInput;
+    obj.x1 = x1;
+    obj.y1 = y1;
+    obj.x2 = x2;
+    obj.y2 = y2;
 
     // update data on screen
     let item = document.getElementById(model.selectedItemId);
@@ -75,8 +77,9 @@ function updateNote() {
     editItemInDb("notes", model.selectedItemId, "text", textInput);
 
     // update data in object
-    setObjValue(model.notes, "title", titleInput);
-    setObjValue(model.notes, "text", textInput);
+    let obj = getObj(model.notes, model.selectedItemId);
+    obj.title = titleInput;
+    obj.text = textInput;
 
     // update data on screen
     let item = document.getElementById(model.selectedItemId);

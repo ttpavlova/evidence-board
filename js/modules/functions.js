@@ -202,11 +202,11 @@ function findObjValueByKeyValue(obj, knownIndex, knownValue, searchIndex) {
     }
 }
 
-// sets new object value
-function setObjValue(obj, indexName, value) {
+// get item from array of objects
+function getObj(obj, id) {
     for (let key in obj) {
-        if (obj[key].id == model.selectedItemId) {
-            (obj[key])[indexName] = value;
+        if (obj[key].id == id) {
+            return obj[key];
         }
     }
 }
@@ -229,4 +229,4 @@ function isValueTaken(obj, indexName, value) {
     }
 }
 
-export { dragItem, createArrayOfIds, createArrayOfTitles, getElemCenterCoordinates, getLineIdArr, moveLines, changeLineCoordinates, countLineTitleCoordinates, findObjValue, findObjValueByKeyValue, setObjValue, deleteObj, isValueTaken };
+export { dragItem, createArrayOfIds, createArrayOfTitles, getElemCenterCoordinates, getLineIdArr, moveLines, changeLineCoordinates, countLineTitleCoordinates, findObjValue, findObjValueByKeyValue, getObj, deleteObj, isValueTaken };
