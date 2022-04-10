@@ -30,7 +30,10 @@ class Modal {
 
     // clear all text fields and error messages
     clear() {
-        this.window.querySelector(".modal__input").value = "";
+        let textInputs = this.window.querySelectorAll(".modal__input");
+        for (let i = 0; i < textInputs.length; i++) {
+            textInputs[i].value = "";
+        }
         if (this.window.querySelector(".modal__message") != null) {
             this.window.querySelector(".modal__message").innerHTML = "";
         }

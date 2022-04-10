@@ -83,6 +83,10 @@ h1, h2, h3, h4, h5, h6 {
     background-color: #c98570;
 }
 
+.menu__item:focus {
+    outline: none;
+}
+
 .menu__item:last-child {
     margin-right: 0;
 }
@@ -97,12 +101,12 @@ h1, h2, h3, h4, h5, h6 {
 .plus-sign {
     font-family: 'Oswald', sans-serif;
     font-size: 22px;
+    margin-right: 10px;
 }
 
 .item-word {
     font-family: 'Oswald', sans-serif;
     font-size: 16px;
-    margin-left: 10px;
 }
 
 /* toolbar */
