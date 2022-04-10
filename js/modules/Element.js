@@ -1,10 +1,6 @@
-import { Item } from './Item.js';
-
 // element class
-class Element extends Item {
-    constructor(id, title, img, x, y) {
-        super();
-        
+class Element {
+    constructor(id, title, img, x, y) {        
         this.id = id;
         this.title = title;
         this.img = img;

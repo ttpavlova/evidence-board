@@ -1,4 +1,5 @@
 import { model, elements, lines, notes } from '../main.js';
+import { view } from './view.js';
 import { Element } from './Element.js';
 import { Connection } from './Connection.js';
 import { Note } from './Note.js';
@@ -20,7 +21,7 @@ function addElementToPage(id, title, img, x, y) {
     elem.style.top = y;
     document.getElementsByClassName("elements__container")[0].appendChild(elem);
     elem.addEventListener("click", function() {
-        element.selectItem(elem.id, "elem");
+        view.selectItem(elem.id, "elem");
     });
     elem.addEventListener("mousedown", function(e) {
         dragItem(elem, e, "element");
@@ -72,7 +73,7 @@ function addLineToPage(id, title, elemId1, elemId2, x1, y1, x2, y2) {
     line.setAttribute("stroke", "black");
     document.getElementsByClassName("lines__container")[0].appendChild(line);
     line.onclick = function () {
-        connection.selectItem(line.id, "line");
+        view.selectItem(line.id, "line");
     }
 
     // create a text tag for line's title
@@ -104,7 +105,7 @@ function addNoteToPage(id, title, text, x, y) {
     note.style.top = y;
     document.getElementsByClassName("notes__container")[0].appendChild(note);
     note.addEventListener("click", function() {
-        noteObj.selectItem(note.id, "note");
+        view.selectItem(note.id, "note");
     });
     note.addEventListener("mousedown", function(e) {
         dragItem(note, e, "note");

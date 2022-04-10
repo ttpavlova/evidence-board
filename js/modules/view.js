@@ -16,6 +16,29 @@ let view = {
         }
     },
 
+    // select item onclick
+    selectItem: function(itemId, itemType) {
+        // the element selected now
+        let item = document.getElementById(itemId);
+        let className = "";
+
+        if ((itemType == "elem") || (itemType == "note")) {
+            className = "item__selected";
+            this.showIcon(itemId);
+        }
+        else if (itemType == "line") {
+            className = "line__selected";
+        }
+
+        this.removeSelection(itemId);
+        item.classList.add(className);
+
+        model.selectedItemId = itemId; // remember id of the latest selected element
+        model.selectedType = itemType; // remember if the latest selected item was element, line or note
+
+        this.setEditDeleteBtnState();
+    },
+
     removeSelection: function(itemId) {
         // the latest selected item
         let itemSelected = document.getElementById(model.selectedItemId);

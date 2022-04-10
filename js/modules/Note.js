@@ -1,10 +1,6 @@
-import { Item } from './Item.js';
-
 // note class
-class Note extends Item {
-    constructor(id, title, text, x, y) {
-        super();
-        
+class Note {
+    constructor(id, title, text, x, y) {        
         this.id = id;
         this.title = title;
         this.text = text;

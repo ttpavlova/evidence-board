@@ -90,9 +90,10 @@ deleteBtn.addEventListener("click", function() {
     else if (model.selectedType == "note") {
         deleteNote(model.selectedItemId);
     }
-
+    
     model.selectedItemId = "";
     model.selectedType = "";
+    view.setEditDeleteBtnState();
 });
 
 // set edit and delete buttons to disabled by default

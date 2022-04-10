@@ -1,10 +1,6 @@
-import { Item } from './Item.js';
-
 // connection class
-class Connection extends Item {
+class Connection {
     constructor(id, title, elemId1, elemId2, x1, y1, x2, y2) {
-        super();
-        
         this.id = id;
         this.title = title;
         this.elemId1 = elemId1;
