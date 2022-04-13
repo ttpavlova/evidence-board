@@ -7,12 +7,12 @@ let view = {
     // disable edit and delete buttons on toolbar when nothing is selected
     setEditDeleteBtnState: function() {
         if (model.ifSelectedItemExists()) {
-            editBtn.classList.remove("iconDisabled");
-            deleteBtn.classList.remove("iconDisabled");
+            editBtn.classList.remove("icon-disabled");
+            deleteBtn.classList.remove("icon-disabled");
         }
         else {
-            editBtn.classList.add("iconDisabled");
-            deleteBtn.classList.add("iconDisabled");
+            editBtn.classList.add("icon-disabled");
+            deleteBtn.classList.add("icon-disabled");
         }
     },
 

@@ -13,7 +13,7 @@ class ElemModal extends Modal {
     setPreviewImgtoBlank() {
         let previewImg = document.getElementById("modal-load-img");
 
-        previewImg.src = "img/add-image.png";
+        previewImg.src = "img/add_photo_alternate_black_48dp.svg";
         previewImg.classList.add("blank");
     }
 

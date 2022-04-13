@@ -6,8 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Evidence board</title>
     <link rel="stylesheet" href="css/style.css">
-    <link rel="icon" type="image/png" href="img/zoom-in-3.png">
+    <link rel="icon" type="image/png" href="img/outline_search_black_24dp.png">
     <link href="https://fonts.googleapis.com/css2?family=Courgette&family=Oswald&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
     <div class="header">
@@ -17,16 +18,16 @@
             </div>
             <div class="header__menu">
                 <a class="toolbar-item" id="zoom-in" title="Zoom In">
-                    <img class="toolbar-item__img" src="img/zoom-in-3.png" alt="Zoom In">
+                    <span class="material-icons md-28">zoom_in</span>
                 </a>
                 <a class="toolbar-item" id="zoom-out" title="Zoom Out">
-                    <img class="toolbar-item__img" src="img/zoom-out-3.png" alt="Zoom Out">
+                    <span class="material-icons md-28">zoom_out</span>
                 </a>
-                <a class="toolbar-item" id="edit-item" title="Edit">
-                    <img class="toolbar-item__img" src="img/edit.png" alt="Edit" aria-label="Edit item">
+                <a class="toolbar-item icon-disabled" id="edit-item" title="Edit">
+                    <span class="material-icons md-28">edit</span>
                 </a>
-                <a class="toolbar-item" id="delete-item" title="Delete">
-                    <img class="toolbar-item__img" src="img/delete.png" alt="Delete" aria-label="Delete item">
+                <a class="toolbar-item icon-disabled" id="delete-item" title="Delete">
+                    <span class="material-icons md-28">delete</span>
                 </a>
                 <button class="menu__item" id="new-element">
                     <div class="btn-container">
@@ -58,13 +59,13 @@
         <div class="modal" id="modal-element">
             <div class="modal__content">
                 <div class="modal__close" id="close-btn">
-                    <img class="modal__close-img" src="img/close-button.png" alt="close-button">
+                    <span class="material-icons md-28">close</span>
                 </div>
 
                 <p class="modal__load-text">Load image</p>
                 <input class="modal__load-file" id="modal-load-file" type="file" accept=".jpg, .jpeg, .png"><br>
                 <div class="modal__container">
-                    <img class="modal__img" id="modal-load-img" src="img/add-image.png" alt="Image preview">
+                    <img class="modal__img" id="modal-load-img" src="img/add_photo_alternate_black_48dp.svg" alt="Image preview">
                 </div>
 
                 <label for="modal__input" class="modal__label">Enter element title: </label>
@@ -83,7 +84,7 @@
         <div class="modal" id="modal-connection">
             <div class="modal__content">
                 <div class="modal__close" id="close-btn-connection">
-                    <img class="modal__close-img" src="img/close-button.png" alt="close-button">
+                    <span class="material-icons md-28">close</span>
                 </div>
 
                 <p class="modal__text">Element 1: </p>
@@ -111,7 +112,7 @@
         <div class="modal" id="modal-note">
             <div class="modal__content">
                 <div class="modal__close" id="close-btn-note">
-                    <img class="modal__close-img" src="img/close-button.png" alt="close-button">
+                    <span class="material-icons md-28">close</span>
                 </div>
 
                 <label for="modal__note-title" class="modal__label">Note title: </label>

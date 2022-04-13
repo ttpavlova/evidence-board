@@ -4,7 +4,7 @@ body {
     line-height: 1.6;
     color: #333;
     background-color: lightgray;
-    background-image: url("../img/bg2-v1.jpg");
+    background-image: url("../img/bg.jpg");
     background-size: 600px;
 
     overflow-x: hidden;
@@ -61,22 +61,47 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
 }
 
+/* toolbar */
+
+.material-icons.md-28 {
+    font-size: 28px;
+}
+
+.toolbar-item {
+    max-height: 28px;
+    margin: 10px 10px;
+    opacity: 0.6;
+    transition: 0.1s;
+    cursor: pointer;
+    color: #523A28;
+}
+
+.toolbar-item:hover {
+    opacity: 0.9;
+}
+
+.icon-disabled {
+    opacity: 0.2;
+    pointer-events: none;
+}
+
 .menu__item {
-    width: 120px;
-    margin: 20px 10px;
-    padding: 5px 10px;
-    background-size: 200% auto;
+    width: 130px;
+    margin: 10px 5px;
+    padding: 5px 15px;
     border-radius: 20px;
     background-color: #C38370;
     text-align: center;
     text-transform: uppercase;
     transition: 0.5s;
     color: #fff;
+    border: 2px solid #C38370;
     cursor: pointer;
 }
 
 .menu__item:hover {
     background-color: #E4B7A0;
+    border: 2px solid #E4B7A0;
 }
 
 .menu__item:active {
@@ -89,50 +114,32 @@ h1, h2, h3, h4, h5, h6 {
 
 .menu__item:last-child {
     margin-right: 0;
-    padding: 10px 0px;
+    background-color: #F3E5C3;
+    border: 2px solid #C38370;
+    color: #C38370;
+}
+
+.menu__item:last-child:hover {
+    background-color: #C38370;
+    color: #fff;
 }
 
 .btn-container {
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 0px 15px;
 }
 
 .plus-sign {
     font-family: 'Oswald', sans-serif;
     font-size: 22px;
+    line-height: 1;
     margin-right: 10px;
 }
 
 .item-word {
     font-family: 'Oswald', sans-serif;
     font-size: 16px;
-}
-
-/* toolbar */
-
-.toolbar-item {
-    width: 24px;
-    margin: 20px 10px;
-    opacity: 0.6;
-    transition: 0.1s;
-    cursor: pointer;
-}
-
-/* .toolbar-item:hover {
-    opacity: 0.8;
-} */
-
-.toolbar-item__img {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-.iconDisabled {
-    opacity: 0.2;
-    pointer-events: none;
 }
 
 /* elements */
@@ -225,22 +232,13 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal__close {
     position: absolute;
-    top: 20px;
     right: 20px;
-    width: 20px;
-    height: 20px;
-    cursor: pointer;    
-}
-
-.modal__close-img {
-    width: 100%;
-    height: 100%;
-    display: block;
     opacity: 0.5;
     transition: 0.5s ease;
+    cursor: pointer;
 }
 
-.modal__close-img:hover {
+.modal__close:hover {
     opacity: 0.8;
 }
 
@@ -270,8 +268,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .blank {
-    height: 50%;
-    width: 50%;
+    height: 40%;
+    width: 40%;
     opacity: 0.5;
 }
 
