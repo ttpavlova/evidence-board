@@ -58,20 +58,30 @@
         <!-- modal for "new element" button -->
         <div class="modal" id="modal-element">
             <div class="modal__content">
-                <div class="modal__close" id="close-btn">
-                    <span class="material-icons md-28">close</span>
+                <div class="modal__header">
+                    <div class="modal__title">New Element</div>
+                    <div class="modal__close" id="close-btn">
+                        <span class="material-icons md-28">close</span>
+                    </div>
                 </div>
 
-                <p class="modal__load-text">Load image</p>
-                <input class="modal__load-file" id="modal-load-file" type="file" accept=".jpg, .jpeg, .png"><br>
-                <div class="modal__container">
-                    <img class="modal__img" id="modal-load-img" src="img/add_photo_alternate_black_48dp.svg" alt="Image preview">
+                <div class="modal__center">
+                    <div class="modal__preview preview-medium">
+                        <img class="modal__img" id="modal-load-img" src="img/add_photo_alternate_black_48dp.svg" alt="Image preview">
+                    </div>
+                    
+
+                    <div class="modal__inputs">
+                        <label for="modal-input" class="modal__label">Title</label>
+                        <input type="text" class="modal__input" id="modal-elem-title" name="modal-input" placeholder="Element Name">
+                        <span class="modal__message" id="message-elem"></span>
+                        <label for="modal-load-file" class="modal__load-btn">
+                            <span class="material-icons">file_upload</span>
+                            Upload a file
+                        </label>
+                        <input class="modal__load-file" id="modal-load-file" name="modal-load-file" type="file" accept=".jpg, .jpeg, .png">
+                    </div>
                 </div>
-
-                <label for="modal__input" class="modal__label">Enter element title: </label>
-
-                <input type="text" class="modal__input" id="modal-elem-title" name="modal__input" placeholder="Element name">
-                <span class="modal__message" id="message-elem"></span>
                 
                 <!-- create element -->
                 <button class="modal__submit" id="create-elem-btn">Create element</button>
@@ -83,23 +93,39 @@
         <!-- modal for "new connection" button -->
         <div class="modal" id="modal-connection">
             <div class="modal__content">
-                <div class="modal__close" id="close-btn-connection">
-                    <span class="material-icons md-28">close</span>
+                <div class="modal__header">
+                    <div class="modal__title">New Connection</div>
+                    <div class="modal__close" id="close-btn-connection">
+                        <span class="material-icons md-28">close</span>
+                    </div>
                 </div>
 
-                <p class="modal__text">Element 1: </p>
-                <select id="modal-elem1" class="modal__select">
-                    <option>Choose an element</option>
-                </select>
+                <div class="modal__center">
+                    <div class="modal__images-preview">
+                        <div class="modal__preview preview-small">
+                            <img class="modal__img blank" id="preview-img-1" src="img/image_black_48dp.svg" alt="Image for element1">
+                        </div>
+                        <div class="modal__preview preview-small">
+                            <img class="modal__img blank" id="preview-img-2" src="img/image_black_48dp.svg" alt="Image for element2">
+                        </div>
+                    </div>
 
-                <p class="modal__text">Element 2: </p>
-                <select id="modal-elem2" class="modal__select">
-                    <option>Choose an element</option>
-                </select>
+                    <div class="modal__inputs">
+                        <p class="modal__text">Element 1: </p>
+                        <select id="modal-elem1" class="modal__select">
+                            <option>Choose an element</option>
+                        </select>
 
-                <label for="modal__conn-title" class="modal__label">Connection title: </label>
-                <input type="text" class="modal__input" id="modal-conn-title" name="modal__conn-title" placeholder="Connection name">
-                <span class="modal__message" id="message-conn"></span>
+                        <p class="modal__text">Element 2: </p>
+                        <select id="modal-elem2" class="modal__select">
+                            <option>Choose an element</option>
+                        </select>
+
+                        <label for="modal-conn-title" class="modal__label">Connection title: </label>
+                        <input type="text" class="modal__input" id="modal-conn-title" name="modal-conn-title" placeholder="Connection Name">
+                        <span class="modal__message" id="message-conn"></span>
+                    </div>
+                </div>
 
                 <!-- create connection -->
                 <button class="modal__submit" id="create-conn-btn">Create connection</button>
@@ -111,15 +137,29 @@
         <!-- modal for "new note" button -->
         <div class="modal" id="modal-note">
             <div class="modal__content">
-                <div class="modal__close" id="close-btn-note">
-                    <span class="material-icons md-28">close</span>
+                <div class="modal__header">
+                    <div class="modal__title">New Note</div>
+                    <div class="modal__close" id="close-btn-note">
+                        <span class="material-icons md-28">close</span>
+                    </div>
                 </div>
 
-                <label for="modal__note-title" class="modal__label">Note title: </label>
-                <input type="text" class="modal__input" name="modal__note-title" id="modal-note-title" placeholder="Note name">
+                <div class="modal__center">
+                    <div class="modal__preview-block">
+                        <div class="note-preview">
+                            <div class="note__title">Case #1</div>
+                            <div class="note__text">Details...</div>
+                        </div>
+                    </div>
 
-                <label for="modal__note-text" class="modal__label">Note text: </label>
-                <input type="text" class="modal__input" name="modal__note-text" id="modal-note-text" placeholder="Note text">
+                    <div class="modal__inputs">
+                        <label for="modal-note-title" class="modal__label">Note title: </label>
+                    <input type="text" class="modal__input" name="modal__note-title" id="modal-note-title" placeholder="Note Name">
+
+                    <label for="modal-note-text" class="modal__label">Note text: </label>
+                    <input type="text" class="modal__input" name="modal-note-text" id="modal-note-text" placeholder="Note Text">
+                    </div>
+                </div>
 
                 <!-- create note -->
                 <button class="modal__submit" id="create-note-btn">Create note</button>

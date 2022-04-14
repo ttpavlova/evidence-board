@@ -45,7 +45,7 @@ class ConnModal extends Modal {
         let select2 = document.getElementById(anotherSelectId);
         let elemTitle = select1.value;
 
-        let elemId = findObjValueByKeyValue(model.elements, "title", elemTitle, "id");
+        let elemId = findObjValueByKeyValue(model.elements, "title", elemTitle, "id");        
         let titleArr = createArrayOfTitles(elemId);
 
         for (let i = 1; i < elems.length; i++) {
@@ -62,6 +62,9 @@ class ConnModal extends Modal {
                 }
             }
         }
+
+        // show an image of the selected option
+        this.showPreviewImg(elemId, currentSelectId);
     }
 
     // fill inputs with data from db
@@ -117,6 +120,37 @@ class ConnModal extends Modal {
             else {
                 message.innerHTML = "All fields must contain data";
             }
+        }
+    }
+
+    // add blank class when nothing is selected in the dropdown list
+    setPreviewImgToBlank(id) {
+        let previewImg = document.getElementById(id);
+
+        previewImg.src = "img/image_black_48dp.svg";
+        previewImg.classList.add("blank");
+    }
+
+    // remove default icon when image is selected
+    removeBlankClass(id) {
+        let previewImg = document.getElementById(id);
+
+        previewImg.classList.remove("blank");
+    }
+
+    // show a preview image when one of the options in the dropdown list is selected
+    showPreviewImg(elemId, dropdownListId) {
+        let lastStringChar = dropdownListId.slice(dropdownListId.length - 1);
+        let previewImgId = "preview-img-" + lastStringChar;
+        if (elemId != undefined) {
+            let img = findObjValueByKeyValue(model.elements, "id", elemId, "img");
+            let previewImg = document.getElementById(previewImgId);
+            previewImg.src = img;
+            this.removeBlankClass(previewImgId);
+        }
+        else {
+            // if "Choose an element" option is selected, set preview img to default
+            this.setPreviewImgToBlank(previewImgId);
         }
     }
 

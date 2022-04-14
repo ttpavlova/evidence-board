@@ -163,7 +163,7 @@ closeNoteModalBtn.addEventListener("click", function() {
 
 let fileInput = document.getElementById("modal-load-file");
 
-fileInput.addEventListener('change', function() {
+fileInput.addEventListener("change", function() {
     elemModal.previewFile();
 });
 
