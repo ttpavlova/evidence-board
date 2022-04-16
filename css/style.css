@@ -1,6 +1,7 @@
 body {
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
+    font-weight: 400;
     line-height: 1.6;
     color: #333;
     background-color: lightgray;
@@ -46,7 +47,9 @@ h1, h2, h3, h4, h5, h6 {
 
 .header__logo a {
     font-family: 'Courgette', cursive;
-    font-size: 32px;
+    font-family: 'Libre Baskerville', serif;
+    font-weight: 600;
+    font-size: 26px;
     text-decoration: none;
     color: #C5796D;
 }
@@ -62,6 +65,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* toolbar */
+
+.material-icons.md-18 {
+    font-size: 18px;
+}
 
 .material-icons.md-28 {
     font-size: 28px;
@@ -149,11 +156,13 @@ h1, h2, h3, h4, h5, h6 {
 .element {
     position: absolute;
     width: 150px;
-    height: 150px;
+    height: 180px;
+    background-color: #C38370;
     z-index: 10;
-    box-shadow: 5px 5px 7px rgba(33, 33, 33, .7);
+    box-shadow: 5px 5px 7px 1px rgba(35, 35, 35, .7);
     transform: rotate(-2deg);
     transition: transform .15s linear;
+    cursor: move;
 }
 
 .element:nth-child(even) {
@@ -169,18 +178,15 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .element:hover, .element:focus {
-    box-shadow: 10px 10px 7px rgba(0, 0, 0, .7);
+    box-shadow: 10px 10px 7px 1px rgba(0, 0, 0, .7);
     transform: scale(1.2);
     z-index: 12;
 }
 
 .element__picture {
-    position: relative;
     width: 100%;
-    height: 100%;
+    height: 80%;
     border: 5px solid #C38370;
-    background-color: #C38370;
-    cursor: move;
 }
 
 .element__img {
@@ -191,12 +197,12 @@ h1, h2, h3, h4, h5, h6 {
 
 .element__title {
     width: 100%;
+    height: 20%;
     background-color: #fff;
     text-align: center;
     font-size: 22px;
     background-color: #C38370;
     color: #fff;
-    box-shadow: 5px 5px 7px rgba(33, 33, 33, .7);
 }
 
 /* modal */
@@ -230,7 +236,7 @@ h1, h2, h3, h4, h5, h6 {
     padding: 20px 20px;
     background-color: #fff;
     border-radius: 8px;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .modal__header {
@@ -238,6 +244,12 @@ h1, h2, h3, h4, h5, h6 {
     align-items: center;
     justify-content: space-between;
     margin-bottom: 20px;
+}
+
+.modal__title {
+    font-family: 'Montserrat', sans-serif;
+    font-size: 18px;
+    font-weight: 600;
 }
 
 .modal__close {
@@ -255,38 +267,79 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal__center {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
     margin-bottom: 20px;
 }
 
+.modal__footer {
+    /* display: flex; */
+}
+
 /* new element modal window */
+
+.modal__upload-block {
+    width: 150px;
+}
 
 .modal__load-text {
     margin: 20px 0;
 }
 
+.upload__content {
+    display: flex;
+    align-items: center;
+}
+
 .modal__load-btn {
+    position: relative;
     display: flex;
     align-items: center;
     justify-content: space-between;
-    width: 130px;
-    padding: 10px 10px;
-    background-color: #0E86D4;
-    color: #fff;
+    width: 180px;
+    height: 35px;
+    padding: 10px 15px;
+    background-color: #fff;
+    border: 2px solid #74A6F3;
+    border-radius: 8px;
+    transition: 0.5s;
+    color: #000;
     text-align: center;
+    font-weight: 500;
     cursor: pointer;
+}
+
+.arrow {
+    position: absolute;
+    top: 7px;
+    transition: top 0.3s ease;
+}
+
+.btn-text {
+    position: absolute;
+    left: 37px;
+}
+
+.modal__load-btn:hover {
+    background-color: #74A6F3;
+    color: #fff;
+}
+
+.modal__load-btn:hover .arrow {  
+    top: 5px;
 }
 
 .modal__load-file {
     opacity: 0;
+    width: 50px;
 }
 
 .modal__preview {
     display: flex;
     align-items: center;
     justify-content: center;
-    background-color: rgba(0, 0, 0, 0.1);
+    background-color: #f0f0f0;
     border-radius: 15px;
+    margin-bottom: 20px;
 }
 
 .preview-medium {
@@ -299,8 +352,8 @@ h1, h2, h3, h4, h5, h6 {
     width: 150px;
 }
 
-.preview-small:first-child {
-    margin-bottom: 20px;
+.preview-small:last-child {
+    margin-bottom: 0;
 }
 
 .modal__img {
@@ -311,8 +364,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .blank {
-    height: 40%;
-    width: 40%;
+    height: 30%;
+    width: 30%;
     opacity: 0.5;
 }
 
@@ -320,18 +373,26 @@ h1, h2, h3, h4, h5, h6 {
     display: flex;
     flex-direction: column;
     margin-left: 50px;
+    font-weight: 500;
 }
 
 .modal__label {
     display: block;
-    margin: 20px 0;
+    margin-bottom: 20px;
+    font-weight: 500;
+}
+
+.modal__label:last-child {
+    margin-top: 10px;
 }
 
 .modal__input {
     display: block;
+    margin-bottom: 20px;
     padding: 10px 20px;
     width: 250px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    font-family: 'Montserrat', sans-serif;
 }
 
 .modal__input:focus {
@@ -346,15 +407,17 @@ h1, h2, h3, h4, h5, h6 {
     flex-direction: column;
 }
 
-.modal__text {
-    margin: 20px 0;
+.modal__select {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    width: 250px;
+    border-bottom: 2px solid #74A6F3;
+    font-family: 'Montserrat', sans-serif;
+    outline: none;
 }
 
-.modal__select {
-    padding: 5px 10px;
-    width: 250px;
-    border: 1px solid rgba(0, 0, 0, 0.5);
-    outline: none;
+.select__option {
+    font-family: 'Montserrat', sans-serif;
 }
 
 .modal__message {
@@ -368,13 +431,17 @@ h1, h2, h3, h4, h5, h6 {
 .modal__submit {
     padding: 10px 20px;
     background-color: #C5796D;
+    border-radius: 8px;
     color: #fff;
+    font-family: 'Montserrat', sans-serif;
+    font-weight: 600;
     cursor: pointer;
 }
 
 /* new note modal window */
 
 .modal__preview-block {
+    margin-top: 15px;
     margin-left: 30px;
 }
 
@@ -418,7 +485,7 @@ h1, h2, h3, h4, h5, h6 {
     z-index: 11;
     cursor: move;
     background-color: bisque;
-    box-shadow: 5px 5px 7px rgba(33, 33, 33, .7);
+    box-shadow: 5px 5px 7px 1px rgba(35, 35, 35, .7);
     transform: rotate(-5deg);
     transition: transform .15s linear;
 }
@@ -436,7 +503,7 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .note:hover, .note:focus {
-    box-shadow: 10px 10px 7px rgba(0, 0, 0, .7);
+    box-shadow: 10px 10px 7px 1px rgba(0, 0, 0, .7);
     transform: scale(1.2);
     z-index: 12;
 }
@@ -449,7 +516,7 @@ h1, h2, h3, h4, h5, h6 {
     width: 150px;
     height: 150px;
     background-color: bisque;
-    box-shadow: 5px 5px 7px rgba(33, 33, 33, .7);
+    box-shadow: 5px 5px 7px 1px rgba(35, 35, 35, .7);
     transform: rotate(5deg);
 }
 

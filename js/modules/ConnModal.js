@@ -20,6 +20,7 @@ class ConnModal extends Modal {
             let option = elements[i].innerHTML;
 
             let elem = document.createElement("option");
+            elem.className = "select__option";
             elem.textContent = option;
             elem.value = option;
             selectFirstElement.appendChild(elem);
@@ -115,7 +116,7 @@ class ConnModal extends Modal {
         }
         else {
             if (this.inputIsValid()) {
-                message.innerHTML = "One of elements isn't selected";
+                message.innerHTML = "Options in both dropdown lists should be selected";
             }
             else {
                 message.innerHTML = "All fields must contain data";

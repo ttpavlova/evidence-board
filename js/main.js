@@ -140,6 +140,8 @@ let closeConnModalBtn = document.getElementById("close-btn-connection");
 closeConnModalBtn.addEventListener("click", function() {
     connModal.clear();
     connModal.clearSelectOptions();
+    connModal.setPreviewImgToBlank("preview-img-1");
+    connModal.setPreviewImgToBlank("preview-img-2");
     connModal.close();
 });
 

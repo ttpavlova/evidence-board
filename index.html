@@ -7,7 +7,11 @@
     <title>Evidence board</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="icon" type="image/png" href="img/outline_search_black_24dp.png">
+    <!-- fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Courgette&family=Oswald&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
+    <!-- icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
 <body>
@@ -66,27 +70,34 @@
                 </div>
 
                 <div class="modal__center">
-                    <div class="modal__preview preview-medium">
-                        <img class="modal__img" id="modal-load-img" src="img/add_photo_alternate_black_48dp.svg" alt="Image preview">
+                    <div class="modal__upload-block">
+                        <div class="modal__preview preview-small">
+                            <img class="modal__img" id="modal-load-img" src="img/add_photo_alternate_black_48dp.svg" alt="Image preview">
+                        </div>
                     </div>
                     
-
                     <div class="modal__inputs">
-                        <label for="modal-input" class="modal__label">Title</label>
+                        <label for="modal-input" class="modal__label">Title:</label>
                         <input type="text" class="modal__input" id="modal-elem-title" name="modal-input" placeholder="Element Name">
+
+                        <div class="upload__content">
+                            <label for="modal-load-file" class="modal__load-btn">
+                                <span class="material-icons md-18 arrow">file_upload</span>
+                                <span class="btn-text">Upload an image</span>
+                            </label>
+                            <input class="modal__load-file" id="modal-load-file" name="modal-load-file" type="file" accept=".jpg, .jpeg, .png">
+                        </div>
+
                         <span class="modal__message" id="message-elem"></span>
-                        <label for="modal-load-file" class="modal__load-btn">
-                            <span class="material-icons">file_upload</span>
-                            Upload a file
-                        </label>
-                        <input class="modal__load-file" id="modal-load-file" name="modal-load-file" type="file" accept=".jpg, .jpeg, .png">
                     </div>
                 </div>
                 
-                <!-- create element -->
-                <button class="modal__submit" id="create-elem-btn">Create element</button>
-                <!-- update element -->
-                <button class="modal__submit" id="update-elem-btn">Update element</button>
+                <div class="modal__footer">
+                    <!-- create element -->
+                    <button class="modal__submit" id="create-elem-btn">Create element</button>
+                    <!-- update element -->
+                    <button class="modal__submit" id="update-elem-btn">Update element</button>
+                </div>
             </div>
         </div>
 
@@ -111,26 +122,28 @@
                     </div>
 
                     <div class="modal__inputs">
-                        <p class="modal__text">Element 1: </p>
-                        <select id="modal-elem1" class="modal__select">
-                            <option>Choose an element</option>
+                        <p class="modal__label">Element 1: </p>
+                        <select class="modal__select" id="modal-elem1">
+                            <option class="select__option">Choose an element</option>
                         </select>
 
-                        <p class="modal__text">Element 2: </p>
-                        <select id="modal-elem2" class="modal__select">
-                            <option>Choose an element</option>
+                        <p class="modal__label">Element 2: </p>
+                        <select class="modal__select" id="modal-elem2">
+                            <option class="select__option">Choose an element</option>
                         </select>
 
-                        <label for="modal-conn-title" class="modal__label">Connection title: </label>
+                        <label for="modal-conn-title" class="modal__label">Title: </label>
                         <input type="text" class="modal__input" id="modal-conn-title" name="modal-conn-title" placeholder="Connection Name">
                         <span class="modal__message" id="message-conn"></span>
                     </div>
                 </div>
 
-                <!-- create connection -->
-                <button class="modal__submit" id="create-conn-btn">Create connection</button>
-                <!-- update connection -->
-                <button class="modal__submit" id="update-conn-btn">Update connection</button>
+                <div class="modal__footer">
+                    <!-- create connection -->
+                    <button class="modal__submit" id="create-conn-btn">Create connection</button>
+                    <!-- update connection -->
+                    <button class="modal__submit" id="update-conn-btn">Update connection</button>
+                </div>
             </div>
         </div>
 
@@ -153,18 +166,20 @@
                     </div>
 
                     <div class="modal__inputs">
-                        <label for="modal-note-title" class="modal__label">Note title: </label>
+                        <label for="modal-note-title" class="modal__label">Title: </label>
                     <input type="text" class="modal__input" name="modal__note-title" id="modal-note-title" placeholder="Note Name">
 
-                    <label for="modal-note-text" class="modal__label">Note text: </label>
+                    <label for="modal-note-text" class="modal__label">Text: </label>
                     <input type="text" class="modal__input" name="modal-note-text" id="modal-note-text" placeholder="Note Text">
                     </div>
                 </div>
 
-                <!-- create note -->
-                <button class="modal__submit" id="create-note-btn">Create note</button>
-                <!-- update note -->
-                <button class="modal__submit" id="update-note-btn">Update note</button>
+                <div class="modal__footer">
+                    <!-- create note -->
+                    <button class="modal__submit" id="create-note-btn">Create note</button>
+                    <!-- update note -->
+                    <button class="modal__submit" id="update-note-btn">Update note</button>
+                </div>
             </div>
         </div>
     </div>
