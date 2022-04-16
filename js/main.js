@@ -219,12 +219,14 @@ createConnBtn.addEventListener("click", function() {
 });
 
 createNoteBtn.addEventListener("click", function() {
-    let [id, title, text, x, y] = noteModal.getItemData();
-    addNoteToPage(id, title, text, x, y);
+    if (noteModal.allInputsAreValid()) {
+        let [id, title, text, x, y] = noteModal.getItemData();
+        addNoteToPage(id, title, text, x, y);
 
-    // clear the inputs and close modal window
-    noteModal.clear();
-    noteModal.close();
+        // clear the inputs and close modal window
+        noteModal.clear();
+        noteModal.close();
+    }
 });
 
 // event listeners for updating elements, lines and notes buttons
@@ -248,9 +250,11 @@ updateConnBtn.addEventListener("click", function() {
 });
 
 updateNoteBtn.addEventListener("click", function() {
-    updateNote();
-    noteModal.clear();
-    noteModal.close();
+    if (noteModal.allInputsAreValid()) {
+        updateNote();
+        noteModal.clear();
+        noteModal.close();
+    }
 });
 
 // clear all data button

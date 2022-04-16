@@ -31,6 +31,23 @@ class NoteModal extends Modal {
         }
     }
 
+    // check if inputs are valid
+    allInputsAreValid() {
+        if (this.inputIsValid()) {
+            return true;
+        }
+        else {
+            this.showErrorMessages();
+        }
+    }
+
+    // show error message that explains which input is empty or incorrect
+    showErrorMessages() {
+        let message = document.getElementById("message-note");
+
+        message.innerHTML = "Title must contain 1-15 characters and cannot start or end with whitespace";
+    }
+
     // get data from note modal window
     getItemData() {
         let titleInput = document.getElementById("modal-note-title").value;

@@ -81,6 +81,7 @@ h1, h2, h3, h4, h5, h6 {
     transition: 0.1s;
     cursor: pointer;
     color: #523A28;
+    user-select: none;
 }
 
 .toolbar-item:hover {
@@ -399,13 +400,13 @@ h1, h2, h3, h4, h5, h6 {
     margin-bottom: 20px;
     padding: 10px 20px;
     width: 250px;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.3);
+    border-bottom: 2px solid rgba(0, 0, 0, 0.3);
     font-family: 'Montserrat', sans-serif;
 }
 
 .modal__input:focus {
     outline: none;
-    border-bottom: 1px solid #C5796D;
+    border-bottom: 2px solid #C5796D;
 }
 
 /* new connection modal window */
@@ -490,6 +491,7 @@ h1, h2, h3, h4, h5, h6 {
     height: 150px;
     top: 150px;
     left: 300px;
+    padding: 5px 5px;
     z-index: 11;
     cursor: move;
     background-color: bisque;
@@ -529,11 +531,11 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .note__title {
-
+    margin-bottom: 5px;
 }
 
 .note__text {
-    width: 80%;
+    width: 90%;
     height: 80%;
     z-index: 12;
     outline: none;
