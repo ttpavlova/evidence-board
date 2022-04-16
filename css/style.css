@@ -239,7 +239,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal__content {
     position: relative;
-    width: 575px;
+    width: 500px;
     max-width: 100%;
     min-height: 150px;
     padding: 20px 20px;
@@ -306,6 +306,7 @@ h1, h2, h3, h4, h5, h6 {
     justify-content: space-between;
     width: 180px;
     height: 35px;
+    margin-bottom: 10px;
     padding: 10px 15px;
     background-color: #fff;
     border: 2px solid #74A6F3;
@@ -387,7 +388,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal__label {
     display: block;
-    margin-bottom: 20px;
+    margin-bottom: 10px;
     font-weight: 500;
 }
 
@@ -431,7 +432,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal__message {
     display: block;
-    margin: 10px 0px;
+    /* margin: 10px 0px; */
     width: 300px;
     font-size: 12px;
     color: red;
@@ -451,7 +452,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal__preview-block {
     margin-top: 15px;
-    margin-left: 30px;
+    margin-left: 5px;
 }
 
 .hidden {
