@@ -111,7 +111,7 @@ class ConnModal extends Modal {
 
         if (this.dropdownOptionsAreSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "Field must contain 1-15 characters  and cannot start or end with whitespace";
+                message.innerHTML = "Field must contain 1-15 characters  and cannot start or end with a whitespace";
             }
         }
         else {

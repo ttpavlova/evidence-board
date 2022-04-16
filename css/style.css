@@ -432,8 +432,7 @@ h1, h2, h3, h4, h5, h6 {
 
 .modal__message {
     display: block;
-    /* margin: 10px 0px; */
-    width: 300px;
+    width: 250px;
     font-size: 12px;
     color: red;
 }
