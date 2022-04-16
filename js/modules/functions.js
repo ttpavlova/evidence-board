@@ -165,7 +165,7 @@ function countLineTitleCoordinates(x1, y1, x2, y2, title) {
     const canvas = document.getElementById("canvas");
     const ctx = canvas.getContext("2d");
 
-    ctx.font = "14px Montserrat, sans-serif";
+    ctx.font = "18px Montserrat, sans-serif";
 
     let text = ctx.measureText(title); // TextMetrics object
     // console.log("text.width = " + text.width);

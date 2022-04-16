@@ -47,11 +47,17 @@ function addElementToPage(id, title, img, x, y) {
     icon.alt = "selected";
     document.getElementById(elem.id).appendChild(icon);
 
-    // add title
+    // add title container
     let elem_title = document.createElement("div");
-    elem_title.className = "element__title";
-    elem_title.innerHTML = title;
+    elem_title.className = "title__container";
+    elem_title.id = "title" + elem.id.toString().slice(4);
     document.getElementById(elem.id).appendChild(elem_title);
+
+    // add title text
+    let text = document.createElement("p");
+    text.className = "element__title";
+    text.innerHTML = title;
+    document.getElementById(elem_title.id).appendChild(text);
 }
 
 // creates a new connection between two selected elements and adds it to the page

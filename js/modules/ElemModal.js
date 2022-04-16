@@ -84,7 +84,7 @@ class ElemModal extends Modal {
 
         if (this.imageIsSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "Field must contain at least one symbol and cannot start or end with whitespace";
+                message.innerHTML = "Field must contain 1-15 characters and cannot start or end with whitespace";
             }
         }
         else {
