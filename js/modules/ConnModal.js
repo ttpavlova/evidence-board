@@ -111,7 +111,7 @@ class ConnModal extends Modal {
 
         if (this.dropdownOptionsAreSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "Field must contain 1-15 characters  and cannot start or end with a whitespace";
+                message.innerHTML = "Title must contain 2-15 characters  and cannot start or end with a whitespace";
             }
         }
         else {
@@ -129,14 +129,14 @@ class ConnModal extends Modal {
         let previewImg = document.getElementById(id);
 
         previewImg.src = "img/image_black_48dp.svg";
-        previewImg.classList.add("blank");
+        previewImg.classList.add("preview__img_blank");
     }
 
     // remove default icon when image is selected
     removeBlankClass(id) {
         let previewImg = document.getElementById(id);
 
-        previewImg.classList.remove("blank");
+        previewImg.classList.remove("preview__img_blank");
     }
 
     // show a preview image when one of the options in the dropdown list is selected

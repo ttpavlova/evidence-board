@@ -45,7 +45,7 @@ class NoteModal extends Modal {
     showErrorMessages() {
         let message = document.getElementById("message-note");
 
-        message.innerHTML = "Title must contain 1-15 characters and cannot start or end with a whitespace";
+        message.innerHTML = "Title must contain 2-15 characters and cannot start or end with a whitespace";
     }
 
     // get data from note modal window

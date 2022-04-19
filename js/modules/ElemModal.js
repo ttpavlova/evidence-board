@@ -14,14 +14,14 @@ class ElemModal extends Modal {
         let previewImg = document.getElementById("modal-load-img");
 
         previewImg.src = "img/add_photo_alternate_black_48dp.svg";
-        previewImg.classList.add("blank");
+        previewImg.classList.add("preview__img_blank");
     }
 
     // remove default icon when image is selected
     removeBlankClass() {
         let previewImg = document.getElementById("modal-load-img");
 
-        previewImg.classList.remove("blank");
+        previewImg.classList.remove("preview__img_blank");
     }
 
     // add a file preview and representes the file's data as a base64 encoded string
@@ -59,7 +59,7 @@ class ElemModal extends Modal {
     imageIsSelected() {
         let imgPreview = document.getElementById("modal-load-img");
 
-        if (imgPreview.classList.contains("blank")) {
+        if (imgPreview.classList.contains("preview__img_blank")) {
             console.log("no files selected");
         }
         else {
@@ -84,7 +84,7 @@ class ElemModal extends Modal {
 
         if (this.imageIsSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "Field must contain 1-15 characters and cannot start or end with a whitespace";
+                message.innerHTML = "Title must contain 2-15 characters and cannot start or end with a whitespace";
             }
         }
         else {

@@ -8,12 +8,12 @@ class Modal {
 
     // open modal window
     open() {
-        this.window.classList.add("modal__open");
+        this.window.classList.add("modal__opened");
     }
 
     // close modal window
     close() {
-        this.window.classList.remove("modal__open");
+        this.window.classList.remove("modal__opened");
     }
 
     // show create btn, hide update btn

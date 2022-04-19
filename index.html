@@ -10,181 +10,195 @@
     <!-- fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Courgette&family=Oswald&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville&display=swap" rel="stylesheet">
     <!-- icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 </head>
+
+<!-- new body -->
 <body>
     <div class="header">
         <div class="header__container">
-            <div class="header__logo">
-                <a href="#">Evidence board</a>
+
+            <div class="logo">
+                <a class="logo__link" href="#">Evidence board</a>
             </div>
-            <div class="header__menu">
-                <a class="toolbar-item" id="zoom-in" title="Zoom In">
-                    <span class="material-icons md-28">zoom_in</span>
-                </a>
-                <a class="toolbar-item" id="zoom-out" title="Zoom Out">
-                    <span class="material-icons md-28">zoom_out</span>
-                </a>
-                <a class="toolbar-item icon-disabled" id="edit-item" title="Edit">
-                    <span class="material-icons md-28">edit</span>
-                </a>
-                <a class="toolbar-item icon-disabled" id="delete-item" title="Delete">
-                    <span class="material-icons md-28">delete</span>
-                </a>
-                <button class="menu__item" id="new-element">
-                    <div class="btn-container">
-                        <span class="plus-sign">+</span>
-                        <span class="item-word"> element</span>
+
+            <div class="main-menu">
+                <!-- toolbar icons -->
+                <div class="toolbar">
+                    <a id="zoom-in" class="toolbar__item" title="Zoom In">
+                        <span class="material-icons md-28" translate="no">zoom_in</span>
+                    </a>
+                    <a id="zoom-out" class="toolbar__item" title="Zoom Out">
+                        <span class="material-icons md-28" translate="no">zoom_out</span>
+                    </a>
+                    <a id="edit-item" class="toolbar__item toolbar__item_disabled" title="Edit">
+                        <span class="material-icons md-28" translate="no">edit</span>
+                    </a>
+                    <a id="delete-item" class="toolbar__item toolbar__item_disabled" title="Delete">
+                        <span class="material-icons md-28" translate="no">delete</span>
+                    </a>
+                </div>
+
+                <!-- menu buttons -->
+                <div class="menu">
+                    <div id="new-element" class="menu__item menu-item">
+                        <div class="menu-item__container">
+                            <span class="menu-item__plus-sign">+</span>
+                            <span class="menu-item__word"> element</span>
+                        </div>
                     </div>
-                </button>
-                <button class="menu__item" id="new-connection">
-                    <div class="btn-container">
-                        <span class="plus-sign">+</span>
-                        <span class="item-word"> connection</span>
+                    <div id="new-connection" class="menu__item menu-item">
+                        <div class="menu-item__container">
+                            <span class="menu-item__plus-sign">+</span>
+                            <span class="menu-item__word"> connection</span>
+                        </div>
                     </div>
-                </button>
-                <button class="menu__item" id="new-note">
-                    <div class="btn-container">
-                        <span class="plus-sign">+</span>
-                        <span class="item-word"> note</span>
+                    <div id="new-note" class="menu__item menu-item">
+                        <div class="menu-item__container">
+                            <span class="menu-item__plus-sign">+</span>
+                            <span class="menu-item__word"> note</span>
+                        </div>
                     </div>
-                </button>
-                <button class="menu__item" id="clear-db">
-                    <span class="item-word">clear all</span>
-                </button>
+                    <div id="clear-db" class="menu__item menu-item">
+                        <span class="menu-item__word">clear all</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- modals -->
+            <!-- new element modal window -->
+            <div id="modal-element" class="modal">
+                <div class="modal__container">
+
+                    <!-- header -->
+                    <div class="modal__header">
+                        <div class="modal__title">New Element</div>
+                        <div id="close-elem-modal" class="modal__close">
+                            <span class="material-icons md-28" translate="no">close</span>
+                        </div>
+                    </div>
+
+                    <!-- content -->
+                    <div class="modal__content">
+                        <!-- preview block -->
+                        <div class="modal__preview preview">
+                            <div class="preview__container">
+                                <img id="modal-load-img" class="preview__img" src="img/add_photo_alternate_black_48dp.svg" alt="Image preview">
+                            </div>
+                        </div>
+                        <!-- inputs block -->
+                        <div class="modal__inputs">
+                            <label for="modal-elem-title" class="modal__label">Title:</label>
+                            <input type="text" id="modal-elem-title" class="modal__input" name="modal-elem-title" placeholder="Element Name">
+
+                            <div class="upload-img">
+                                <label for="modal-load-file" class="upload-img__btn upload-img-btn">
+                                    <span class="material-icons md-18 upload-img-btn__arrow">file_upload</span>
+                                    <span class="upload-img-btn__text">Upload an image</span>
+                                </label>
+                                <input class="upload-img__input" id="modal-load-file" name="modal-load-file" type="file" accept=".jpg, .jpeg, .png">
+                            </div>
+                            <div id="message-elem" class="modal__message"></div>
+                        </div>
+                    </div>
+
+                    <!-- footer -->
+                    <div class="modal__footer">
+                        <button id="create-elem-btn" class="modal__submit">Create element</button>
+                        <button id="update-elem-btn" class="modal__submit">Update element</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- new connection modal window -->
+            <div id="modal-connection" class="modal">
+                <div class="modal__container">
+
+                    <!-- header -->
+                    <div class="modal__header">
+                        <div class="modal__title">New Connection</div>
+                        <div id="close-conn-modal" class="modal__close">
+                            <span class="material-icons md-28" translate="no">close</span>
+                        </div>
+                    </div>
+
+                    <!-- content -->
+                    <div class="modal__content">
+                        <!-- preview block -->
+                        <div class="modal__preview preview">
+                            <div class="preview__container">
+                                <img id="preview-img-1" class="preview__img preview__img_blank" src="img/image_black_48dp.svg" alt="Image for element1">
+                            </div>
+                            <div class="preview__container">
+                                <img id="preview-img-2" class="preview__img preview__img_blank" src="img/image_black_48dp.svg" alt="Image for element2">
+                            </div>
+                        </div>
+                        <!-- inputs block -->
+                        <div class="modal__inputs">
+                            <label class="modal__label">Element 1: </label>
+                            <select id="modal-elem1" class="modal__select select">
+                                <option class="select__option">Choose an element</option>
+                            </select>
+                            <label class="modal__label">Element 2: </label>
+                            <select id="modal-elem2" class="modal__select select">
+                                <option class="select__option">Choose an element</option>
+                            </select>
+                            <label for="modal-conn-title" class="modal__label">Title: </label>
+                            <input type="text" id="modal-conn-title" class="modal__input" name="modal-conn-title" placeholder="Connection Name">
+                            <span id="message-conn" class="modal__message"></span>
+                        </div>
+                    </div>
+
+                    <!-- footer -->
+                    <div class="modal__footer">
+                        <button id="create-conn-btn" class="modal__submit">Create connection</button>
+                        <button id="update-conn-btn" class="modal__submit">Update connection</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- new note modal window -->
+            <div id="modal-note" class="modal">
+                <div class="modal__container">
+
+                    <!-- header -->
+                    <div class="modal__header">
+                        <div class="modal__title">New Note</div>
+                        <div id="close-note-modal" class="modal__close">
+                            <span class="material-icons md-28" translate="no">close</span>
+                        </div>
+                    </div>
+
+                    <!-- content -->
+                    <div class="modal__content">
+                        <div class="modal__preview modal__preview_note">
+                            <div class="note-preview">
+                                <p class="note-preview__title">Case #1</p>
+                                <textarea class="note-preview__text" readonly="readonly">Details...</textarea>
+                            </div>
+                        </div>
+                        <div class="modal__inputs">
+                            <label for="modal-note-title" class="modal__label">Title: </label>
+                            <input type="text" id="modal-note-title" class="modal__input" name="modal-note-title" placeholder="Note Name">
+
+                            <label for="modal-note-text" class="modal__label">Text: </label>
+                            <textarea id="modal-note-text" class="modal__input" rows="5" cols="20" placeholder="Note Text"></textarea>
+                            <span id="message-note" class="modal__message"></span>
+                        </div>
+                    </div>
+
+                    <!-- footer -->
+                    <div class="modal__footer">
+                        <button id="create-note-btn" class="modal__submit">Create note</button>
+                        <button id="update-note-btn" class="modal__submit">Update note</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="modal-container">
-        <!-- modal for "new element" button -->
-        <div class="modal" id="modal-element">
-            <div class="modal__content">
-                <div class="modal__header">
-                    <div class="modal__title">New Element</div>
-                    <div class="modal__close" id="close-btn">
-                        <span class="material-icons md-28">close</span>
-                    </div>
-                </div>
-
-                <div class="modal__center">
-                    <div class="modal__upload-block">
-                        <div class="modal__preview preview-small">
-                            <img class="modal__img" id="modal-load-img" src="img/add_photo_alternate_black_48dp.svg" alt="Image preview">
-                        </div>
-                    </div>
-                    
-                    <div class="modal__inputs">
-                        <label for="modal-input" class="modal__label">Title:</label>
-                        <input type="text" class="modal__input" id="modal-elem-title" name="modal-input" placeholder="Element Name">
-
-                        <div class="upload__content">
-                            <label for="modal-load-file" class="modal__load-btn">
-                                <span class="material-icons md-18 arrow">file_upload</span>
-                                <span class="btn-text">Upload an image</span>
-                            </label>
-                            <input class="modal__load-file" id="modal-load-file" name="modal-load-file" type="file" accept=".jpg, .jpeg, .png">
-                        </div>
-
-                        <span class="modal__message" id="message-elem"></span>
-                    </div>
-                </div>
-                
-                <div class="modal__footer">
-                    <!-- create element -->
-                    <button class="modal__submit" id="create-elem-btn">Create element</button>
-                    <!-- update element -->
-                    <button class="modal__submit" id="update-elem-btn">Update element</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- modal for "new connection" button -->
-        <div class="modal" id="modal-connection">
-            <div class="modal__content">
-                <div class="modal__header">
-                    <div class="modal__title">New Connection</div>
-                    <div class="modal__close" id="close-btn-connection">
-                        <span class="material-icons md-28">close</span>
-                    </div>
-                </div>
-
-                <div class="modal__center">
-                    <div class="modal__images-preview">
-                        <div class="modal__preview preview-small">
-                            <img class="modal__img blank" id="preview-img-1" src="img/image_black_48dp.svg" alt="Image for element1">
-                        </div>
-                        <div class="modal__preview preview-small">
-                            <img class="modal__img blank" id="preview-img-2" src="img/image_black_48dp.svg" alt="Image for element2">
-                        </div>
-                    </div>
-
-                    <div class="modal__inputs">
-                        <p class="modal__label">Element 1: </p>
-                        <select class="modal__select" id="modal-elem1">
-                            <option class="select__option">Choose an element</option>
-                        </select>
-
-                        <p class="modal__label">Element 2: </p>
-                        <select class="modal__select" id="modal-elem2">
-                            <option class="select__option">Choose an element</option>
-                        </select>
-
-                        <label for="modal-conn-title" class="modal__label">Title: </label>
-                        <input type="text" class="modal__input" id="modal-conn-title" name="modal-conn-title" placeholder="Connection Name">
-                        <span class="modal__message" id="message-conn"></span>
-                    </div>
-                </div>
-
-                <div class="modal__footer">
-                    <!-- create connection -->
-                    <button class="modal__submit" id="create-conn-btn">Create connection</button>
-                    <!-- update connection -->
-                    <button class="modal__submit" id="update-conn-btn">Update connection</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- modal for "new note" button -->
-        <div class="modal" id="modal-note">
-            <div class="modal__content">
-                <div class="modal__header">
-                    <div class="modal__title">New Note</div>
-                    <div class="modal__close" id="close-btn-note">
-                        <span class="material-icons md-28">close</span>
-                    </div>
-                </div>
-
-                <div class="modal__center">
-                    <div class="modal__preview-block">
-                        <div class="note-preview">
-                            <div class="note__title">Case #1</div>
-                            <div class="note__text">Details...</div>
-                        </div>
-                    </div>
-
-                    <div class="modal__inputs">
-                        <label for="modal-note-title" class="modal__label">Title: </label>
-                    <input type="text" class="modal__input" name="modal__note-title" id="modal-note-title" placeholder="Note Name">
-
-                    <label for="modal-note-text" class="modal__label">Text: </label>
-                    <input type="text" class="modal__input" name="modal-note-text" id="modal-note-text" placeholder="Note Text">
-                    <span class="modal__message" id="message-note"></span>
-                    </div>
-                </div>
-
-                <div class="modal__footer">
-                    <!-- create note -->
-                    <button class="modal__submit" id="create-note-btn">Create note</button>
-                    <!-- update note -->
-                    <button class="modal__submit" id="update-note-btn">Update note</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
+    <!-- the board -->
     <div class="container" id="container" style="transform: scale(1);">
 
         <svg id="svg" width="1500" height="1500" viewBox="0 0 1500 1500">

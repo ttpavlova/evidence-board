@@ -114,7 +114,7 @@ newElemBtn.addEventListener("click", function() {
     elemModal.showCreateBtn();
 });
 
-let closeElemModalBtn = document.getElementById("close-btn");
+let closeElemModalBtn = document.getElementById("close-elem-modal");
 
 closeElemModalBtn.addEventListener("click", function() {
     elemModal.clear();
@@ -135,7 +135,7 @@ newConnBtn.addEventListener("click", function() {
     connModal.showCreateBtn();
 });
 
-let closeConnModalBtn = document.getElementById("close-btn-connection");
+let closeConnModalBtn = document.getElementById("close-conn-modal");
 
 closeConnModalBtn.addEventListener("click", function() {
     connModal.clear();
@@ -154,7 +154,7 @@ newNoteBtn.addEventListener("click", function() {
     noteModal.showCreateBtn();
 });
 
-let closeNoteModalBtn = document.getElementById("close-btn-note");
+let closeNoteModalBtn = document.getElementById("close-note-modal");
 
 closeNoteModalBtn.addEventListener("click", function() {
     noteModal.clear();
@@ -214,6 +214,8 @@ createConnBtn.addEventListener("click", function() {
         // clear the inputs and close modal window
         connModal.clear();
         connModal.clearSelectOptions();
+        connModal.setPreviewImgToBlank("preview-img-1");
+        connModal.setPreviewImgToBlank("preview-img-2");
         connModal.close();
     }
 });
@@ -245,6 +247,8 @@ updateConnBtn.addEventListener("click", function() {
         updateConn();
         connModal.clear();
         connModal.clearSelectOptions();
+        connModal.setPreviewImgToBlank("preview-img-1");
+        connModal.setPreviewImgToBlank("preview-img-2");
         connModal.close();
     }
 });

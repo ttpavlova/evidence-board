@@ -14,7 +14,6 @@ class itemType {
     countLatestItemId() {
         if (this.numArr.length > 0) {
             this.maxNumId = Math.max.apply(null, this.numArr);
-            console.log("maxNumId = " + this.maxNumId);
         }
     }
 
