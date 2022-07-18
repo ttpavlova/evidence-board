@@ -12,13 +12,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Courgette&family=Oswald&display=swap" rel="stylesheet">
     <!-- icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@48,400,0,0" />
 </head>
 
 <!-- new body -->
 <body>
-    <div class="header">
+    <header class="header">
         <div class="header__container">
-
             <div class="logo">
                 <a class="logo__link" href="#">Evidence board</a>
             </div>
@@ -64,9 +64,30 @@
                         <span class="menu-item__word">clear all</span>
                     </div>
                 </div>
-            </div>
+            </div>            
+        </div>
+    </header>
+
+    <main class="main" id="main">
+        <!-- the board -->
+        <div class="container" id="container" style="transform: scale(1);">
+
+            <svg id="svg" width="2500" height="2500" viewBox="0 0 2500 2500">
+                <rect id="background" x="0" y="0" width="2500" height="2500" fill="transparent"></rect>
+                <g class="lines__container"></g>
+                <g class="lines-text__container"></g>
+            </svg>
+
+            <div class="elements__container"></div>
+
+            <div class="notes__container"></div>
             
-            <!-- modals -->
+            <canvas id="canvas" class="canvas" width="300" height="150"></canvas>
+
+        </div>
+
+        <!-- modals -->
+        <div class="modals">
             <!-- new element modal window -->
             <div id="modal-element" class="modal">
                 <div class="modal__container">
@@ -196,24 +217,22 @@
                 </div>
             </div>
         </div>
-    </div>
+    </main>
 
-    <!-- the board -->
-    <div class="container" id="container" style="transform: scale(1);">
-
-        <svg id="svg" width="1500" height="1500" viewBox="0 0 1500 1500">
-            <rect id="background" x="0" y="0" width="1500" height="1500" fill="transparent"></rect>
-            <g class="lines__container"></g>
-            <g class="lines-text__container"></g>
-        </svg>
-
-        <div class="elements__container"></div>
-
-        <div class="notes__container"></div>
-        
-        <canvas id="canvas" width="300" height="150"></canvas>
-
-    </div>
+    <footer class="footer">
+        <div class="footer__container">
+            <div class="footer-menu">
+                <a class="footer-menu__item" href="https://github.com/ttpavlova/evidence-board" target="_blank">
+                    <span class="footer-menu__link">About</span>
+                    <span class="material-symbols-outlined new-window-icon">
+                        open_in_new
+                    </span>
+                </a>
+            </div>
+        </div>
+    </footer>
+    
     <script type="module" src="js/main.js"></script>
+    <script src="https://unpkg.com/xregexp/xregexp-all.js"></script>
 </body>
 </html>

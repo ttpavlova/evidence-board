@@ -111,7 +111,7 @@ class ConnModal extends Modal {
 
         if (this.dropdownOptionsAreSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "Title must contain 2-15 characters  and cannot start or end with a whitespace";
+                message.innerHTML = "The title must contain 2-15 characters";
             }
         }
         else {

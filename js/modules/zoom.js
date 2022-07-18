@@ -1,3 +1,4 @@
+let main = document.getElementById("main");
 let container = document.getElementById("container");
 
 function zoom(name) {
@@ -18,6 +19,7 @@ function zoom(name) {
     }
 
     container.style.transform = "scale(" + scale + ")";
+    changeMainHeight();
 
     localStorage.setItem("zoom", scale);
 }
@@ -43,4 +45,10 @@ function getZoomValue() {
     return scale;
 }
 
-export { zoom, setZoomValue };
+function changeMainHeight() {
+    let containerParameters = container.getBoundingClientRect();
+    let containerHeight = containerParameters.height;
+    main.style.height = containerHeight + "px";
+}
+
+export { zoom, setZoomValue, changeMainHeight };

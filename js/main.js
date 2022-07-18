@@ -1,5 +1,5 @@
 import { view } from './modules/view.js';
-import { zoom, setZoomValue } from './modules/zoom.js';
+import { zoom, setZoomValue, changeMainHeight } from './modules/zoom.js';
 import { ElemModal } from './modules/ElemModal.js';
 import { ConnModal } from './modules/ConnModal.js';
 import { NoteModal } from './modules/NoteModal.js';
@@ -11,6 +11,7 @@ import { clearObjStore } from './modules/indexeddb.js';
 
 function init() {
     setZoomValue();
+    changeMainHeight();
 }
 
 window.onload = init;
