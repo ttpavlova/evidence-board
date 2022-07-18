@@ -4,7 +4,7 @@ import { editItemInDb } from './indexeddb.js';
 
 function updateElem() {
     let previewImg = document.getElementById("modal-load-img").src;
-    let titleInput = document.getElementById("modal-elem-title").value;
+    let titleInput = document.getElementById("modal-elem-title").value.trim();
 
     // update data in db
     editItemInDb("elements", model.selectedItemId, "img", previewImg);
@@ -26,7 +26,7 @@ function updateElem() {
 function updateConn() {
     let elemTitle1 = document.getElementById("modal-elem1").value;
     let elemTitle2 = document.getElementById("modal-elem2").value;
-    let titleInput = document.getElementById("modal-conn-title").value;
+    let titleInput = document.getElementById("modal-conn-title").value.trim();
 
     let elemId1 = findObjValueByKeyValue(model.elements, "title", elemTitle1, "id");
     let elemId2 = findObjValueByKeyValue(model.elements, "title", elemTitle2, "id");
@@ -69,7 +69,7 @@ function updateConn() {
 }
 
 function updateNote() {
-    let titleInput = document.getElementById("modal-note-title").value;
+    let titleInput = document.getElementById("modal-note-title").value.trim();
     let textInput = document.getElementById("modal-note-text").value;
 
     // update data in db

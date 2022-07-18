@@ -50,7 +50,7 @@ class NoteModal extends Modal {
 
     // get data from note modal window
     getItemData() {
-        let titleInput = document.getElementById("modal-note-title").value;
+        let titleInput = document.getElementById("modal-note-title").value.trim();
         let textInput = document.getElementById("modal-note-text").value;
 
         // calculate id

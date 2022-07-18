@@ -159,7 +159,7 @@ class ConnModal extends Modal {
     getItemData() {
         let elemTitle1 = document.getElementById("modal-elem1").value;
         let elemTitle2 = document.getElementById("modal-elem2").value;
-        let inputValue = document.getElementById("modal-conn-title").value;
+        let inputValue = document.getElementById("modal-conn-title").value.trim();
 
         // calculate id
         let id = lines.getLatestItemId();

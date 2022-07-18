@@ -100,7 +100,7 @@ class ElemModal extends Modal {
     // get data from element modal window
     getItemData() {
         let imgPreview = document.getElementById("modal-load-img").src;
-        let inputValue = document.getElementById("modal-elem-title").value;
+        let inputValue = document.getElementById("modal-elem-title").value.trim();
         let messageInput = document.getElementById("message-elem");
     
         // checks if title is already taken
