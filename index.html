@@ -27,11 +27,14 @@
                 <!-- toolbar icons -->
                 <div class="toolbar">
                     <!-- import/export icons -->
-                    <a href="#" id="import" class="toolbar__item" title="Import File">
-                        <span class="material-symbols-outlined md-28" translate="no">
-                            file_upload
-                        </span>
-                    </a>
+                    <button id="import" class="toolbar__item" title="Import File">
+                        <label for="import-input" class="import__label">
+                            <span class="material-symbols-outlined md-28" translate="no">
+                                file_upload
+                            </span>
+                        </label>
+                        <input type="file" id="import-input" class="import__input">
+                    </button>
                     <a download="evidence-board-data.json" href="#"  id="export" class="toolbar__item" title="Export File">
                         <span class="material-symbols-outlined md-28" translate="no">
                             file_download
