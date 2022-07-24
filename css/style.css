@@ -25,6 +25,10 @@ h1, h2, h3, h4, h5, h6 {
     margin: 0;
 }
 
+button {
+    user-select: none;
+}
+
 /* header */
 
 .header {
@@ -73,6 +77,7 @@ h1, h2, h3, h4, h5, h6 {
     transition: 0.1s;
     cursor: pointer;
     color: #523A28;
+    background-color: transparent;
     user-select: none;
 }
 
@@ -85,6 +90,10 @@ h1, h2, h3, h4, h5, h6 {
 .toolbar__item_disabled {
     opacity: 0.2;
     pointer-events: none;
+}
+
+.material-symbols-outlined.md-28 {
+    font-size: 28px;
 }
 
 .material-icons.md-18 {

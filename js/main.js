@@ -1,4 +1,5 @@
 import { view } from './modules/view.js';
+import { exportFile } from './modules/export.js';
 import { zoom, setZoomValue, changeMainHeight } from './modules/zoom.js';
 import { ElemModal } from './modules/ElemModal.js';
 import { ConnModal } from './modules/ConnModal.js';
@@ -39,6 +40,14 @@ let lines = new itemType();
 let notes = new itemType();
 
 // toolbar
+
+// export
+
+let exportBtn = document.getElementById("export");
+
+exportBtn.addEventListener("click", function() {
+    exportFile();
+});
 
 // zoom
 

@@ -26,18 +26,30 @@
             <div class="main-menu">
                 <!-- toolbar icons -->
                 <div class="toolbar">
-                    <a id="zoom-in" class="toolbar__item" title="Zoom In">
+                    <!-- import/export icons -->
+                    <a href="#" id="import" class="toolbar__item" title="Import File">
+                        <span class="material-symbols-outlined md-28" translate="no">
+                            file_upload
+                        </span>
+                    </a>
+                    <a download="evidence-board-data.json" href="#"  id="export" class="toolbar__item" title="Export File">
+                        <span class="material-symbols-outlined md-28" translate="no">
+                            file_download
+                        </span>
+                    </a>
+                    <!-- zoom icons -->
+                    <button id="zoom-in" class="toolbar__item" title="Zoom In">
                         <span class="material-icons md-28" translate="no">zoom_in</span>
-                    </a>
-                    <a id="zoom-out" class="toolbar__item" title="Zoom Out">
+                    </button>
+                    <button id="zoom-out" class="toolbar__item" title="Zoom Out">
                         <span class="material-icons md-28" translate="no">zoom_out</span>
-                    </a>
-                    <a id="edit-item" class="toolbar__item toolbar__item_disabled" title="Edit">
+                    </button>
+                    <button id="edit-item" class="toolbar__item toolbar__item_disabled" title="Edit">
                         <span class="material-icons md-28" translate="no">edit</span>
-                    </a>
-                    <a id="delete-item" class="toolbar__item toolbar__item_disabled" title="Delete">
+                    </button>
+                    <button id="delete-item" class="toolbar__item toolbar__item_disabled" title="Delete">
                         <span class="material-icons md-28" translate="no">delete</span>
-                    </a>
+                    </button>
                 </div>
 
                 <!-- menu buttons -->
