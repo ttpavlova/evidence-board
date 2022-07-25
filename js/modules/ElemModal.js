@@ -84,7 +84,7 @@ class ElemModal extends Modal {
 
         if (this.imageIsSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "The title must contain 2-15 characters";
+                message.innerHTML = "The title must contain 1-15 characters";
             }
         }
         else {

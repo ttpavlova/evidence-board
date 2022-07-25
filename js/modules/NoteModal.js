@@ -45,7 +45,7 @@ class NoteModal extends Modal {
     showErrorMessages() {
         let message = document.getElementById("message-note");
 
-        message.innerHTML = "The title must contain 2-15 characters";
+        message.innerHTML = "The title must contain 1-15 characters";
     }
 
     // get data from note modal window
