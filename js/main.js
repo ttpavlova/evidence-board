@@ -1,4 +1,6 @@
 import { view } from './modules/view.js';
+import { importFile } from './modules/import.js';
+import { exportFile } from './modules/export.js';
 import { zoom, setZoomValue, changeMainHeight } from './modules/zoom.js';
 import { ElemModal } from './modules/ElemModal.js';
 import { ConnModal } from './modules/ConnModal.js';
