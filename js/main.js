@@ -1,6 +1,4 @@
 import { view } from './modules/view.js';
-import { importFile } from './modules/import.js';
-import { exportFile } from './modules/export.js';
 import { zoom, setZoomValue, changeMainHeight } from './modules/zoom.js';
 import { ElemModal } from './modules/ElemModal.js';
 import { ConnModal } from './modules/ConnModal.js';
@@ -47,22 +45,6 @@ let items = {
 }
 
 // toolbar
-
-// import
-
-let importBtn = document.getElementById("import");
-
-importBtn.addEventListener("click", function() {
-    // importFile();
-})
-
-// export
-
-let exportBtn = document.getElementById("export");
-
-exportBtn.addEventListener("click", function() {
-    exportFile();
-});
 
 // zoom
 

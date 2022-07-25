@@ -1,4 +1,4 @@
-import { addElementToDb, addLineToDb, addNoteToDb } from './indexeddb.js';
+import { addElementToDb, addLineToDb, addNoteToDb, clearObjStore } from './indexeddb.js';
 
 let importInput = document.getElementById("import-input");
 
@@ -41,36 +41,41 @@ function importFile(input) {
 }
 
 function writeNewData(result) {
-    let itemsObjCopy = [];
-    
-    try {
-        let json = JSON.parse(result);
-        itemsObjCopy = json;
-        console.log(itemsObjCopy);
-        console.log(itemsObjCopy.elements);
-    } catch {
-        alert("Error: Incorrect JSON file.");
+    let newItemsObj = checkJSONData(result);
+
+    if (!checkJSONData(result) || !checkFileData(newItemsObj)) {
+        alert("Error: File data is incorrect.");
         return;
     }
 
-    if (checkFileData(itemsObjCopy)) {
-        // ...
+    clearDb();
+
+    try {
+        addElementsToDb(newItemsObj.elements);
+        addLinesToDb(newItemsObj.lines);
+        addNotesToDb(newItemsObj.notes);
+    } catch {
+        alert("Error: Can't add items to Db");
     }
 
-    // try {
-    //     clearDb();
-    //     addElementsToDb(itemsObjCopy.elements);
-    //     addLinesToDb(itemsObjCopy.lines);
-    //     addNotesToDb(itemsObjCopy.notes);
-    // } catch {
-    //     alert("An error occured.");
-    // }
+    setTimeout(function() {
+        // reload the page
+        document.location.reload();
+    }, 500);
+    
+}
+
+function checkJSONData(result) {
+    try {
+        let json = JSON.parse(result);
+        return json;
+    } catch {
+        return false;
+    }
 }
 
 function checkFileData(obj) {
     if ((obj.elements == undefined) || (obj.lines == undefined) || (obj.notes == undefined)) {
-        alert("Error: File data is incorrect.");
-
         return false;
     }
 
@@ -78,13 +83,9 @@ function checkFileData(obj) {
 }
 
 function clearDb() {
-    if (window.confirm("Are you sure you want to open a new scheme? All current items will be deleted and the page will be reloaded")) {
-        clearObjStore("elements");
-        // clearObjStore("lines");
-        // clearObjStore("notes");
-        // reload the page
-        document.location.reload();
-    }
+    clearObjStore("elements");
+    clearObjStore("lines");
+    clearObjStore("notes");
 }
 
 function addElementsToDb(obj) {
