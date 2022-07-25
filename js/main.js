@@ -40,6 +40,12 @@ let elements = new itemType();
 let lines = new itemType();
 let notes = new itemType();
 
+let items = {
+    elements: model.elements,
+    lines: model.lines,
+    notes: model.notes,
+}
+
 // toolbar
 
 // import
@@ -305,4 +311,4 @@ background.addEventListener("click", function() {
     view.setEditDeleteBtnState();
 });
 
-export { model, elements, lines, notes };
+export { model, elements, lines, notes, items };
