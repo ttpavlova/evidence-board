@@ -61,7 +61,7 @@ function writeNewData(result) {
     setTimeout(function() {
         // reload the page
         document.location.reload();
-    }, 500);
+    }, 2000);
     
 }
 
