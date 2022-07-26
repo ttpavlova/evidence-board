@@ -84,7 +84,7 @@ class ElemModal extends Modal {
 
         if (this.imageIsSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "The title must contain 1-15 characters";
+                message.innerHTML = "The title must contain 1-25 characters";
             }
         }
         else {
@@ -121,8 +121,8 @@ class ElemModal extends Modal {
     
             // get coordinates
             let windowWidth = window.innerWidth;
-            let x = windowWidth / 2 - model.elemWidth / 2 + "px";
-            let y = "100px";
+            let x = document.getElementById("main").scrollLeft + windowWidth / 2 - model.elemWidth / 2 + "px";
+            let y = document.documentElement.scrollTop + 150 + "px";
     
             // add data to db
             addElementToDb(id, title, img, x, y);

@@ -45,7 +45,7 @@ class NoteModal extends Modal {
     showErrorMessages() {
         let message = document.getElementById("message-note");
 
-        message.innerHTML = "The title must contain 1-15 characters";
+        message.innerHTML = "The title must contain 1-25 characters";
     }
 
     // get data from note modal window
@@ -66,8 +66,8 @@ class NoteModal extends Modal {
 
         // get coordinates
         let windowWidth = window.innerWidth;
-        let x = windowWidth / 2 - model.noteWidth / 2 + "px";
-        let y = "100px";
+        let x = document.getElementById("main").scrollLeft + windowWidth / 2 - model.noteWidth / 2 + "px";
+        let y = document.documentElement.scrollTop + 150 + "px";
 
         // add data to db
         addNoteToDb(id, title, text, x, y);

@@ -41,7 +41,7 @@ class Modal {
 
     // check if text input is valid
     inputIsValid() {
-        let regex = XRegExp('^[\\p{L}\\d\\s]{1,15}$');
+        let regex = XRegExp('^[\\p{L}\\d\\s,-—()!?]{1,25}$');
         let inputValue = this.window.querySelectorAll(".modal__input")[0].value.trim();
 
         console.log("in check " + inputValue);

@@ -111,7 +111,7 @@ class ConnModal extends Modal {
 
         if (this.dropdownOptionsAreSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "The title must contain 1-15 characters";
+                message.innerHTML = "The title must contain 1-25 characters";
             }
         }
         else {
