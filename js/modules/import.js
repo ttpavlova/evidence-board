@@ -60,7 +60,7 @@ function writeNewData(result) {
 
     setTimeout(function() {
         // reload the page
-        document.location.reload();
+        // document.location.reload();
     }, 2000);
     
 }
