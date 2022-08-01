@@ -55,7 +55,8 @@ button {
 }
 
 .logo__link {
-    font-family: 'Courgette', cursive;
+    /* font-family: 'Courgette', cursive; */
+    font-family: 'Oswald', sans-serif;
     font-weight: 500;
     font-size: 26px;
     text-decoration: none;
@@ -166,7 +167,8 @@ button {
 
 .menu__item:last-child {
     margin-right: 0;
-    background-color: #F3E5C3;
+    /* background-color: #F3E5C3; */
+    background-color: #fff;
     border: 2px solid #C38370;
     color: #C38370;
 }
@@ -180,13 +182,6 @@ button {
     display: flex;
     justify-content: center;
     align-items: center;
-}
-
-.menu-item__plus-sign {
-    font-family: 'Oswald', sans-serif;
-    font-size: 22px;
-    line-height: 1;
-    margin-right: 10px;
 }
 
 .menu-item__word {
@@ -209,12 +204,21 @@ button {
 .side-toolbar {
     position: fixed;
     left: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
     width: 50px;
-    height: 200px;
+    /* height: 200px; */
+    height: 150px;
     background-color: #fff;
     border-radius: 5px;
     box-shadow: 0 0 10px 2px rgb(0 0 0 / 10%);
     z-index: 100;
+}
+
+.line-icon {
+    transform: rotate(125deg);
 }
 
 /* zoom toolbar */
@@ -706,6 +710,7 @@ button {
     align-items: center;
     margin-right: 30px;
     font-size: 14px;
+    font-weight: 500;
     color: #fff;
     text-decoration: none;
 }

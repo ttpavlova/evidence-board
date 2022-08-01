@@ -51,24 +51,6 @@
 
                 <!-- menu buttons -->
                 <div class="menu">
-                    <div id="new-element" class="menu__item menu-item">
-                        <div class="menu-item__container">
-                            <span class="menu-item__plus-sign">+</span>
-                            <span class="menu-item__word"> element</span>
-                        </div>
-                    </div>
-                    <div id="new-connection" class="menu__item menu-item">
-                        <div class="menu-item__container">
-                            <span class="menu-item__plus-sign">+</span>
-                            <span class="menu-item__word"> connection</span>
-                        </div>
-                    </div>
-                    <div id="new-note" class="menu__item menu-item">
-                        <div class="menu-item__container">
-                            <span class="menu-item__plus-sign">+</span>
-                            <span class="menu-item__word"> note</span>
-                        </div>
-                    </div>
                     <div id="clear-db" class="menu__item menu-item">
                         <span class="menu-item__word">clear all</span>
                     </div>
@@ -82,8 +64,23 @@
         <div class="main__container">
             <!-- side toolbar -->
             <div class="side-toolbar">
-
+                <button id="new-element" class="toolbar__item">
+                    <span class="material-symbols-outlined md-28" translate="no">
+                        image
+                    </span>
+                </button>
+                <button id="new-connection" class="toolbar__item">
+                    <span class="material-symbols-outlined md-28 line-icon" translate="no">
+                        horizontal_rule
+                    </span>
+                </button>
+                <button id="new-note" class="toolbar__item">
+                    <span class="material-symbols-outlined md-28" translate="no">
+                        sticky_note_2
+                    </span>
+                </button>
             </div>
+            
             <!-- zoom toolbar -->
             <div class="zoom-toolbar">
                 <button id="zoom-out" class="toolbar__item" title="Zoom Out">

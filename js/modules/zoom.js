@@ -34,6 +34,8 @@ function setZoomValue() {
     container.style.transform = "scale(" + scale + ")";
 
     zoomPercent.innerHTML = getZoomInPercent(scale) + "%";
+    console.log(scale);
+    console.log(zoomPercent.innerHTML);
 }
 
 function getZoomValue() {
@@ -41,7 +43,8 @@ function getZoomValue() {
     let scale = "";
 
     if (isNaN(localStorage.getItem("zoom")) || (localStorage.getItem("zoom") == null)) {
-        scale = localStorage.setItem("zoom", 1);
+        localStorage.setItem("zoom", 1);
+        scale = 1;
     }
     else {
         scale = localStorage.getItem("zoom");
