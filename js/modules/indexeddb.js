@@ -1,4 +1,5 @@
 import { addElementToPage, addLineToPage, addNoteToPage } from './addItemToPage.js';
+import { setElementsCount, setLinesCount, setNotesCount } from './import.js';
 
 // indexedDB
 
@@ -54,6 +55,12 @@ function addElementToDb(id, title, img, x, y) {
     request.onsuccess = function(e) {
         // console.log("the element was added to db successfully");
     };
+    
+    countItemsInDb("elements");
+
+    transaction.oncomplete = function() {
+        // console.log("add element transaction completed");
+    }
 }
 
 // add a line to the db
@@ -81,6 +88,12 @@ function addLineToDb(id, title, elemId1, elemId2, x1, y1, x2, y2) {
     request.onsuccess = function(e) {
         // console.log("the line was added to db successfully");
     };
+
+    countItemsInDb("lines");
+
+    transaction.oncomplete = function() {
+        // console.log("add line transaction completed");
+    }
 }
 
 // add a note to the db
@@ -103,8 +116,37 @@ function addNoteToDb(id, title, text, x, y) {
     };
 
     request.onsuccess = function(e) {
-        // console.log("the element was added to db successfully");
+        // console.log("the note was added to db successfully");
     };
+
+    countItemsInDb("notes");
+
+    transaction.oncomplete = function() {
+        // console.log("add note transaction completed");
+    }
+}
+
+function countItemsInDb(objectStoreName) {
+    let transaction = db.transaction([objectStoreName], "readonly");
+    let store = transaction.objectStore(objectStoreName);
+
+    let request = store.count();
+
+    request.onerror = function(e) {
+        console.log("error", e.target.error.name);
+    };
+
+    request.onsuccess = function(e) {
+        // console.log(request.result + " items in " + objectStoreName + " store");
+
+        if (objectStoreName == "elements") {
+            setElementsCount(request.result);
+        } else if (objectStoreName == "lines") {
+            setLinesCount(request.result);
+        } else {
+            setNotesCount(request.result);
+        }
+    }
 }
 
 // get an item from the db
@@ -219,15 +261,25 @@ function readItemsFromDb(objectStoreName) {
 
 // clear object store
 function clearObjStore(objectStoreName) {
-    let request = db.transaction([objectStoreName], "readwrite").objectStore(objectStoreName).clear();
+    let transaction = db.transaction([objectStoreName], "readwrite");
+    let store = transaction.objectStore(objectStoreName);
+
+    let request = store.clear();
 
     request.onerror = function(e) {
         console.log("error", e.target.error.name);
     }
 
     request.onsuccess = function(e) {
-        console.log("all items were deleted successfully from db");
+        // console.log("all items were deleted successfully from db");
     }
+
+    countItemsInDb(objectStoreName);
+
+    transaction.oncomplete = function(e) {
+        // console.log("transaction completed: all items were deleted from " + objectStoreName + " store");
+    }
+
 }
 
-export { addElementToDb, addLineToDb, addNoteToDb, getItemFromDb, editItemInDb, deleteItemFromDb, readItemsFromDb, clearObjStore };
+export { addElementToDb, addLineToDb, addNoteToDb, countItemsInDb, getItemFromDb, editItemInDb, deleteItemFromDb, readItemsFromDb, clearObjStore };

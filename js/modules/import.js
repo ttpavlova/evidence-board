@@ -58,11 +58,14 @@ function writeNewData(result) {
         alert("Error: Can't add items to Db");
     }
 
-    setTimeout(function() {
-        // reload the page
-        // document.location.reload();
-    }, 2000);
-    
+    // check when everything is loaded in db
+    let interval = setInterval(function() {
+        if (elementsNumberLoaded == newItemsObj.elements.length && linesNumberLoaded == newItemsObj.lines.length && notesNumberLoaded == newItemsObj.notes.length) {
+            clearInterval(interval);
+            // reload the page
+            document.location.reload();
+        }
+    }, 1000);    
 }
 
 function checkJSONData(result) {
@@ -106,4 +109,23 @@ function addNotesToDb(obj) {
     }
 }
 
-export { importFile };
+let elementsNumberLoaded = 0;
+let linesNumberLoaded = 0;
+let notesNumberLoaded = 0;
+
+function setElementsCount(count) {
+    // console.log(count + " = elements count");
+    elementsNumberLoaded = count;
+}
+
+function setLinesCount(count) {
+    // console.log(count + " = lines count");
+    linesNumberLoaded = count;
+}
+
+function setNotesCount(count) {
+    // console.log(count + " = notes count");
+    notesNumberLoaded = count;
+}
+
+export { importFile, setElementsCount, setLinesCount, setNotesCount, elementsNumberLoaded, linesNumberLoaded, notesNumberLoaded };

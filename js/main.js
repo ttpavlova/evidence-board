@@ -1,5 +1,5 @@
 import { view } from './modules/view.js';
-import { importFile } from './modules/import.js';
+import { importFile, elementsNumberLoaded, linesNumberLoaded, notesNumberLoaded } from './modules/import.js';
 import { exportFile } from './modules/export.js';
 import { zoom, setZoomValue, changeMainHeight } from './modules/zoom.js';
 import { ElemModal } from './modules/ElemModal.js';
@@ -280,7 +280,9 @@ clearDbButton.addEventListener("click", function() {
         clearObjStore("lines");
         clearObjStore("notes");
         // reload the page
-        document.location.reload();
+        if (elementsNumberLoaded == 0 && linesNumberLoaded == 0 && notesNumberLoaded == 0) {
+            document.location.reload();
+        }
     }
 });
 
