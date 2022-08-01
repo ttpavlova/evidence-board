@@ -75,6 +75,7 @@ button {
 }
 
 .toolbar__item {
+    position: relative;
     max-height: 28px;
     margin: 10px 10px;
     opacity: 0.6;
@@ -219,6 +220,39 @@ button {
 
 .line-icon {
     transform: rotate(125deg);
+}
+
+/* tooltips */
+
+.toolbar__item .tooltip-text {
+    position: absolute;
+    left: 180%;
+    width: 150px;
+    padding: 5px 10px;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 14px;
+    font-weight: 500;
+    color: #fff;
+    background-color: rgba(0, 0, 0, .8);
+    border-radius: 5px;
+    opacity: 0;
+    transition: opacity 0.1s;
+    z-index: 10;
+}
+
+.toolbar__item .tooltip-text::after {
+    content: "";
+    position: absolute;
+    top: 50%;
+    right: 100%;
+    margin-top: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent rgba(0, 0, 0, .8) transparent transparent;
+}
+
+.toolbar__item:hover .tooltip-text {
+    opacity: 1;
 }
 
 /* zoom toolbar */
