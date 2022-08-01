@@ -84,11 +84,26 @@
     </header>
 
     <main class="main" id="main">
+        
+        <!-- side toolbar -->
+        <div class="main__container">
+            <div class="side-toolbar">
+
+            </div>
+        </div>
+
         <!-- the board -->
         <div class="container" id="container" style="transform: scale(1);">
-
             <svg id="svg" width="3000" height="3000" viewBox="0 0 3000 3000">
+                    <pattern id="pattern-grid" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse" >
+                        <polyline class="grid-line" points="0 200, 1000 200" stroke-width="2" />
+                        <polyline class="grid-line" points="0 0, 0 200" stroke-width="2" />
+                    </pattern>
+                    <!-- define the shape that will contain the pattern as the fill -->
+                    <rect x="0" y="0" width="100%" height="100%" fill="url(#pattern-grid)" />
+    
                 <rect id="background" x="0" y="0" width="3000" height="3000" fill="transparent"></rect>
+
                 <g class="lines__container"></g>
                 <g class="lines-text__container"></g>
             </svg>
