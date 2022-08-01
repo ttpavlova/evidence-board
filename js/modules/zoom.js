@@ -1,5 +1,6 @@
 let main = document.getElementById("main");
 let container = document.getElementById("container");
+let zoomPercent = document.getElementById("zoom-percent");
 
 function zoom(name) {
 
@@ -21,6 +22,8 @@ function zoom(name) {
     container.style.transform = "scale(" + scale + ")";
     changeMainHeight();
 
+    zoomPercent.innerHTML = getZoomInPercent(scale) + "%";
+
     localStorage.setItem("zoom", scale);
 }
 
@@ -29,6 +32,8 @@ function setZoomValue() {
     let scale = getZoomValue();
 
     container.style.transform = "scale(" + scale + ")";
+
+    zoomPercent.innerHTML = getZoomInPercent(scale) + "%";
 }
 
 function getZoomValue() {
@@ -43,6 +48,10 @@ function getZoomValue() {
     }
 
     return scale;
+}
+
+function getZoomInPercent(scale) {
+    return scale * 100;
 }
 
 function changeMainHeight() {
