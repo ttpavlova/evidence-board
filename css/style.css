@@ -228,7 +228,7 @@ button {
     position: absolute;
     left: 180%;
     width: 150px;
-    padding: 5px 10px;
+    padding: 5px;
     font-family: 'Montserrat', sans-serif;
     font-size: 14px;
     font-weight: 500;
@@ -269,6 +269,21 @@ button {
     border-radius: 5px;
     box-shadow: 0 0 10px 2px rgb(0 0 0 / 10%);
     z-index: 100;
+}
+
+.zoom-toolbar .tooltip-text {
+    bottom: 180%;
+    left: 50%;
+    margin-left: -45px;
+    width: 90px;
+}
+
+.zoom-toolbar .tooltip-text::after {
+    top: 100%;
+    left: 50%;
+    margin-top: 0;
+    margin-left: -5px;
+    border-color: rgba(0, 0, 0, .8) transparent transparent transparent;
 }
 
 /* modals */
