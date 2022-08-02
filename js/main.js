@@ -279,10 +279,15 @@ clearDbButton.addEventListener("click", function() {
         clearObjStore("elements");
         clearObjStore("lines");
         clearObjStore("notes");
-        // reload the page
-        if (elementsNumberLoaded == 0 && linesNumberLoaded == 0 && notesNumberLoaded == 0) {
-            document.location.reload();
-        }
+
+        // check if everything is deleted from the db
+        let interval = setInterval(function() {
+            if (elementsNumberLoaded == 0 && linesNumberLoaded == 0 && notesNumberLoaded == 0) {
+                clearInterval(interval);
+                // reload the page
+                document.location.reload();
+            }
+        }, 500);
     }
 });
 

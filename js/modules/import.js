@@ -58,14 +58,14 @@ function writeNewData(result) {
         alert("Error: Can't add items to Db");
     }
 
-    // check when everything is loaded in db
+    // check if everything is uploaded into the db
     let interval = setInterval(function() {
         if (elementsNumberLoaded == newItemsObj.elements.length && linesNumberLoaded == newItemsObj.lines.length && notesNumberLoaded == newItemsObj.notes.length) {
             clearInterval(interval);
             // reload the page
             document.location.reload();
         }
-    }, 1000);    
+    }, 1000);
 }
 
 function checkJSONData(result) {
