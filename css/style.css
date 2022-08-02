@@ -242,6 +242,9 @@ button {
 
 .tooltip-text {
     position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     padding: 5px;
     width: 150px;
     height: 30px;
@@ -260,10 +263,12 @@ button {
 .upper-toolbar__item .tooltip-text {
     top: 180%;
     left: 50%;
-    margin-left: -75px;
+    margin-left: -60px;
+    width: 120px;
 }
 
 .side-toolbar__item .tooltip-text {
+    top: 0;
     left: 180%;
     width: 150px;
 }
