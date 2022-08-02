@@ -634,16 +634,17 @@ button {
 
 .line {
     stroke-width: 2px;
-    stroke: #342617;
+    stroke: #5d221a;
 }
 
 .line:hover {
-    stroke-width: 3px;
+    stroke-width: 4px;
     cursor: pointer;
 }
 
 .line__text {
     font-size: 18px;
+    font-weight: 500;
 }
 
 .line__selected {
