@@ -25,27 +25,31 @@
 
             <div class="main-menu">
                 <!-- toolbar icons -->
-                <div class="toolbar">
+                <div class="toolbar upper-toolbar">
                     <!-- import/export icons -->
-                    <button id="import" class="toolbar__item" title="Import File">
+                    <button id="import" class="toolbar__item upper-toolbar__item">
                         <label for="import-input" class="import__label">
                             <span class="material-symbols-outlined md-28" translate="no">
                                 file_upload
                             </span>
+                            <span class="tooltip-text">Import a File</span>
                         </label>
                         <input type="file" id="import-input" class="import__input">
                     </button>
-                    <a download="evidence-board-data.json" href="#"  id="export" class="toolbar__item" title="Export File">
+                    <a download="evidence-board-data.json" href="#"  id="export" class="toolbar__item upper-toolbar__item">
                         <span class="material-symbols-outlined md-28" translate="no">
                             file_download
                         </span>
+                        <span class="tooltip-text">Export a File</span>
                     </a>
                     
-                    <button id="edit-item" class="toolbar__item toolbar__item_disabled" title="Edit">
+                    <button id="edit-item" class="toolbar__item upper-toolbar__item toolbar__item_disabled">
                         <span class="material-icons md-28" translate="no">edit</span>
+                        <span class="tooltip-text">Edit an Item</span>
                     </button>
-                    <button id="delete-item" class="toolbar__item toolbar__item_disabled" title="Delete">
+                    <button id="delete-item" class="toolbar__item upper-toolbar__item toolbar__item_disabled">
                         <span class="material-icons md-28" translate="no">delete</span>
+                        <span class="tooltip-text">Delete an Item</span>
                     </button>
                 </div>
 
@@ -63,20 +67,20 @@
         
         <div class="main__container">
             <!-- side toolbar -->
-            <div class="side-toolbar">
-                <button id="new-element" class="toolbar__item">
+            <div class="toolbar side-toolbar">
+                <button id="new-element" class="toolbar__item side-toolbar__item">
                     <span class="material-symbols-outlined md-28" translate="no">
                         image
                     </span>
                     <span class="tooltip-text">Add an Element</span>
                 </button>
-                <button id="new-connection" class="toolbar__item">
+                <button id="new-connection" class="toolbar__item side-toolbar__item">
                     <span class="material-symbols-outlined md-28 line-icon" translate="no">
                         horizontal_rule
                     </span>
                     <span class="tooltip-text">Add a Connection</span>
                 </button>
-                <button id="new-note" class="toolbar__item">
+                <button id="new-note" class="toolbar__item side-toolbar__item">
                     <span class="material-symbols-outlined md-28" translate="no">
                         sticky_note_2
                     </span>
@@ -85,13 +89,13 @@
             </div>
 
             <!-- zoom toolbar -->
-            <div class="zoom-toolbar">
-                <button id="zoom-out" class="toolbar__item">
+            <div class="toolbar zoom-toolbar">
+                <button id="zoom-out" class="toolbar__item zoom-toolbar__item">
                     <span class="material-icons md-28" translate="no">zoom_out</span>
                     <span class="tooltip-text">Zoom Out</span>
                 </button>
-                <span id="zoom-percent" class="toolbar__item not-clickable"></span>
-                <button id="zoom-in" class="toolbar__item">
+                <span id="zoom-percent" class="toolbar__item zoom-toolbar__item not-clickable"></span>
+                <button id="zoom-in" class="toolbar__item zoom-toolbar__item">
                     <span class="material-icons md-28" translate="no">zoom_in</span>
                     <span class="tooltip-text">Zoom In</span>
                 </button>
