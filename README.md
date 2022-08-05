@@ -44,7 +44,3 @@ To build and run this project locally, you need to clone this repository and lau
 # clone this repository
 $ git clone https://github.com/ttpavlova/evidence-board.git
 ```
-
-# Credits
-
-Extended JavaScript regular expressions https://github.com/slevithan/xregexp
