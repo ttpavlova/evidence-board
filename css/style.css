@@ -7,10 +7,9 @@ body {
     font-weight: 400;
     line-height: 1.6;
     color: #333;
-    background-color: lightgray;
-    background-color: #F5F5F5;
+    /* background-color: #F5F5F5; */
     background-color: #FFF7ED;
-    /* background-image: url("../img/bg.jpg"); */
+    background-image: url("../img/bg-lighter.jpg");
     background-size: 600px;
 }
 
@@ -55,7 +54,6 @@ button {
 }
 
 .logo__link {
-    /* font-family: 'Courgette', cursive; */
     font-family: 'Oswald', sans-serif;
     font-weight: 500;
     font-size: 26px;
