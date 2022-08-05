@@ -16,6 +16,16 @@ You can try the demo at https://evidence-board.netlify.app/
 
 # Overview
 
+Creating a connection:
+
+![creating-connection.gif](https://github.com/ttpavlova/evidence-board/blob/main/gifs/creating-connection.gif)
+Importing a scheme:
+
+![importing-scheme.gif](https://github.com/ttpavlova/evidence-board/blob/main/gifs/importing-scheme.gif)
+Moving items:
+
+![moving-items.gif](https://github.com/ttpavlova/evidence-board/blob/main/gifs/moving-items.gif)
+
 ## Items
 
 There are three types of items: elements, connections and notes. Any element can be connected to another element, elements can have multiple connections.
