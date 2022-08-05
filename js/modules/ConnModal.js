@@ -95,6 +95,16 @@ class ConnModal extends Modal {
         }
     }
 
+    inputIsValid() {
+        let inputValue = this.window.querySelectorAll(".modal__input")[0].value.trim();
+
+        console.log("in check " + inputValue);
+
+        if (inputValue.length > 0 && inputValue.length <= 35) {
+            return true;
+        }
+    }
+
     // checks if inputs are valid
     allInputsAreValid = function() {
         if (this.dropdownOptionsAreSelected() && this.inputIsValid()) {
@@ -111,7 +121,7 @@ class ConnModal extends Modal {
 
         if (this.dropdownOptionsAreSelected()) {
             if (!this.inputIsValid()) {
-                message.innerHTML = "The title must contain 1-25 characters";
+                message.innerHTML = "The title must contain 1-35 characters";
             }
         }
         else {

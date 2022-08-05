@@ -34,8 +34,6 @@ function setZoomValue() {
     container.style.transform = "scale(" + scale + ")";
 
     zoomPercent.innerHTML = getZoomInPercent(scale) + "%";
-    console.log(scale);
-    console.log(zoomPercent.innerHTML);
 }
 
 function getZoomValue() {
