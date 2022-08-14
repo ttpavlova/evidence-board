@@ -68,9 +68,18 @@ class ElemModal extends Modal {
         }
     }
 
+    // check if title is already taken
+    titleIsTaken() {
+        let inputValue = document.getElementById("modal-elem-title").value.trim();
+
+        if (isValueTaken(model.elements, "title", inputValue)) {
+            return true;
+        }
+    }
+
     // check if inputs are valid
     allInputsAreValid() {
-        if (this.imageIsSelected() && this.inputIsValid()) {
+        if (this.imageIsSelected() && this.inputIsValid() && !this.titleIsTaken()) {
             return true;
         }
         else {
@@ -85,6 +94,9 @@ class ElemModal extends Modal {
         if (this.imageIsSelected()) {
             if (!this.inputIsValid()) {
                 message.innerHTML = "The title must contain 1-25 characters";
+            }
+            else if (this.titleIsTaken()) {
+                message.innerHTML = "This title has already been taken";
             }
         }
         else {
@@ -101,34 +113,27 @@ class ElemModal extends Modal {
     getItemData() {
         let imgPreview = document.getElementById("modal-load-img").src;
         let inputValue = document.getElementById("modal-elem-title").value.trim();
-        let messageInput = document.getElementById("message-elem");
-    
-        // checks if title is already taken
-        if (isValueTaken(model.elements, "title", inputValue)) {
-            messageInput.innerHTML = "This title has already been taken. Choose another one.";
-        }
-        else {
-            // calculate id
-            let id = elements.getLatestItemId();
-            id++;
-            id = "elem" + id;
-    
-            // get img src
-            let img = imgPreview;
-    
-            // get title
-            let title = inputValue;
-    
-            // get coordinates
-            let windowWidth = window.innerWidth;
-            let x = document.getElementById("main").scrollLeft + windowWidth / 2 - model.elemWidth / 2 + "px";
-            let y = document.documentElement.scrollTop + 150 + "px";
-    
-            // add data to db
-            addElementToDb(id, title, img, x, y);
-    
-            return [id, title, img, x, y];
-        }
+
+        // calculate id
+        let id = elements.getLatestItemId();
+        id++;
+        id = "elem" + id;
+
+        // get img src
+        let img = imgPreview;
+
+        // get title
+        let title = inputValue;
+
+        // get coordinates
+        let windowWidth = window.innerWidth;
+        let x = document.getElementById("main").scrollLeft + windowWidth / 2 - model.elemWidth / 2 + "px";
+        let y = document.documentElement.scrollTop + 150 + "px";
+
+        // add data to db
+        addElementToDb(id, title, img, x, y);
+
+        return [id, title, img, x, y];
     }
 }
 
