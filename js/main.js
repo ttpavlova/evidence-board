@@ -1,7 +1,7 @@
 import { view } from './modules/view.js';
 import { importFile, elementsNumberLoaded, linesNumberLoaded, notesNumberLoaded } from './modules/import.js';
 import { exportFile } from './modules/export.js';
-import { zoom, setZoomValue, changeMainHeight } from './modules/zoom.js';
+import { changeZoom, setInitialZoomValue, changeMainHeight } from './modules/zoom.js';
 import { ElemModal } from './modules/ElemModal.js';
 import { ConnModal } from './modules/ConnModal.js';
 import { NoteModal } from './modules/NoteModal.js';
@@ -12,7 +12,7 @@ import { deleteElement, deleteConnection, deleteNote } from './modules/deleteIte
 import { clearObjStore } from './modules/indexeddb.js';
 
 function init() {
-    setZoomValue();
+    setInitialZoomValue();
     changeMainHeight();
 }
 
@@ -54,10 +54,10 @@ let zoomInBtn = document.getElementById("zoom-in");
 let zoomOutBtn = document.getElementById("zoom-out");
 
 zoomInBtn.addEventListener("click", function() {
-    zoom("in");
+    changeZoom("in");
 });
 zoomOutBtn.addEventListener("click", function() {
-    zoom("out");
+    changeZoom("out");
 });
 
 // button for opening modal window in edit mode

@@ -2,10 +2,20 @@ let main = document.getElementById("main");
 let container = document.getElementById("container");
 let zoomPercent = document.getElementById("zoom-percent");
 
-function zoom(name) {
+function changeZoom(name) {
 
     let scale = Number(getZoomValue());
     
+    scale = countZoom(name, scale);
+
+    container.style.transform = "scale(" + scale + ")";
+    changeMainHeight();
+    zoomPercent.innerHTML = getZoomInPercent(scale) + "%";
+
+    localStorage.setItem("zoom", scale);
+}
+
+function countZoom(name, scale) {
     // 1.0 is default value
     if (name == 'in') {
         // if zoom is not max yet
@@ -19,20 +29,14 @@ function zoom(name) {
         }
     }
 
-    container.style.transform = "scale(" + scale + ")";
-    changeMainHeight();
-
-    zoomPercent.innerHTML = getZoomInPercent(scale) + "%";
-
-    localStorage.setItem("zoom", scale);
+    return Number(scale);
 }
 
-function setZoomValue() {
+function setInitialZoomValue() {
 
     let scale = getZoomValue();
 
     container.style.transform = "scale(" + scale + ")";
-
     zoomPercent.innerHTML = getZoomInPercent(scale) + "%";
 }
 
@@ -61,4 +65,4 @@ function changeMainHeight() {
     main.style.height = containerHeight + "px";
 }
 
-export { zoom, setZoomValue, changeMainHeight };
+export { changeZoom, countZoom, setInitialZoomValue, changeMainHeight, getZoomInPercent };
